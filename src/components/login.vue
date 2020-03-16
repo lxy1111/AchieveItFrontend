@@ -18,12 +18,12 @@
 
       <el-row style="margin-top: 0rem; background: white" :gutter="0" type="flex" class="row-bg" justify="start">
         <el-col :span="24">
-          <input class="loginInfoInput1" v-model="loginInfo.username" placeholder="请输入账号"></input>
+          <input class="loginInfoInput1" v-model="formLogin.loginName" placeholder="请输入账号"></input>
         </el-col>
       </el-row>
       <el-row style="background: white" :gutter="0" type="flex" class="row-bg" justify="start">
         <el-col :span="24">
-          <input type="password" class="loginInfoInput2" v-model="loginInfo.password" placeholder="请输入密码"></input>
+          <input type="password" class="loginInfoInput2" v-model="formLogin.password" placeholder="请输入密码"></input>
         </el-col>
       </el-row>
       <el-row style="background: white" :gutter="0" type="flex" class="row-bg" justify="start">
@@ -143,161 +143,205 @@
     color: #505458;
     font-size: 0.8rem;
   }
-  .login-title1{
-    font-size: 1.1rem;
-    font-family: "PingFang SC";
-    font-weight: bolder;
-    color: #5e5e5e;
-    opacity: 1;
-    position: absolute;
-    text-align: center;
-    left: 50%;
-    -webkit-transform: translate(-50%,0%);
-    transform: translate(-50%,-0%);
-    top: 13%;
-  }
-  .login-title2{
-    font-size: 0.8rem;
-    font-family: PingFang SC;
-    font-weight: bold;
-    color: grey;
-    opacity: 1;
-    position: absolute;
-    text-align: center;
-    left: 50%;
-    -webkit-transform: translate(-50%,0%);
-    transform: translate(-50%,-0%);
-    top: 19%;
-  }
-  .loginInfoInput1{
-    background:rgba(251,251,251,0.5);
-    border:0px solid rgba(255,255,255,1);
-    opacity:1;
-    border-radius:2rem;
-    font-size:0.8rem;
-    font-family:PingFang SC;
-    font-weight:normal;
-    line-height:21px;
-    color:black;
-    opacity:1;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%,0%);
-    margin-top: 40%;
-    padding-left: 1rem;
-    width: 70%;
-    height: 2.5rem;
-    box-shadow:0 0rem 3rem rgba(0,0,0,0.1);
-  }
+.login-title1{
+  font-size: 1.1rem;
+  font-family: "PingFang SC";
+  font-weight: bolder;
+  color: #5e5e5e;
+  opacity: 1;
+  position: absolute;
+  text-align: center;
+  left: 50%;
+  -webkit-transform: translate(-50%,0%);
+  transform: translate(-50%,-0%);
+  top: 13%;
+}
+.login-title2{
+  font-size: 0.8rem;
+  font-family: PingFang SC;
+  font-weight: bold;
+  color: grey;
+  opacity: 1;
+  position: absolute;
+  text-align: center;
+  left: 50%;
+  -webkit-transform: translate(-50%,0%);
+  transform: translate(-50%,-0%);
+  top: 19%;
+}
+.loginInfoInput1{
+  background:rgba(251,251,251,0.5);
+  border:0px solid rgba(255,255,255,1);
+  opacity:1;
+  border-radius:2rem;
+  font-size:0.8rem;
+  font-family:PingFang SC;
+  font-weight:normal;
+  line-height:21px;
+  color:black;
+  opacity:1;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%,0%);
+  margin-top: 40%;
+  padding-left: 1rem;
+  width: 70%;
+  height: 2.5rem;
+  box-shadow:0 0rem 3rem rgba(0,0,0,0.1);
+}
 
-  .loginInfoInput2{
-    background:rgba(251,251,251,0.5);
-    border:0px solid rgba(255,255,255,1);
-    opacity:1;
-    border-radius:2rem;
-    font-size:0.8rem;
-    font-family:PingFang SC;
-    font-weight:normal;
-    line-height:21px;
-    color:black;
-    opacity:1;
-    position: absolute;
-    left: 50%;
-    margin-top: 60%;
-    transform: translate(-50%,0%);
-    padding-left: 1rem;
-    width: 70%;
-    height: 2.5rem;
-    box-shadow:0 0rem 3rem rgba(0,0,0,0.1);
-  }
-  .loginConfirm{
-    background: #439ea8;
-    box-shadow:0px 0px 20px rgba(32,136,255,0.18);
-    opacity:1;
-    border-radius:2rem;
-    border: 0;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%,0%);
-    padding-left: 1rem;
-    width: 75%;
-    height: 2.5rem;
-    margin-top: 80%;
-  }
-  .loginConfirm-text{
-    font-size:0.85rem;
-    font-family:PingFang SC;
-    font-weight:bold;
-    line-height:25px;
-    color:rgba(255,255,255,1);
-    opacity:1;
-  }
-  .loginFail{
-    width: 70%;
-    height: 1.6rem;
-    background:rgba(229,121,121,0.13);
-    border:1px solid rgba(229,121,121,0.30980392156862746);
-    opacity:1;
-    border-radius:4px;
-    text-align: center;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%,0%);
-    margin-top: 100%;
-  }
-  .loginFail-Text{
-    font-size:0.7rem;
-    font-family:PingFang SC;
-    font-weight:500;
-    color: rgb(214, 132, 132);
-    padding: 2.5% 0;
-  }
+.loginInfoInput2{
+  background:rgba(251,251,251,0.5);
+  border:0px solid rgba(255,255,255,1);
+  opacity:1;
+  border-radius:2rem;
+  font-size:0.8rem;
+  font-family:PingFang SC;
+  font-weight:normal;
+  line-height:21px;
+  color:black;
+  opacity:1;
+  position: absolute;
+  left: 50%;
+  margin-top: 60%;
+  transform: translate(-50%,0%);
+  padding-left: 1rem;
+  width: 70%;
+  height: 2.5rem;
+  box-shadow:0 0rem 3rem rgba(0,0,0,0.1);
+}
+.loginConfirm{
+  background: #439ea8;
+  box-shadow:0px 0px 20px rgba(32,136,255,0.18);
+  opacity:1;
+  border-radius:2rem;
+  border: 0;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%,0%);
+  padding-left: 1rem;
+  width: 75%;
+  height: 2.5rem;
+  margin-top: 80%;
+}
+.loginConfirm-text{
+  font-size:0.85rem;
+  font-family:PingFang SC;
+  font-weight:bold;
+  line-height:25px;
+  color:rgba(255,255,255,1);
+  opacity:1;
+}
+.loginFail{
+  width: 70%;
+  height: 1.6rem;
+  background:rgba(229,121,121,0.13);
+  border:1px solid rgba(229,121,121,0.30980392156862746);
+  opacity:1;
+  border-radius:4px;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%,0%);
+  margin-top: 100%;
+}
+.loginFail-Text{
+  font-size:0.7rem;
+  font-family:PingFang SC;
+  font-weight:500;
+  color: rgb(214, 132, 132);
+  padding: 2.5% 0;
+}
 </style>
-
 <script>
-  export default {
-    name: 'login',
-    data() {
-      return {
-        loginInfo:{
-          username: "",
-          password: "",
-          jobId: "",
-          department: "",
-          displayName: "",
-          jobPosition: "",
-          phoneNumber: "",
-          userRole: ""
-        },
-        loginState: "",
-        dialogLoginFail:false,
-        loginMsg:""
-
-      }
-    },
-    mounted() {
-
-
-    },
-    methods: {
-      handleClose(done) {
-        done();
+export default {
+  name: "login",
+  data() {
+    return {
+      formLogin: {
+        loginName: "admin",
+        password: "123456"
       },
-      login() {
+      errorInfo: {
+        text: "登陆失败,请重试",
+        isShowError: false //显示错误提示
+      },
+      loginInfo:{
+        username: "",
+        password: "",
+        jobId: "",
+        department: "",
+        displayName: "",
+        jobPosition: "",
+        phoneNumber: "",
+        userRole: ""
+      },
+      loginState: "",
+      dialogLoginFail:false,
+      loginMsg:""
+    };
+  },
+   mounted() {
+        document.onkeydown = (event) => {
+            var router=this.$route.path;
+            var e = event || window.event || arguments.callee.caller.arguments[0];
+            if (e && e.keyCode == 13&&this.$route.path=='/login') { // enter 键
+                this.login();
+            }
+        };
+    },
+  methods: {
+    handleClose(done) {
+      done();
+    },
+    login() {
+      var param = {
+        loginName: this.formLogin.loginName,
+        password: this.formLogin.password
+      };
 
-        var data=
-          {
-            username: this.loginInfo.username,
-            password: this.loginInfo.password
-          };
+      this.$http
+        .post("/api/shiro-api/login", param)
+        .then(response => {
+          console.log("成功报文:", response);
+          var json = response.data;
+          if (json.status == "SUCCESS") {
+            //报错日志
+            var loginLog = {
+              ip: returnCitySN["cip"],
+              city: returnCitySN["cname"],
+              type: "登陆教学版"
+            };
+            this.$http.post('/api/loginlog-api/save', loginLog);
 
-        this.$router.push({
-          path: '/index',
-          params: { myInfo: this.loginInfo }
+            //保存登陆信息
+            var userInfo = json.data.userInfo;
+            sessionStorage.setItem("userName", userInfo.userName); //用户名
+            sessionStorage.setItem("token", userInfo.token); //保存秘钥
+            var sysRoleVoList = json.data.sysRoleVoList;
+            var position = "";
+            for (var i = 0; i < sysRoleVoList.length; i++) {
+              var item = sysRoleVoList[i];
+              if (position == "") {
+                position += item.roleName;
+              } else {
+                position += "|" + item.roleName;
+              }
+            }
+            sessionStorage.setItem("position", position); //用户职位
+            //登陆成功跳转主页
+            this.$router.replace({ path: "/index" });
+          } else {
+            this.errorInfo.isShowError = true;
+            this.errorInfo.text = json.message;
+          }
+        })
+        .catch(error => {
+          console.log("失败报文:", error);
+          this.errorInfo.isShowError = true;
+          this.errorInfo.text = "系统接口异常";
         });
-
-      }
-
     }
   }
+};
 </script>

@@ -10,7 +10,16 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+       '/api': {
+          target: 'http://101ycy.com:10001',
+          changeOrigin: true,
+          pathRewrite: {
+            '^/api': '/'
+          }
+      }
+
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
@@ -20,14 +29,7 @@ module.exports = {
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
-    // Use Eslint Loader?
-    // If true, your code will be linted during bundling and
-    // linting errors and warnings will be shown in the console.
-    useEslint: true,
-    // If true, eslint errors and warnings will also be shown in the error overlay
-    // in the browser.
-    showEslintErrorsInOverlay: false,
-
+    
     /**
      * Source Maps
      */
@@ -56,7 +58,7 @@ module.exports = {
      * Source Maps
      */
 
-    productionSourceMap: true,
+    productionSourceMap: false,//改成false,减少文件
     // https://webpack.js.org/configuration/devtool/#production
     devtool: '#source-map',
 
@@ -64,7 +66,8 @@ module.exports = {
     // Surge or Netlify already gzip all static assets for you.
     // Before setting to `true`, make sure to:
     // npm install --save-dev compression-webpack-plugin
-    productionGzip: false,
+    // cnpm install --save-dev compression-webpack-plugin@1.1.12　　　　//记得带版本号,上边的报错用这个,发现服务端开启gzip就行,这里不用设置
+    productionGzip: false,//改成true,压缩
     productionGzipExtensions: ['js', 'css'],
 
     // Run the build command with an extra argument to
