@@ -1,43 +1,30 @@
 <template>
-  <div id="app" style="">
-    <router-view v-if="isRouterAlive"/>
+  <div id="app">
+    <router-view/>
   </div>
 </template>
 
 <script>
-
-  export default {
-    name: 'App',
-    provide() {
-      return{
-        reload: this.reload
-      };
-    },
-    data() {
-      return{
-        isRouterAlive: true
-      };
-    },
-    methods: {
-      reload(){
-        this.isRouterAlive = false;
-        this.$nextTick(function(){
-          this.isRouterAlive = true;
-        })
-      }
-    }
-  }
+export default {
+  name: "App"
+};
 </script>
 
 <style>
-  @import "../static/css/main.css";
-  @import "../static/css/theme-green/color-green.css";
-  #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    /*margin-top: 60px;*/
-  }
+/*基础样式 start*/
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+a {
+  text-decoration: none;
+}
+/*基础样式 end*/
 </style>
