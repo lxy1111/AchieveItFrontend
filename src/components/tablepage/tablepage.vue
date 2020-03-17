@@ -97,28 +97,28 @@
 
     <el-table :data="tableData" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">
       <el-table-column type="selection" width="30" align="center"></el-table-column>
-      <el-table-column type="expand" width="30">
-        <template slot-scope="props">
-          <el-form
-            :inline="true"
-            :model="formSearch"
-            ref="formSearch"
-            class="demo-form-inline"
-            label-width="82px"
-          >
-            <el-form-item class="form_input" label="功能列表" prop="qq">
-              <el-input v-model="formSearch.qq" placeholder=""></el-input>
-            </el-form-item>
-            <el-form-item class="form_input" label="人员管理" prop="qq">
-              <el-input v-model="formSearch.qq" placeholder=""></el-input>
-            </el-form-item>
-            <el-form-item class="form_input" label="工时管理" prop="qq">
-              <el-input v-model="formSearch.qq" placeholder=""></el-input>
-            </el-form-item>
+<!--      <el-table-column type="expand" width="30">-->
+<!--        <template slot-scope="props">-->
+<!--          <el-form-->
+<!--            :inline="true"-->
+<!--            :model="formSearch"-->
+<!--            ref="formSearch"-->
+<!--            class="demo-form-inline"-->
+<!--            label-width="82px"-->
+<!--          >-->
+<!--            <el-form-item class="form_input" label="功能列表" prop="qq">-->
+<!--              <el-input v-model="formSearch.qq" placeholder=""></el-input>-->
+<!--            </el-form-item>-->
+<!--            <el-form-item class="form_input" label="人员管理" prop="qq">-->
+<!--              <el-input v-model="formSearch.qq" placeholder=""></el-input>-->
+<!--            </el-form-item>-->
+<!--            <el-form-item class="form_input" label="工时管理" prop="qq">-->
+<!--              <el-input v-model="formSearch.qq" placeholder=""></el-input>-->
+<!--            </el-form-item>-->
 
-          </el-form>
-        </template>
-      </el-table-column>
+<!--          </el-form>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column prop="name" label="项目id" width="80" align="center"></el-table-column>
       <el-table-column prop="city" label="项目名称" width="75"></el-table-column>
       <el-table-column prop="type" label="项目上级"  width="75" :formatter="format_type"></el-table-column>
@@ -272,6 +272,25 @@
     padding: 8px !important;
   }
 ._tablepage {
+
+  .el-button {
+    -webkit-appearance: none;
+    background-image: none;
+    border-radius: 3rem;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    display: inline-block;
+    font-size: 0.9rem;
+    height: 32px;
+    line-height: 30px;
+    outline: 0;
+    padding: 0 15px;
+    -webkit-transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+    transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+    font-family: "PingFang SC";
+    width: 6rem;
+    margin-top: 0px;
+  }
 
   .el-dialog {
     border-radius: 2rem !important;

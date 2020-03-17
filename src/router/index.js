@@ -34,15 +34,6 @@ const router = new Router({
           }
         },
         {
-          path: '/test01',
-          name: 'test01',
-          component: () => import('@/components/test/test01'),
-          meta: {
-            title: 'test01页',
-            role: ['白银岗','黄金岗']
-          }
-        },
-        {
           path: '/tablepage',
           name: 'tablepage',
           component: () => import('@/components/tablepage/tablepage'),
@@ -57,6 +48,33 @@ const router = new Router({
           component: () => import('@/components/tablepage/projectDetail'),
           meta: {
             title: '查看项目详情',
+            role: ['项目上级', '项目经理','黄金岗']
+          }
+        },
+        {
+          path: '/riskIdentification',
+          name: 'riskIdentification',
+          component: () => import('@/components/tablepage/riskIdentification'),
+          meta: {
+            title: '风险识别',
+            role: ['项目上级', '项目经理','黄金岗']
+          }
+        },
+        {
+          path: '/deviceManagement',
+          name: 'deviceManagement',
+          component: () => import('@/components/tablepage/deviceManagement'),
+          meta: {
+            title: '设备管理',
+            role: ['项目上级', '项目经理','黄金岗']
+          }
+        },
+        {
+          path: '/riskTracking',
+          name: 'riskTracking',
+          component: () => import('@/components/tablepage/riskTracking'),
+          meta: {
+            title: '风险跟踪',
             role: ['项目上级', '项目经理','黄金岗']
           }
         }

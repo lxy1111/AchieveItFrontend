@@ -5,10 +5,10 @@
       :default-active="onRoutes"
       :collapse="navShow"
       class="el-menu-vertical-demo menu"
-      unique-opened
       router
     >
       <template v-for="(menu_one,i) in menuData">
+
         <el-submenu v-if="getPermitMenus(menu_one.subs).length>0"  :key="i" :index="menu_one.path">
           <template slot="title">
             <i :class="menu_one.icon"></i>
@@ -24,6 +24,12 @@
             <span>{{menu_two.title}}</span>
           </el-menu-item>
         </el-submenu>
+
+        <el-menu-item v-if="getPermitMenus(menu_one.subs).length==0" :key="i" :index="menu_one.path">
+          <i :class="menu_one.icon"></i>
+          <span>{{menu_one.title}}</span>
+        </el-menu-item>
+
       </template>
     </el-menu>
   </div>
@@ -50,53 +56,38 @@ export default {
       navShow: false, //导航是否折叠
       menuData: [
         {
-          icon: "el-icon-star-on",
-          path: "p_home",
+          icon: "el-icon-document",
+          path: "tablepage",
           title: "项目管理",
+          subs: [
+
+          ]
+        },
+        {
+          icon: "el-icon-data-analysis",
+          path: "p_risk",
+          title: "风险管理",
           subs: [
             {
               page: true,
-              path: "tablepage",
-              title: "项目信息",
-              icon: "el-icon-document"
+              path: "riskIdentification",
+              title: "风险识别",
+              icon: "el-icon-aim"
             },
             {
               page: true,
-              path: "test01",
-              title: "缺陷管理",
-              icon: "el-icon-document"
-            },
-            {
-              page: true,
-              path: "test01",
-              title: "风险管理",
-              icon: "el-icon-document"
-            },
-            {
-              page: true,
-              path: "test01",
-              title: "设备管理",
-              icon: "el-icon-document"
+              path: "riskTracking",
+              title: "风险跟踪",
+              icon: "el-icon-s-promotion"
             }
           ]
         },
         {
-          icon: "el-icon-tickets",
-          path: "p_tablepage",
-          title: "归档管理",
+          icon: "el-icon-s-platform",
+          path: "deviceManagement",
+          title: "设备管理",
           subs: [
-            {
-              page: true,
-              path: "test01",
-              title: "归档提交",
-              icon: "el-icon-document"
-            },
-            {
-              page: true,
-              path: "test01",
-              title: "归档审批",
-              icon: "el-icon-document"
-            }
+
           ]
         }
       ]
