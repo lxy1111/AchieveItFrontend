@@ -38,7 +38,7 @@ const router = new Router({
           name: 'tablepage',
           component: () => import('@/components/tablepage/tablepage'),
           meta: {
-            title: '项目信息',
+            title: '项目管理',
             role: ['项目上级', '项目经理','黄金岗']
           }
         },
@@ -56,7 +56,7 @@ const router = new Router({
           name: 'riskIdentification',
           component: () => import('@/components/tablepage/riskIdentification'),
           meta: {
-            title: '风险识别',
+            title: '风险管理',
             role: ['项目上级', '项目经理','黄金岗']
           }
         },

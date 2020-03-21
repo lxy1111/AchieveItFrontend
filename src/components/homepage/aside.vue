@@ -65,21 +65,10 @@ export default {
         },
         {
           icon: "el-icon-data-analysis",
-          path: "p_risk",
+          path: "riskIdentification",
           title: "风险管理",
           subs: [
-            {
-              page: true,
-              path: "riskIdentification",
-              title: "风险识别",
-              icon: "el-icon-aim"
-            },
-            {
-              page: true,
-              path: "riskTracking",
-              title: "风险跟踪",
-              icon: "el-icon-s-promotion"
-            }
+
           ]
         },
         {

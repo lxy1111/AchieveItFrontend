@@ -254,6 +254,7 @@
 }
 </style>
 <script>
+  import {requestLogin} from '../api/api';
 export default {
   name: "login",
   data() {
@@ -296,12 +297,11 @@ export default {
     },
     login() {
       var param = {
-        loginName: this.formLogin.loginName,
+        username: this.formLogin.loginName,
         password: this.formLogin.password
       };
 
-      this.$http
-        .post("/api/shiro-api/login", param)
+      requestLogin(param)
         .then(response => {
           console.log("成功报文:", response);
           var json = response.data;
