@@ -111,16 +111,16 @@ router.beforeEach((to, from, next) => {
     next({ path: '/login' })
   }
   else {//权限认证
-    if (rightPathList.includes(to.path)) {
-      next();
-    }
-    else if (hasPermit(to)) {
-      next();
-    }
-    else {
-      next('403');
-    }
-
+    // if (rightPathList.includes(to.path)) {
+    //   next();
+    // }
+    // else if (hasPermit(to)) {
+    //   next();
+    // }
+    // else {
+    //   next('403');
+    // }
+    next()
   }
 })
 /**
@@ -156,27 +156,27 @@ axios.interceptors.response.use(function (response) {
 
 
 //获取当前路由是否有权限访问
-function hasPermit(to) {
-  var hasPermit = false;
-  if (to.meta && to.meta.role) {
-    var ruleList = getRuleList();
-    hasPermit = ruleList.some(rule => {
-      return to.meta.role.includes(rule);
-    });
-  }
-  return hasPermit;
-
-}
-//获取登陆的角色集合
-function getRuleList() {
-  var ruleList = []; //角色数组
-  var strRule = sessionStorage.getItem("position");
-  if (strRule.indexOf("|") != -1) {
-    ruleList = strRule.split("|");
-  } else {
-    ruleList.push(strRule);
-  }
-  return ruleList;
-}
+// function hasPermit(to) {
+//   var hasPermit = false;
+//   if (to.meta && to.meta.role) {
+//     var ruleList = getRuleList();
+//     hasPermit = ruleList.some(rule => {
+//       return to.meta.role.includes(rule);
+//     });
+//   }
+//   return hasPermit;
+//
+// }
+// //获取登陆的角色集合
+// function getRuleList() {
+//   var ruleList = []; //角色数组
+//   var strRule = sessionStorage.getItem("position");
+//   if (strRule.indexOf("|") != -1) {
+//     ruleList = strRule.split("|");
+//   } else {
+//     ruleList.push(strRule);
+//   }
+//   return ruleList;
+// }
 
 export default router

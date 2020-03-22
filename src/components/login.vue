@@ -297,43 +297,43 @@ export default {
     },
     login() {
       var param = {
-        username: this.formLogin.loginName,
-        password: this.formLogin.password
+        password: this.formLogin.password,
+          username: this.formLogin.loginName,
       };
 
       requestLogin(param)
         .then(response => {
           console.log("成功报文:", response);
-          var json = response.data;
-          if (json.status == "SUCCESS") {
-            //报错日志
-            var loginLog = {
-              ip: returnCitySN["cip"],
-              city: returnCitySN["cname"],
-              type: "登陆教学版"
-            };
-            this.$http.post('/api/loginlog-api/save', loginLog);
+          var json = response;
+
+          if (json.msg == "登录成功") {
 
             //保存登陆信息
-            var userInfo = json.data.userInfo;
-            sessionStorage.setItem("userName", userInfo.userName); //用户名
+            var userInfo = json.data;
+            sessionStorage.setItem("userName", param.username); //用户名
             sessionStorage.setItem("token", userInfo.token); //保存秘钥
-            var sysRoleVoList = json.data.sysRoleVoList;
-            var position = "";
-            for (var i = 0; i < sysRoleVoList.length; i++) {
-              var item = sysRoleVoList[i];
-              if (position == "") {
-                position += item.roleName;
-              } else {
-                position += "|" + item.roleName;
-              }
-            }
-            sessionStorage.setItem("position", position); //用户职位
+            // var sysRoleVoList = json.data.sysRoleVoList;
+            // var position = "";
+            // for (var i = 0; i < sysRoleVoList.length; i++) {
+            //   var item = sysRoleVoList[i];
+            //   if (position == "") {
+            //     position += item.roleName;
+            //   } else {
+            //     position += "|" + item.roleName;
+            //   }
+            // }
+            // sessionStorage.setItem("position", position); //用户职位
             //登陆成功跳转主页
+              this.$message({
+                  message: '登录成功',
+                  type: 'success'
+              });
+
             this.$router.replace({ path: "/index" });
           } else {
             this.errorInfo.isShowError = true;
             this.errorInfo.text = json.message;
+              this.$message.error('登录失败');
           }
         })
         .catch(error => {

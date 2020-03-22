@@ -3,7 +3,33 @@ import dev from '../../config/dev.env'
 
 let base = '';
 
-axios.defaults.baseURL="http://47.100.187.197:8080";
+axios.defaults.baseURL="/api";
+
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 
 export const requestLogin = params => { return axios.post(`/Login/LogOn`, params).then(res => res.data); };
+
+export const searchProject = params => { return axios.post(`/ProjectInfo/Search`, params).then(res => res.data); };
+
+export const createNewProject = params => { return axios.post(`/Project/NewProject`, params).then(res => res.data); };
+
+export const deleteProject = params => { return axios.post(`/ProjectInfo/Delete`, params).then(res => res.data); };
+
+export const updateProject = params => { return axios.post(`/ProjectInfo/Edit`, params).then(res => res.data); };
+
+export const addProjectFunction = params => { return axios.post(`/ProjectFunction/Add`, params).then(res => res.data); };
+
+export const deleteProjectFunction = params => { return axios.post(`/ProjectFunction/Delete`, params).then(res => res.data); };
+
+export const updateProjectFunction = params => { return axios.post(`/ProjectFunction/Edjt`, params).then(res => res.data); };
+
+export const searchProjectFunction = params => { return axios.post(`/ProjectFunction/Search`, params).then(res => res.data); };
+
+export const addProjectSubFunction = params => { return axios.post(`/ProjectSubFunction/SubAdd`, params).then(res => res.data); };
+
+export const updateProjectSubFunction = params => { return axios.post(`/ProjectSubFunction/SubEdit`, params).then(res => res.data); };
+
+export const deleteProjectSubFunction = params => { return axios.post(`/ProjectSubFunction/SubDelete`, params).then(res => res.data); };
+
+

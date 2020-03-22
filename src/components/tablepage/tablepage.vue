@@ -22,23 +22,17 @@
               label-width="82px"
             >
               <el-form-item class="small_form_input" label="项目id" prop="name">
-                <el-input v-model="formSearch.name" placeholder=""></el-input>
+                <el-input v-model="formSearch.projectid" placeholder=""></el-input>
               </el-form-item>
               <el-form-item class="form_input" label="项目名称" prop="city">
-                <el-input v-model="formSearch.city" placeholder=""></el-input>
-              </el-form-item>
-              <el-form-item class="form_input" label="客户信息" prop="city">
-                <el-input v-model="formSearch.city" placeholder=""></el-input>
+                <el-input v-model="formSearch.projectname" placeholder=""></el-input>
               </el-form-item>
               <el-form-item class="form_select" label="项目上级" prop="type">
-                <el-select v-model="formSearch.type" placeholder="">
+                <el-select v-model="formSearch.superior" placeholder="">
                   <el-option label="留言" value="1"></el-option>
                   <el-option label="建议" value="2"></el-option>
                   <el-option label="BUG" value="3"></el-option>
                 </el-select>
-              </el-form-item>
-              <el-form-item class="form_input" label="主要里程碑" prop="age">
-                <el-input v-model="formSearch.age" placeholder=""></el-input>
               </el-form-item>
               <!--      <el-form-item class="form_select" label="性别" prop="gender">-->
               <!--        <el-select v-model="formSearch.gender" placeholder="性别">-->
@@ -46,15 +40,6 @@
               <!--          <el-option label="女" value="2"></el-option>-->
               <!--        </el-select>-->
               <!--      </el-form-item>-->
-              <el-form-item class="form_input" label="主要功能" prop="qq">
-                <el-input v-model="formSearch.qq" placeholder=""></el-input>
-              </el-form-item>
-              <el-form-item class="form_input" label="采用技术" prop="qq">
-                <el-input v-model="formSearch.qq" placeholder=""></el-input>
-              </el-form-item>
-              <el-form-item class="small_form_input" label="业务领域" prop="qq">
-                <el-input v-model="formSearch.qq" placeholder=""></el-input>
-              </el-form-item>
               <el-form-item class="form_date" label="预定时间" prop="createDate">
                 <!--        <el-date-picker-->
                 <!--          v-model="formSearch.createDate"-->
@@ -64,14 +49,14 @@
                 <!--          end-placeholder="结束日期"-->
                 <!--        ></el-date-picker>-->
                 <el-date-picker
-                  v-model="formSearch.createDate"
+                  v-model="formSearch.booktime"
                   type="date"
                   placeholder="选择预定时间"
                 ></el-date-picker>
               </el-form-item>
               <el-form-item class="form_date" label="交付时间" prop="createDate">
                 <el-date-picker
-                  v-model="formSearch.createDate"
+                  v-model="formSearch.submittime"
                   type="date"
                   placeholder="选择交付时间"
                 ></el-date-picker>
@@ -119,18 +104,13 @@
 <!--          </el-form>-->
 <!--        </template>-->
 <!--      </el-table-column>-->
-      <el-table-column prop="name" label="项目id" width="80" align="center"></el-table-column>
-      <el-table-column prop="city" label="项目名称" width="75"></el-table-column>
-      <el-table-column prop="type" label="项目上级"  width="75" :formatter="format_type"></el-table-column>
-      <el-table-column prop="city" label="客户信息" show-overflow-tooltip tooltip-effect="dark" width="80"></el-table-column>
-      <el-table-column prop="name" label="主要里程碑"  width="90"></el-table-column>
-      <el-table-column prop="age" label="主要功能" width="80"></el-table-column>
-      <el-table-column prop="age" label="采用技术" width="80"></el-table-column>
-      <el-table-column prop="age" label="业务领域"  width="80"></el-table-column>
+      <el-table-column prop="id" label="项目id"  align="center"></el-table-column>
+      <el-table-column prop="projectName" label="项目名称" ></el-table-column>
+      <el-table-column prop="createrId" label="项目上级" ></el-table-column>
 <!--      <el-table-column prop="gender" label="性别"  :formatter="format_gender"></el-table-column>-->
-      <el-table-column prop="createtime" label="预定时间" :formatter="format_date"></el-table-column>
-      <el-table-column prop="updatetime" label="交付日" :formatter="format_date"></el-table-column>
-      <el-table-column fixed="right" prop="status" label="状态" width="80">
+      <el-table-column prop="scheduleTime" label="预定时间" :formatter="format_date"></el-table-column>
+      <el-table-column prop="deliveryTime" label="交付日" :formatter="format_date"></el-table-column>
+      <el-table-column fixed="right" prop="status" label="状态" >
         <template slot-scope="scope">
           <button @click="handleTodayVisit(scope.$index, scope.row)"
                   style="border-radius: 1rem;
@@ -170,7 +150,7 @@
                   >申请立项</button>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="90" align="center">
+      <el-table-column fixed="right" label="操作"  align="center">
         <template slot-scope="scope">
           <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowDetail(scope.row)"></i>
           <i style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
@@ -580,49 +560,30 @@
 
 
 <script>
+  import {searchProject} from '../../api/api'
 export default {
   name: "tablepage",
   data() {
     return {
       pageInfo: {
         //分页
-        currentPage: 1,
-        pageSize: 5,
-        pageTotal: 80
+          pageSize: 5,
+          pageNum: 1,
+          pageTotal:''
       },
       tableData: [
-        {
-          name: "张三",
-          city: "北京",
-          type: "1",
-          age: 18,
-          gender: 1,
-          qq: 123444,
-          createtime: 1546587784000,
-          updatetime: 1546587784000
-        },
-        {
-          name: "李四",
-          city: "上海",
-          type: "2",
-          age: 19,
-          gender: 0,
-          qq: 555,
-          createtime: 1546587784000,
-          updatetime: 1546587784000
-        }
+
       ],
       formSearch: {
-        name: "",
-        city: "",
-        type: "",
-        age: null,
-        gender: null,
-        qq: "",
-        startdate: null, //开始时间
-        enddate: null, //结束时间
-        createDate: "" //日期
-      },
+          projectid:'',
+          projectname:'',
+          superior:'',
+          booktime:'',
+          submittime:'',
+          status:'',
+          pageNum:1,
+          pageSize:10
+    },
       formEdit: {
         name: "",
         city: "",
@@ -657,17 +618,16 @@ export default {
     onSearch() {
       //查询
       this.loading = true;
-      if (this.formSearch.createDate) {
-        this.formSearch.startdate = this.searchCreateDate[0];
-        this.formSearch.enddate = this.searchCreateDate[1];
-      }
-      var param = Object.assign({}, this.formSearch, this.pageInfo);
-      this.$http
-        .post("/api/msg-api/queryList", param)
+      // if (this.formSearch.createDate) {
+      //   this.formSearch.startdate = this.searchCreateDate[0];
+      //   this.formSearch.enddate = this.searchCreateDate[1];
+      // }
+      // var param = Object.assign({}, this.formSearch, this.pageInfo);
+        searchProject(this.formSearch)
         .then(response => {
-          var json = response.data;
-          if (json.status == "SUCCESS") {
-            this.tableData = json.data;
+          var json = response;
+          if (json.msg == "查询成功") {
+            this.tableData = json.data.infoList;
             this.pageInfo.pageTotal = json.count;
           } else {
             this.$message({ message: json.message, type: "warning" });
