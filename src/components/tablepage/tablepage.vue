@@ -627,7 +627,7 @@ export default {
         .then(response => {
           var json = response;
           if (json.msg == "查询成功") {
-            this.tableData = json.data.infoList;
+            this.tableData = json.data.data;
             this.pageInfo.pageTotal = json.count;
           } else {
             this.$message({ message: json.message, type: "warning" });

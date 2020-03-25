@@ -59,6 +59,7 @@ export default {
       //切换左侧导航展示/折叠
       this.navShow = !this.navShow;
       bus.$emit("navShowChange", this.navShow);
+      console.log('dasdsda')
     },
     // 全屏事件
     handleFullScreen() {
