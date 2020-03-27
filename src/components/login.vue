@@ -312,17 +312,19 @@ export default {
             var userInfo = json.data;
             sessionStorage.setItem("userName", param.username); //用户名
             sessionStorage.setItem("token", userInfo.token); //保存秘钥
-            // var sysRoleVoList = json.data.sysRoleVoList;
-            // var position = "";
-            // for (var i = 0; i < sysRoleVoList.length; i++) {
-            //   var item = sysRoleVoList[i];
-            //   if (position == "") {
-            //     position += item.roleName;
-            //   } else {
-            //     position += "|" + item.roleName;
-            //   }
-            // }
-            // sessionStorage.setItem("position", position); //用户职位
+
+            //var sysRoleVoList = json.data.sysRoleVoList;
+            var position = "黄金岗";
+            //for (var i = 0; i < sysRoleVoList.length; i++) {
+              //var item = sysRoleVoList[i];
+              // if (position == "") {
+              //   position += item.roleName;
+              // } else {
+              //   position += "|" + item.roleName;
+              // }
+            //}
+            sessionStorage.setItem("position", position); //用户职位
+
             //登陆成功跳转主页
               this.$message({
                   message: '登录成功',

@@ -88,6 +88,7 @@ export default {
     bus.$on("navShowChange", navShow => {
       this.navShow = navShow;
     });
+    console.log("导航栏：："+this.navShow);
   },
   mounted() {},
   methods: {

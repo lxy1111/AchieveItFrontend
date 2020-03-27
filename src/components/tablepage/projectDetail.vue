@@ -16,59 +16,57 @@
                   :rules="formEditRules"
                   :disabled="editDialogParam.formEditDisabled"
                 >
-                  <el-form-item class="form_input" label="项目id" prop="name">
-                    <el-input v-model="formEdit.name" placeholder=""></el-input>
+                  <el-form-item class="form_input" label="项目id" prop="id">
+                    <el-input v-model="formEdit.id" placeholder=""></el-input>
                   </el-form-item>
-                  <el-form-item class="form_input" label="项目名称" prop="city">
-                    <el-input v-model="formEdit.city" placeholder=""></el-input>
+                  <el-form-item class="form_input" label="项目名称" prop="projectName">
+                    <el-input v-model="formEdit.projectName" placeholder=""></el-input>
                   </el-form-item>
-                  <el-form-item label="项目状态" prop="city">
-                    <button @click=""
-                            style="border-radius: 1rem;
-                            border: 0px;
-                            position: relative;
-                            width: 4.7rem;
-                            height: 1.8rem;
-                            color: #309aec;
-                            font-size: 0.9rem;
-                            font-weight: bolder;
-                            font-family: PingFang SC;
-                            background: rgba(48,154,236,0.09);"
-                    >申请立项</button>
+                  <el-form-item label="项目状态" prop="status">
+                    <button
+                            class="status_button" v-if="formEdit.status==0">申请立项</button>
+                    <button style="color: #00C1A0; background: rgba(0,193,160,0.09);"
+                            class="status_button" v-if="formEdit.status==1">已立项</button>
+                    <button @click="" style="color: #ab1b10; background: rgba(171,27,16,0.09);"
+                            class="status_button" v-if="formEdit.status==2">立即驳回</button>
+                    <button @click="" style="color: #0cab2f; background: rgba(12,171,47,0.09);"
+                            class="status_button" v-if="formEdit.status==3">进行中</button>
+                    <button @click="" style="color: #ab4d02; background: rgba(171,77,2,0.09);"
+                            class="status_button" v-if="formEdit.status==4">已交付</button>
+                    <button @click="" style="color: #838383; background: rgba(131,131,131,0.09);"
+                            class="status_button" v-if="formEdit.status==5">结束</button>
+                    <button @click="" style="color: #ab8c05; background: rgba(171,140,5,0.09);"
+                            class="status_button" v-if="formEdit.status==6">已归档</button>
                   </el-form-item>
-                  <el-form-item class="form_select" label="项目上级" prop="type">
-                    <el-select v-model="formEdit.type" placeholder="">
-                      <el-option label="留言" value="1"></el-option>
-                      <el-option label="建议" value="2"></el-option>
-                      <el-option label="BUG" value="3"></el-option>
-                    </el-select>
+                  <el-form-item class="form_select" label="项目上级" prop="leader">
+                    <el-input v-model="formEdit.leader" placeholder=""></el-input>
                   </el-form-item>
-                  <el-form-item class="form_input_big" label="客户信息" prop="age">
-                    <el-input v-model="formEdit.age" placeholder=""></el-input>
+                  <el-form-item class="form_input_big" label="客户信息" prop="customerInfo">
+                    <el-input v-model="formEdit.customerInfo" placeholder=""></el-input>
                   </el-form-item>
-                  <el-form-item class="form_input_big" label="主要里程碑" prop="qq">
-                    <el-input v-model="formEdit.qq" placeholder=""></el-input>
+                  <el-form-item class="form_input_big" label="主要里程碑" prop="milepost">
+                    <el-input v-model="formEdit.milepost" placeholder=""></el-input>
                   </el-form-item>
-                  <el-form-item class="form_input" label="主要功能" prop="qq">
-                    <el-input type="textarea" autosize v-model="formEdit.qq" placeholder=""></el-input>
+                  <el-form-item class="form_input" label="主要功能" prop="projectFunction">
+                    <el-input type="textarea" autosize v-model="formEdit.projectFunction" placeholder=""></el-input>
                   </el-form-item>
-                  <el-form-item class="form_input_big" label="采用技术" prop="qq">
-                    <el-input v-model="formEdit.qq" placeholder=""></el-input>
+                  <el-form-item class="form_input_big" label="采用技术" prop="technology">
+                    <el-input v-model="formEdit.technology" placeholder=""></el-input>
                   </el-form-item>
-                  <el-form-item class="form_input" label="业务领域" prop="qq">
-                    <el-input v-model="formEdit.qq" placeholder=""></el-input>
+                  <el-form-item class="form_input" label="业务领域" prop="businessArea">
+                    <el-input v-model="formEdit.businessArea" placeholder=""></el-input>
                   </el-form-item>
-                  <el-form-item class="form_date" label="预定时间" prop="createDate">
+                  <el-form-item class="form_date" label="预定时间" prop="scheduleTime">
                     <el-date-picker
-                      v-model="formSearch.createDate"
-                      type="date"
+                      v-model="formEdit.scheduleTime"
+                      type="datetime"
                       placeholder="选择预定时间"
                     ></el-date-picker>
                   </el-form-item>
-                  <el-form-item class="form_date" label="交付时间" prop="createDate">
+                  <el-form-item class="form_date" label="交付时间" prop="deliveryTime">
                     <el-date-picker
-                      v-model="formSearch.createDate"
-                      type="date"
+                      v-model="formEdit.deliveryTime"
+                      type="datetime"
                       placeholder="选择交付时间"
                     ></el-date-picker>
                   </el-form-item>
@@ -77,7 +75,7 @@
             </el-tab-pane>
             <el-tab-pane label="功能列表">
               <el-row style="margin-top: 1rem;">
-                <el-col :span="16">
+                <el-col :span="20">
                   <el-button style="background: #439ea8;
                                   color: white;
                                   margin-left: 1rem;
@@ -91,27 +89,26 @@
                                   border-color: #cf9236;"
                              round>导出至excel</el-button>
                 </el-col>
-                <el-col :span="8">
+                <el-col :span="4">
                   <el-button style="background: #309aec;
                                   color: white;
                                   margin-left: 1rem;
                                   border-color: #309aec;"
                              round @click="onShowAddFunction">新建功能</el-button>
-                  <el-button style="" type="danger" round>批量删除</el-button>
                 </el-col>
               </el-row>
               <div>
                 <el-table
                   :data="functionList"
+                  v-loading="loadingFunc"
                   style="width: 100%;margin-bottom: 20px; margin-top: 1rem;"
                   row-key="name"
                   default-expand-all
-                  :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+                  :tree-props="{children: 'subFunction', hasChildren: 'hasChildren'}"
                   stripe class="visitor-table" align="center">
-                  <el-table-column type="selection" align="center"></el-table-column>
                   <el-table-column prop="id" label="功能id" align="center"></el-table-column>
-                  <el-table-column prop="name" label="功能名称"></el-table-column>
-                  <el-table-column prop="head" label="负责人"></el-table-column>
+                  <el-table-column prop="functionName" label="功能名称"></el-table-column>
+                  <el-table-column prop="personCharge" label="负责人"></el-table-column>
                   <el-table-column fixed="right" label="操作" width="90" align="center">
                     <template slot-scope="scope">
                       <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
@@ -261,14 +258,14 @@
         :rules="formEditFunctionRules"
         :disabled="editFunctionDialogParam.formEditFunctionDisabled"
       >
-        <el-form-item class="form_input" label="功能id" prop="id">
-          <el-input v-model="formEditFunction.id" placeholder=""></el-input>
+        <el-form-item class="form_input" v-show="this.editFunctionDialogParam.title!='新增功能'" label="功能id" prop="id"></el-input>
+          <el-input disabled v-model="formEditFunction.id" placeholder=""></el-input>
         </el-form-item>
-        <el-form-item class="form_input" label="功能名称" prop="name">
-          <el-input v-model="formEditFunction.name" placeholder=""></el-input>
+        <el-form-item class="form_input" label="功能名称" prop="functionName">
+          <el-input v-model="formEditFunction.functionName" placeholder=""></el-input>
         </el-form-item>
-        <el-form-item class="form_input" label="负责人" prop="head">
-          <el-input v-model="formEditFunction.head" placeholder=""></el-input>
+        <el-form-item class="form_input" label="负责人" prop="personCharge">
+          <el-input v-model="formEditFunction.personCharge" placeholder=""></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -288,17 +285,40 @@
         :model="formEditGroup"
         ref="formEditFunction"
         class="demo-form-inline-dialog"
-        label-width="68px"
+        label-width="100px"
         :rules="formEditGroupRules"
         :disabled="editGroupDialogParam.formEditGroupDisabled"
       >
-        <el-form-item class="form_input" label="组员id" prop="id">
-          <el-input v-model="formEditGroup.id" placeholder=""></el-input>
+        <el-form-item class="form_input_group" label="搜索组员" prop="name">
+          <el-autocomplete class="form_input_group"
+            v-model="formEditGroup.name"
+            :fetch-suggestions="querySearchAsync"
+            placeholder="搜索员工ID或姓名"
+            @select="handleSelect"
+          ></el-autocomplete>
+<!--          <el-input v-model="formEditGroup.name" placeholder="搜索员工ID或姓名"></el-input>-->
         </el-form-item>
-        <el-form-item class="form_input" label="姓名" prop="name">
-          <el-input v-model="formEditGroup.name" placeholder=""></el-input>
+        <el-form-item class="form_input_group" label="" prop="head">
+          <el-button style="background: #309aec;
+                                color: white;
+                                margin-left: 1rem;
+                                width: 4rem;
+                                border-color: #309aec;"
+                     round >搜索</el-button>
         </el-form-item>
-        <el-form-item class="form_input" label="角色" prop="head">
+        <el-form-item class="form_input_group" label="部门" prop="name">
+          <el-input v-model="formEditGroup.department" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input_group" label="邮箱" prop="name">
+          <el-input v-model="formEditGroup.email" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input_group" label="电话" prop="name">
+          <el-input v-model="formEditGroup.phone" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input_group" label="项目上级邮箱" prop="name">
+          <el-input v-model="formEditGroup.bossEmail" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input_group" label="角色" prop="head">
           <el-input v-model="formEditGroup.role" placeholder=""></el-input>
         </el-form-item>
       </el-form>
@@ -313,10 +333,21 @@
 </template>
 
 <script>
-    export default {
+  import {searchProject, searchProjectSubFunction} from '../../api/api'
+  import {searchProjectFunction, addProjectFunction, updateProjectFunction} from '../../api/api'
+
+
+  export default {
         name: "projectDetail",
         data () {
           return {
+            staffs: [
+                { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号" },
+                { "value": "Hot honey 首尔炸鸡（仙霞路）", "address": "上海市长宁区淞虹路661号" },
+                { "value": "新旺角茶餐厅", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
+                { "value": "泷千家(天山西路店)", "address": "天山西路438号" }
+            ],    //////全部员工
+
             fileList: [
             //   {
             //   name: 'food.jpeg',
@@ -326,66 +357,20 @@
             //   url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
             // }
             ],
-            functionList: [
-              {
-                id: "功能1",
-                name: "北京",
-                head: "1",
-                detail: 18,
-                children: [{
-                  name: "43",
-                  id: "46",
-                  head: "667",
-                  detail: 18
-                }]
-              },
-              {
-                name: "功能2",
-                id: "上海",
-                head: "2",
-                detail: 19
-              },
-              {
-                name: "功能3",
-                id: "上海",
-                head: "2",
-                detail: 19
-              },
-              {
-                name: "功能4",
-                id: "上海",
-                head: "2",
-                detail: 19
-              },
-              {
-                name: "功能5",
-                id: "上海",
-                head: "2",
-                detail: 19
-              }
-            ],
+            functionList: [],
+            loadingFunc: false,
+            formSearchFunc: {
+              functionName: "",
+              id: "",
+              personCharge: "",
+              projectId: ""
+            },
+
+
             groupList: [
               {
                 id: "10165101240",
                 name: "组员1",
-                role: "开发人员",
-                email: "380923800@qq.com",
-                department: "技术部",
-                bossEmail: "10165101240@stu.ecnu.edu.cn",
-                phone: "18918058616"
-              },
-              {
-                name: "组员2",
-                id: "10165101110",
-                role: "测试人员",
-                email: "380923800@qq.com",
-                department: "技术部",
-                bossEmail: "10165101240@stu.ecnu.edu.cn",
-                phone: "18918058616"
-              },
-              {
-                name: "组员3",
-                id: "10165101000",
                 role: "开发人员",
                 email: "380923800@qq.com",
                 department: "技术部",
@@ -400,24 +385,6 @@
                 role: "开发人员",
                 function: "3142",
                 activity: "32321",
-                starttime: "",
-                endtime: ""
-              },
-              {
-                name: "组员2",
-                id: "10165101110",
-                role: "测试人员",
-                function: "7774574",
-                activity: "2446",
-                starttime: "",
-                endtime: ""
-              },
-              {
-                name: "组员3",
-                id: "10165101000",
-                role: "开发人员",
-                function: "9876",
-                activity: "24554",
                 starttime: "",
                 endtime: ""
               }
@@ -491,18 +458,19 @@
                 whetherComplete: true
               }],
             formEditFunction: {
-                id: "",
-                name: "",
-                head: "",
-                detail: "",
-                children: [{
-
-                }]
+                //id: "",
+                functionName: "",
+                personCharge: "",
+                projectId: ""
             },
             formEditGroup: {
               id: "",
               name: "",
-              role: ""
+              role: "",
+              department: '',
+              phone: '',
+              email: '',
+              bossEmail: ''
             },
             formSearch: {
               name: "2213",
@@ -516,12 +484,20 @@
               createDate: "" //日期
             },
             formEdit: {
-              name: "",
-              city: "",
-              type: "",
-              age: null,
-              gender: null,
-              qq: ""
+              businessArea: "",
+              changeTime: "",
+              createTime: "",
+              createrId: 1,
+              customerInfo: "",
+              deliveryTime: "",
+              id: 1,
+              leader: "",
+              milepost: "",
+              projectFunction: "",
+              projectName: "",
+              scheduleTime: "",
+              status: 1,
+              technology: ""
             },
             formEditRules: {
               //校验规则
@@ -553,13 +529,105 @@
             formSearchTime: ""
           }
         },
+        created() {
+
+        },
         mounted() {
-          this.formEdit = this.$route.params.projectInfo;
-          this.$route.meta.title="查看项目-"+this.formEdit.name;
+          console.log("111111111111111111");
+          console.log(this.$route);
+          this.onChangeQueryId(this.$route.query.id);
+        },
+        computed: {
+          getQueryId: function() {
+            return this.$route.query.id
+          }
+        },
+        watch:{
+          getQueryId: {
+            handler(newValue, oldValue) {
+              console.log(newValue, oldValue);
+              this.onChangeQueryId(newValue);
+            }
+          }
         },
         methods: {
+          getAllFunction(projectId){
 
+            this.loadingFunc = true
+            searchProjectFunction(projectId)
+              .then(response => {
+                var json = response;
+                console.log(json);
+                if (json.msg == "查询成功") {
+
+                  this.functionList = json.data.data;
+                  console.log("功能列表查询成功");
+
+                  // for (var i=0;i<json.count;i++){
+                  //
+                  //   console.log("正在获取是否有子功能；"+i);
+                  //   searchProjectSubFunction(this.functionList[i].id)
+                  //     .then(res => {
+                  //       console.log(res);
+                  //       if(res.msg == "查询成功"&&res.count>0){
+                  //         this.functionList[i].hasChildren = true;
+                  //       }else {
+                  //         this.$message({ message: json.message, type: "warning" });
+                  //       }
+                  //     })
+                  //     .catch(error => {
+                  //       this.$message({ message: "执行异常,请重试", type: "error" });
+                  //     })
+                  //     .finally(() => {
+                  //
+                  //     });
+                  //
+                  // }
+
+
+                } else {
+                  this.$message({ message: json.message, type: "warning" });
+                }
+              })
+              .catch(error => {
+                this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+              .finally(() => {
+                this.loadingFunc = false;
+              });
+
+          },
+          onChangeQueryId(newValue) {
+            console.log("newValue: "+newValue);
+
+            searchProject({
+              id: newValue,
+              pageNum: 1,
+              pageSize: 1
+            })
+              .then(response => {
+                var json = response;
+                console.log(json);
+                if (json.msg == "查询成功") {
+                  this.formEdit = json.data.data[0];
+                  this.getAllFunction(this.formEdit.id);
+                } else {
+                  this.$message({ message: json.message, type: "warning" });
+                }
+              })
+              .catch(error => {
+                this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+              .finally(() => {
+                this.loading = false;
+              });
+
+          },
           onShowAddFunction() {
+            this.formEditFunction={
+              functionName: "",
+              personCharge: ""
+            }
             this.editFunctionDialogParam.title = "新增功能";//设置标题
             this.editFunctionDialogParam.show = true;//显示弹框
             this.editFunctionDialogParam.formEditFunctionDisabled=false;//设置可编辑
@@ -568,8 +636,9 @@
             this.editFunctionDialogParam.title = "编辑功能";
             this.editFunctionDialogParam.show = true;
             this.editFunctionDialogParam.formEditFunctionDisabled=false;
-
             this.formEditFunction=Object.assign({},rowData);
+
+
           },
           onShowDeleteFunction(rowData) {
 
@@ -609,7 +678,9 @@
             this.formEditGroup=Object.assign({},rowData);
 
           },
+          handleTodayVisit() {
 
+          },
 
           handleDialogClose() {       //功能弹窗关闭
             this.$refs["formEditFunction"].resetFields();
@@ -623,50 +694,39 @@
             }
           },
           _saveFunction() {
-            this.$refs["formEditFunction"].validate(valid => {
-              if (valid) {
-                var param = Object.assign({}, this.formEditFunction);
-                this.$http
-                  .post("/api/msg-api/add", param)
-                  .then(response => {
-                    var json = response.data;
-                    if (json.status == "SUCCESS") {
-                      this.$message({ message: "执行成功", type: "success" });
-                      this.onSearch();
-                      this.editFunctionDialogParam.show = false;
-                    } else {
-                      this.$message({ message: json.message, type: "error" });
-                    }
-                  })
-                  .catch(error => {
-                    this.$message({ message: "执行异常,请重试", type: "error" });
-                  })
-                  .finally(() => {});
-              }
-            });
+
+            this.formEditFunction.projectId=this.formEdit.id;
+            addProjectFunction(this.formEditFunction)
+              .then(response => {
+                var json = response;
+                console.log(json);
+                this.editFunctionDialogParam.show = false;
+                this.getAllFunction(this.formEditFunction.projectId);
+              })
+              .catch(error => {
+                this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+              .finally(() => {
+
+              });
           },
           _editFunction() {
-            this.$refs["formEditFunction"].validate(valid => {
-              if (valid) {
-                var param = Object.assign({}, this.formEdit);
-                this.$http
-                  .post("/api/msg-api/update", param)
-                  .then(response => {
-                    var json = response.data;
-                    if (json.status == "SUCCESS") {
-                      this.$message({ message: "执行成功", type: "success" });
-                      this.onSearch();
-                      this.editFunctionDialogParam.show = false;
-                    } else {
-                      this.$message({ message: json.message, type: "error" });
-                    }
-                  })
-                  .catch(error => {
-                    this.$message({ message: "执行异常,请重试", type: "error" });
-                  })
-                  .finally(() => {});
-              }
-            });
+
+            this.formEditFunction.projectId=this.formEdit.id;
+            updateProjectFunction(this.formEditFunction)
+              .then(response => {
+                var json = response;
+                console.log(json);
+                this.editFunctionDialogParam.show = false;
+                this.getAllFunction(this.formEditFunction.projectId);
+              })
+              .catch(error => {
+                this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+              .finally(() => {
+
+              });
+
           },
           format_date(row, column) {
             var date = row[column.property];
@@ -677,6 +737,23 @@
           },
           handleChange(file, fileList) {
             this.fileList = fileList.slice(-3);
+          },
+          handleSelect(item) {
+            console.log(item);
+          },
+          querySearchAsync(queryString, cb) {
+            var staffs = this.staffs;
+            var results = queryString ? staffs.filter(this.createStateFilter(queryString)) : staffs;
+
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+              cb(results);
+            }, 3000 * Math.random());
+          },
+          createStateFilter(queryString) {
+            return (state) => {
+              return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+            };
           }
 
         }
@@ -686,6 +763,19 @@
 <style lang="scss">
 ._detailpage {
   font-family: "PingFang SC" !important;
+
+  .status_button {
+    border-radius: 1rem;
+    border: 0px;
+    position: relative;
+    width: 4.7rem;
+    height: 1.8rem;
+    color: #309aec;
+    font-size: 0.9rem;
+    font-weight: bolder;
+    font-family: PingFang SC;
+    background: rgba(48,154,236,0.09);
+  }
 
   .el-collapse {
     border: 0;
@@ -885,7 +975,31 @@
   .visitor-table .el-table__row>td{
     border: none !important;
   }
-
+  .form_input_group {
+    .el-form-item__content {
+      width: 800px;
+    }
+    .el-input__inner {
+      -webkit-appearance: none;
+      background-color: #FFF;
+      background-image: none;
+      border-radius: 2rem;
+      border: 1px solid #DCDFE6;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      color: #606266;
+      display: inline-block;
+      font-size: inherit;
+      height: 30px;
+      line-height: 25px;
+      outline: 0;
+      padding: 0 15px;
+      -webkit-transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+      transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+      width: 100%;
+      font-family: "PingFang SC";
+    }
+  }
   .form_input {
     .el-form-item__content {
       width: 200px;
@@ -966,12 +1080,12 @@
     font-family: "PingFang SC";
 
     .el-form-item__content {
-      width: 200px;
+      width: 210px;
       font-family: "PingFang SC";
     }
 
     .el-date-editor.el-input, .el-date-editor.el-input__inner {
-      width: 200px;
+      width: 210px;
     }
 
     .el-input__inner {

@@ -22,9 +22,11 @@ export const addProjectFunction = params => { return axios.post(`/ProjectFunctio
 
 export const deleteProjectFunction = params => { return axios.post(`/ProjectFunction/Delete`, params).then(res => res.data); };
 
-export const updateProjectFunction = params => { return axios.post(`/ProjectFunction/Edjt`, params).then(res => res.data); };
+export const updateProjectFunction = params => { return axios.post(`/ProjectFunction/Edit`, params).then(res => res.data); };
 
-export const searchProjectFunction = params => { return axios.post(`/ProjectFunction/Search`, params).then(res => res.data); };
+export const searchProjectFunction = params => { return axios.post(`/ProjectFunction/Search?id=`+params, params).then(res => res.data); };
+
+export const searchProjectSubFunction = params => { return axios.post(`/ProjectSubFunction/SubSearch?id=`+params, params).then(res => res.data); };
 
 export const addProjectSubFunction = params => { return axios.post(`/ProjectSubFunction/SubAdd`, params).then(res => res.data); };
 
@@ -32,4 +34,6 @@ export const updateProjectSubFunction = params => { return axios.post(`/ProjectS
 
 export const deleteProjectSubFunction = params => { return axios.post(`/ProjectSubFunction/SubDelete`, params).then(res => res.data); };
 
+export const searchDevice = params => { return axios.post(`/Device/Search`, params).then(res => res.data); };
 
+export const editDevice = params => { return axios.post(`/Device/Edit`, params).then(res => res.data); };

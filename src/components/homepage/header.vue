@@ -51,7 +51,7 @@ export default {
     };
   },
   mounted(){
-    this.position=sessionStorage.getItem('position');
+    //this.position=sessionStorage.getItem('position');
     this.username=sessionStorage.getItem('userName');
   },
   methods: {
@@ -59,7 +59,7 @@ export default {
       //切换左侧导航展示/折叠
       this.navShow = !this.navShow;
       bus.$emit("navShowChange", this.navShow);
-      console.log('dasdsda')
+      console.log('导航栏状态：'+this.navShow);
     },
     // 全屏事件
     handleFullScreen() {

@@ -19,25 +19,22 @@
               :model="formSearch"
               ref="formSearch"
               class="demo-form-inline"
-              label-width="82px"
+              label-width="100px"
             >
-              <el-form-item class="small_form_input" label="设备id" prop="name">
-                <el-input v-model="formSearch.name" placeholder=""></el-input>
+              <el-form-item class="small_form_input" label="设备id" prop="id">
+                <el-input v-model="formSearch.id" placeholder=""></el-input>
               </el-form-item>
-              <el-form-item class="form_input" label="资产管理者" prop="city">
-                <el-input v-model="formSearch.city" placeholder=""></el-input>
+              <el-form-item class="form_input" label="资产管理者" prop="deviceowner">
+                <el-input v-model="formSearch.deviceowner" placeholder=""></el-input>
               </el-form-item>
-              <el-form-item class="form_input" label="资产使用期限" prop="city">
-                <el-input v-model="formSearch.city" placeholder=""></el-input>
+              <el-form-item class="form_input" label="设备状态" prop="status">
+                <el-input v-model="formSearch.status" placeholder=""></el-input>
               </el-form-item>
-              <el-form-item class="form_input" label="设备状态" prop="qq">
-                <el-input v-model="formSearch.qq" placeholder=""></el-input>
-              </el-form-item>
-              <el-form-item class="form_date" label="归还日期" prop="createDate">
+              <el-form-item class="form_date" label="资产使用期限" prop="deadline">
                 <el-date-picker
-                  v-model="formSearch.createDate"
+                  v-model="formSearch.deadline"
                   type="date"
-                  placeholder="选择归还日期"
+                  placeholder="选择资产使用期限"
                 ></el-date-picker>
               </el-form-item>
               <el-form-item>
@@ -50,7 +47,7 @@
         </el-collapse>
       </el-col>
       <el-col :span="3">
-        <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">导入风险</el-button>
+        <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新增设备</el-button>
       </el-col>
       <el-col :span="2">
         <el-button style="margin-top: 7px;" type="danger" round>批量删除</el-button>
@@ -61,59 +58,11 @@
 
     <el-table :data="tableData" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">
       <el-table-column type="selection" width="30" align="center"></el-table-column>
-      <!--      <el-table-column type="expand" width="30">-->
-      <!--        <template slot-scope="props">-->
-      <!--          <el-form-->
-      <!--            :inline="true"-->
-      <!--            :model="formSearch"-->
-      <!--            ref="formSearch"-->
-      <!--            class="demo-form-inline"-->
-      <!--            label-width="82px"-->
-      <!--          >-->
-      <!--            <el-form-item class="form_input" label="功能列表" prop="qq">-->
-      <!--              <el-input v-model="formSearch.qq" placeholder=""></el-input>-->
-      <!--            </el-form-item>-->
-      <!--            <el-form-item class="form_input" label="人员管理" prop="qq">-->
-      <!--              <el-input v-model="formSearch.qq" placeholder=""></el-input>-->
-      <!--            </el-form-item>-->
-      <!--            <el-form-item class="form_input" label="工时管理" prop="qq">-->
-      <!--              <el-input v-model="formSearch.qq" placeholder=""></el-input>-->
-      <!--            </el-form-item>-->
-
-      <!--          </el-form>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-      <el-table-column prop="name" label="资产id"  align="center"></el-table-column>
-      <el-table-column prop="city" label="资产管理者" ></el-table-column>
-      <el-table-column prop="type" label="资产使用期限"   :formatter="format_type"></el-table-column>
-      <el-table-column fixed="right" prop="status" label="设备状态" >
+      <el-table-column prop="id" label="设备id"  align="center"></el-table-column>
+      <el-table-column prop="deviceowner" label="资产管理者" ></el-table-column>
+      <el-table-column prop="status" label="设备状态" >
         <template slot-scope="scope">
-          <button @click="handleTodayVisit(scope.$index, scope.row)"
-                  style="border-radius: 1rem;
-                            border: 0px;
-                            position: relative;
-                            width: 3.5rem;
-                            height: 1.4rem;
-                            color: #36aba8;
-                            font-size: 0.8rem;
-                            font-weight: bolder;
-                            font-family: PingFang SC;
-                            background: rgba(54,171,168,0.09);"
-                  v-if="scope.row.visitStatus=='non_arrival'">未到</button>
-          <button @click="handleTodayVisit(scope.$index, scope.row)"
-                  style="border-radius: 1rem;
-                            border: 0px;
-                            position: relative;
-                            width: 3.5rem;
-                            height: 1.4rem;
-                            color: #00C1A0;
-                            font-size: 0.8rem;
-                            font-weight: bolder;
-                            font-family: PingFang SC;
-                            background: rgba(0,193,160,0.09);"
-                  v-if="scope.row.visitStatus=='in'">已进入</button>
-          <button @click="handleTodayVisit(scope.$index, scope.row)"
-                  style="border-radius: 1rem;
+          <button style="border-radius: 1rem;
                             border: 0px;
                             position: relative;
                             width: 4rem;
@@ -123,10 +72,10 @@
                             font-weight: bolder;
                             font-family: PingFang SC;
                             background: rgba(48,154,236,0.09);"
-          >申请立项</button>
+          >项目状态</button>
         </template>
       </el-table-column>
-      <el-table-column prop="createtime" label="归还日期" :formatter="format_date"></el-table-column>
+      <el-table-column prop="deadline" label="资产使用期限" :formatter="format_date"></el-table-column>
     </el-table>
 
     <!--表格 end-->
@@ -147,7 +96,7 @@
     <el-dialog
       :title="editDialogParam.title"
       :visible.sync="editDialogParam.show"
-      width="700px"
+      width="500px"
       @close="handleDialogClose"
     >
       <el-form
@@ -156,56 +105,19 @@
         ref="formEdit"
         class="demo-form-inline-dialog"
         label-width="68px"
-        :rules="formEditRules"
         :disabled="editDialogParam.formEditDisabled"
       >
-        <el-form-item class="form_input" label="项目id" prop="name">
-          <el-input v-model="formEdit.name" placeholder=""></el-input>
+        <el-form-item class="form_input" label="设备id" prop="id">
+          <el-input v-model="formEdit.id" placeholder=""></el-input>
         </el-form-item>
-        <el-form-item class="form_input" label="项目名称" prop="city">
-          <el-input v-model="formEdit.city" placeholder=""></el-input>
+        <el-form-item class="form_input" label="资产管理者" prop="deviceowner">
+          <el-input v-model="formEdit.deviceowner" placeholder=""></el-input>
         </el-form-item>
-        <el-form-item class="form_select" label="项目上级" prop="type">
-          <el-select v-model="formEdit.type" placeholder="">
-            <el-option label="留言" value="1"></el-option>
-            <el-option label="建议" value="2"></el-option>
-            <el-option label="BUG" value="3"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item class="form_input" label="客户信息" prop="age">
-          <el-input v-model="formEdit.age" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item class="form_input" label="主要里程碑" prop="qq">
-          <el-input v-model="formEdit.qq" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item class="form_input" label="主要功能" prop="qq">
-          <el-input type="textarea" autosize v-model="formEdit.qq" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item class="form_input" label="采用技术" prop="qq">
-          <el-input v-model="formEdit.qq" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item class="form_input" label="业务领域" prop="qq">
-          <el-input v-model="formEdit.qq" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item class="form_date" label="预定时间" prop="createDate">
-          <!--        <el-date-picker-->
-          <!--          v-model="formSearch.createDate"-->
-          <!--          type="daterange"-->
-          <!--          range-separator="至"-->
-          <!--          start-placeholder="开始日期"-->
-          <!--          end-placeholder="结束日期"-->
-          <!--        ></el-date-picker>-->
+        <el-form-item class="form_date" label="资产交付期限" prop="createDate">
           <el-date-picker
-            v-model="formSearch.createDate"
+            v-model="formEdit.deadline"
             type="date"
             placeholder="选择预定时间"
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item class="form_date" label="交付时间" prop="createDate">
-          <el-date-picker
-            v-model="formSearch.createDate"
-            type="date"
-            placeholder="选择交付时间"
           ></el-date-picker>
         </el-form-item>
       </el-form>
@@ -430,12 +342,12 @@
       font-family: "PingFang SC";
 
       .el-form-item__content {
-        width: 160px;
+        width: 180px;
         font-family: "PingFang SC";
       }
 
       .el-date-editor.el-input, .el-date-editor.el-input__inner {
-        width: 160px;
+        width: 180px;
       }
 
       .el-input__inner {
@@ -492,7 +404,7 @@
     .el-form--inline .el-form-item__label {
       float: none;
       display: inline-block;
-      width: 82px !important;
+      width: 100px !important;
       font-family: "PingFang SC";
     }
     .visitor-table th{
@@ -531,6 +443,8 @@
 
 
 <script>
+  import {editDevice, searchDevice} from "../../api/api";
+
     export default {
         name: "deviceManagement",
         data() {
@@ -539,48 +453,26 @@
                     //分页
                     currentPage: 1,
                     pageSize: 5,
-                    pageTotal: 80
+                    pageTotal: 0
                 },
                 tableData: [
-                    {
-                        name: "张三",
-                        city: "北京",
-                        type: "1",
-                        age: 18,
-                        gender: 1,
-                        qq: 123444,
-                        createtime: 1546587784000,
-                        updatetime: 1546587784000
-                    },
-                    {
-                        name: "李四",
-                        city: "上海",
-                        type: "2",
-                        age: 19,
-                        gender: 0,
-                        qq: 555,
-                        createtime: 1546587784000,
-                        updatetime: 1546587784000
-                    }
+
                 ],
                 formSearch: {
-                    name: "",
-                    city: "",
-                    type: "",
-                    age: null,
-                    gender: null,
-                    qq: "",
-                    startdate: null, //开始时间
-                    enddate: null, //结束时间
-                    createDate: "" //日期
+                  deadline: "",
+                  deviceowner: "",
+                  id: "",
+                  pageNum: 0,
+                  pageSize: 0,
+                  projectID: "",
+                  status: ""
                 },
                 formEdit: {
-                    name: "",
-                    city: "",
-                    type: "",
-                    age: null,
-                    gender: null,
-                    qq: ""
+                  deadline: "",
+                  deviceowner: "",
+                  id: "",
+                  projectID: "",
+                  status: ""
                 },
                 formEditRules: {
                     //校验规则
@@ -608,28 +500,26 @@
             onSearch() {
                 //查询
                 this.loading = true;
-                if (this.formSearch.createDate) {
-                    this.formSearch.startdate = this.searchCreateDate[0];
-                    this.formSearch.enddate = this.searchCreateDate[1];
-                }
-                var param = Object.assign({}, this.formSearch, this.pageInfo);
-                this.$http
-                    .post("/api/msg-api/queryList", param)
-                    .then(response => {
-                        var json = response.data;
-                        if (json.status == "SUCCESS") {
-                            this.tableData = json.data;
-                            this.pageInfo.pageTotal = json.count;
-                        } else {
-                            this.$message({ message: json.message, type: "warning" });
-                        }
-                    })
-                    .catch(error => {
-                        this.$message({ message: "执行异常,请重试", type: "error" });
-                    })
-                    .finally(() => {
-                        this.loading = false;
-                    });
+                this.formSearch.pageNum = this.pageInfo.currentPage;
+                this.formSearch.pageSize = this.pageInfo.pageSize;
+
+                searchDevice(this.formSearch)
+                .then(response => {
+                  var json = response;
+                  console.log(json);
+                  if (json.msg == "查询成功") {
+                    this.tableData = json.data.deviceList;
+                  } else {
+                    this.$message({ message: json.message, type: "warning" });
+                  }
+                })
+                .catch(error => {
+                  this.$message({ message: "执行异常,请重试", type: "error" });
+                })
+                .finally(() => {
+                  this.loading = false;
+                });
+
             },
             onAdd() {
                 if (this.editDialogParam.title == "新增") {
@@ -640,52 +530,36 @@
                 }
             },
             _save() {
-                this.$refs["formEdit"].validate(valid => {
-                    if (valid) {
-                        var param = Object.assign({}, this.formEdit);
-                        this.$http
-                            .post("/api/msg-api/add", param)
-                            .then(response => {
-                                var json = response.data;
-                                if (json.status == "SUCCESS") {
-                                    this.$message({ message: "执行成功", type: "success" });
-                                    this.onSearch();
-                                    this.editDialogParam.show = false;
-                                } else {
-                                    this.$message({ message: json.message, type: "error" });
-                                }
-                            })
-                            .catch(error => {
-                                this.$message({ message: "执行异常,请重试", type: "error" });
-                            })
-                            .finally(() => {});
-                    }
-                });
+
+              console.log("新增设备------调用_save:");
+              console.log(this.formEdit);
+
             },
             _edit() {
-                this.$refs["formEdit"].validate(valid => {
-                    if (valid) {
-                        var param = Object.assign({}, this.formEdit);
-                        this.$http
-                            .post("/api/msg-api/update", param)
-                            .then(response => {
-                                var json = response.data;
-                                if (json.status == "SUCCESS") {
-                                    this.$message({ message: "执行成功", type: "success" });
-                                    this.onSearch();
-                                    this.editDialogParam.show = false;
-                                } else {
-                                    this.$message({ message: json.message, type: "error" });
-                                }
-                            })
-                            .catch(error => {
-                                this.$message({ message: "执行异常,请重试", type: "error" });
-                            })
-                            .finally(() => {});
-                    }
+
+              editDevice(this.formEdit)
+                .then(response => {
+                  var json = response;
+                  console.log(json);
+                })
+                .catch(error => {
+                  this.$message({ message: "执行异常,请重试", type: "error" });
+                })
+                .finally(() => {
+
                 });
+
             },
             onShowAdd() {
+
+                this.formEdit = {
+                  deadline: "",
+                  deviceowner: "",
+                  id: "",
+                  projectID: "",
+                  status: ""
+                };
+
                 this.editDialogParam.title = "新增";//设置标题
                 this.editDialogParam.show = true;//显示弹框
                 this.editDialogParam.formEditDisabled=false;//设置可编辑
@@ -699,7 +573,6 @@
                 this.formEdit.gender+='';
             },
             onShowDetail(rowData) {
-
 
                 this.$router.push({
                     name:'projectDetail',
@@ -718,7 +591,20 @@
             },
             onReset() {
                 //重置
-                this.$refs["formSearch"].resetFields();
+                //this.$refs["formSearch"].resetFields();
+
+              this.formSearch={
+                deadline: "",
+                deviceowner: "",
+                id: "",
+                pageNum: 0,
+                pageSize: 0,
+                projectID: "",
+                status: ""
+              }
+
+              this.onSearch();
+
             },
             format_type(row, column) {
                 //类别转换

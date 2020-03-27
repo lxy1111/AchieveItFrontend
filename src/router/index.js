@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import axios from 'axios'
+import VueWechatTitle from 'vue-wechat-title'
 
 Vue.use(Router)
+Vue.use(VueWechatTitle)
 
 const router = new Router({
   routes: [
@@ -47,7 +49,7 @@ const router = new Router({
           name: 'projectDetail',
           component: () => import('@/components/tablepage/projectDetail'),
           meta: {
-            title: '查看项目详情',
+            title: '项目管理-查看详情',
             role: ['项目上级', '项目经理','黄金岗']
           }
         },
@@ -104,6 +106,9 @@ const router = new Router({
  */
 const rightPathList = ['/login', '/404', '/403'];//直接可以进入的页面
 router.beforeEach((to, from, next) => {
+  if (to.meta.title){
+    document.title = to.meta.title;
+  }
   // debugger
   console.log('跳转到:', to.fullPath);
   var token = sessionStorage.getItem('token');

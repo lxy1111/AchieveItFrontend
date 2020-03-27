@@ -21,49 +21,18 @@
               class="demo-form-inline"
               label-width="82px"
             >
-              <el-form-item class="small_form_input" label="项目id" prop="name">
-                <el-input v-model="formSearch.projectid" placeholder=""></el-input>
+              <el-form-item class="small_form_input" label="项目id" prop="id">
+                <el-input v-model="formSearch.id" placeholder=""></el-input>
               </el-form-item>
-              <el-form-item class="form_input" label="项目名称" prop="city">
-                <el-input v-model="formSearch.projectname" placeholder=""></el-input>
+              <el-form-item class="form_input" label="项目名称" prop="projectName">
+                <el-input v-model="formSearch.projectName" placeholder=""></el-input>
               </el-form-item>
-              <el-form-item class="form_select" label="项目上级" prop="type">
-                <el-select v-model="formSearch.superior" placeholder="">
-                  <el-option label="留言" value="1"></el-option>
-                  <el-option label="建议" value="2"></el-option>
-                  <el-option label="BUG" value="3"></el-option>
-                </el-select>
-              </el-form-item>
-              <!--      <el-form-item class="form_select" label="性别" prop="gender">-->
-              <!--        <el-select v-model="formSearch.gender" placeholder="性别">-->
-              <!--          <el-option label="男" value="1"></el-option>-->
-              <!--          <el-option label="女" value="2"></el-option>-->
-              <!--        </el-select>-->
-              <!--      </el-form-item>-->
-              <el-form-item class="form_date" label="预定时间" prop="createDate">
-                <!--        <el-date-picker-->
-                <!--          v-model="formSearch.createDate"-->
-                <!--          type="daterange"-->
-                <!--          range-separator="至"-->
-                <!--          start-placeholder="开始日期"-->
-                <!--          end-placeholder="结束日期"-->
-                <!--        ></el-date-picker>-->
-                <el-date-picker
-                  v-model="formSearch.booktime"
-                  type="date"
-                  placeholder="选择预定时间"
-                ></el-date-picker>
-              </el-form-item>
-              <el-form-item class="form_date" label="交付时间" prop="createDate">
-                <el-date-picker
-                  v-model="formSearch.submittime"
-                  type="date"
-                  placeholder="选择交付时间"
-                ></el-date-picker>
+              <el-form-item class="form_input" label="项目上级" prop="leader">
+                <el-input v-model="formSearch.leader" placeholder=""></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="onSearch">查询</el-button>
-                <el-button type="warning" @click="onReset" plain>重置</el-button>
+                <el-button type="primary" style="width: 4rem;" @click="onSearch">查询</el-button>
+                <el-button type="warning" style="width: 4rem;" @click="onReset" plain>重置</el-button>
               </el-form-item>
             </el-form>
 
@@ -73,7 +42,7 @@
       <el-col :span="3">
         <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新建项目</el-button>
       </el-col>
-      <el-col :span="2">
+      <el-col :span="3">
         <el-button style="margin-top: 7px;" type="danger" round>批量删除</el-button>
       </el-col>
     </el-row>
@@ -82,72 +51,27 @@
 
     <el-table :data="tableData" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">
       <el-table-column type="selection" width="30" align="center"></el-table-column>
-<!--      <el-table-column type="expand" width="30">-->
-<!--        <template slot-scope="props">-->
-<!--          <el-form-->
-<!--            :inline="true"-->
-<!--            :model="formSearch"-->
-<!--            ref="formSearch"-->
-<!--            class="demo-form-inline"-->
-<!--            label-width="82px"-->
-<!--          >-->
-<!--            <el-form-item class="form_input" label="功能列表" prop="qq">-->
-<!--              <el-input v-model="formSearch.qq" placeholder=""></el-input>-->
-<!--            </el-form-item>-->
-<!--            <el-form-item class="form_input" label="人员管理" prop="qq">-->
-<!--              <el-input v-model="formSearch.qq" placeholder=""></el-input>-->
-<!--            </el-form-item>-->
-<!--            <el-form-item class="form_input" label="工时管理" prop="qq">-->
-<!--              <el-input v-model="formSearch.qq" placeholder=""></el-input>-->
-<!--            </el-form-item>-->
-
-<!--          </el-form>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-      <el-table-column prop="id" label="项目id"  align="center"></el-table-column>
-      <el-table-column prop="projectName" label="项目名称" ></el-table-column>
-      <el-table-column prop="createrId" label="项目上级" ></el-table-column>
-<!--      <el-table-column prop="gender" label="性别"  :formatter="format_gender"></el-table-column>-->
-      <el-table-column prop="scheduleTime" label="预定时间" :formatter="format_date"></el-table-column>
-      <el-table-column prop="deliveryTime" label="交付日" :formatter="format_date"></el-table-column>
-      <el-table-column fixed="right" prop="status" label="状态" >
+      <el-table-column prop="id" label="项目id" width="80" align="center"></el-table-column>
+      <el-table-column prop="projectName" label="项目名称" width="90" align="center"></el-table-column>
+      <el-table-column prop="createrId" label="项目上级" width="80" align="center"></el-table-column>
+      <el-table-column prop="scheduleTime" label="预定时间" align="center" :formatter="format_date"></el-table-column>
+      <el-table-column prop="deliveryTime" label="交付日" align="center" :formatter="format_date"></el-table-column>
+      <el-table-column prop="status" align="center" label="状态" >
         <template slot-scope="scope">
-          <button @click="handleTodayVisit(scope.$index, scope.row)"
-                  style="border-radius: 1rem;
-                            border: 0px;
-                            position: relative;
-                            width: 3.5rem;
-                            height: 1.4rem;
-                            color: #36aba8;
-                            font-size: 0.8rem;
-                            font-weight: bolder;
-                            font-family: PingFang SC;
-                            background: rgba(54,171,168,0.09);"
-                  v-if="scope.row.visitStatus=='non_arrival'">未到</button>
-          <button @click="handleTodayVisit(scope.$index, scope.row)"
-                  style="border-radius: 1rem;
-                            border: 0px;
-                            position: relative;
-                            width: 3.5rem;
-                            height: 1.4rem;
-                            color: #00C1A0;
-                            font-size: 0.8rem;
-                            font-weight: bolder;
-                            font-family: PingFang SC;
-                            background: rgba(0,193,160,0.09);"
-                  v-if="scope.row.visitStatus=='in'">已进入</button>
-          <button @click="handleTodayVisit(scope.$index, scope.row)"
-                  style="border-radius: 1rem;
-                            border: 0px;
-                            position: relative;
-                            width: 4rem;
-                            height: 1.5rem;
-                            color: #309aec;
-                            font-size: 0.83rem;
-                            font-weight: bolder;
-                            font-family: PingFang SC;
-                            background: rgba(48,154,236,0.09);"
-                  >申请立项</button>
+          <button @click=""
+                  class="status_button" v-if="scope.row.status==0">申请立项</button>
+          <button @click="" style="color: #00C1A0; background: rgba(0,193,160,0.09);"
+                  class="status_button" v-if="scope.row.status==1">已立项</button>
+          <button @click="" style="color: #ab1b10; background: rgba(171,27,16,0.09);"
+                  class="status_button" v-if="scope.row.status==2">立即驳回</button>
+          <button @click="" style="color: #0cab2f; background: rgba(12,171,47,0.09);"
+                  class="status_button" v-if="scope.row.status==3">进行中</button>
+          <button @click="" style="color: #ab4d02; background: rgba(171,77,2,0.09);"
+                  class="status_button" v-if="scope.row.status==4">已交付</button>
+          <button @click="" style="color: #838383; background: rgba(131,131,131,0.09);"
+                  class="status_button" v-if="scope.row.status==5">结束</button>
+          <button @click="" style="color: #ab8c05; background: rgba(171,140,5,0.09);"
+                  class="status_button" v-if="scope.row.status==6">已归档</button>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作"  align="center">
@@ -185,55 +109,43 @@
         ref="formEdit"
         class="demo-form-inline-dialog"
         label-width="68px"
-        :rules="formEditRules"
         :disabled="editDialogParam.formEditDisabled"
       >
         <el-form-item class="form_input" label="项目id" prop="name">
-          <el-input v-model="formEdit.name" placeholder=""></el-input>
+          <el-input v-model="formEdit.id" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="项目名称" prop="city">
-          <el-input v-model="formEdit.city" placeholder=""></el-input>
+          <el-input v-model="formEdit.projectName" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_select" label="项目上级" prop="type">
-          <el-select v-model="formEdit.type" placeholder="">
-            <el-option label="留言" value="1"></el-option>
-            <el-option label="建议" value="2"></el-option>
-            <el-option label="BUG" value="3"></el-option>
-          </el-select>
+          <el-input v-model="formEdit.leader" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="客户信息" prop="age">
-          <el-input v-model="formEdit.age" placeholder=""></el-input>
+          <el-input v-model="formEdit.customerInfo" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="主要里程碑" prop="qq">
-          <el-input v-model="formEdit.qq" placeholder=""></el-input>
+          <el-input v-model="formEdit.milepost" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="主要功能" prop="qq">
-          <el-input type="textarea" autosize v-model="formEdit.qq" placeholder=""></el-input>
+          <el-input type="textarea" autosize v-model="formEdit.projectFunction" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="采用技术" prop="qq">
-          <el-input v-model="formEdit.qq" placeholder=""></el-input>
+          <el-input v-model="formEdit.technology" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="业务领域" prop="qq">
-          <el-input v-model="formEdit.qq" placeholder=""></el-input>
+          <el-input v-model="formEdit.businessArea" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_date" label="预定时间" prop="createDate">
-          <!--        <el-date-picker-->
-          <!--          v-model="formSearch.createDate"-->
-          <!--          type="daterange"-->
-          <!--          range-separator="至"-->
-          <!--          start-placeholder="开始日期"-->
-          <!--          end-placeholder="结束日期"-->
-          <!--        ></el-date-picker>-->
           <el-date-picker
-            v-model="formSearch.createDate"
-            type="date"
+            v-model="formEdit.scheduleTime"
+            type="datetime"
             placeholder="选择预定时间"
           ></el-date-picker>
         </el-form-item>
         <el-form-item class="form_date" label="交付时间" prop="createDate">
           <el-date-picker
-            v-model="formSearch.createDate"
-            type="date"
+            v-model="formEdit.deliveryTime"
+            type="datetime"
             placeholder="选择交付时间"
           ></el-date-picker>
         </el-form-item>
@@ -252,6 +164,19 @@
     padding: 8px !important;
   }
 ._tablepage {
+
+  .status_button {
+    border-radius: 1rem;
+    border: 0px;
+    position: relative;
+    width: 4.7rem;
+    height: 1.8rem;
+    color: #309aec;
+    font-size: 0.9rem;
+    font-weight: bolder;
+    font-family: PingFang SC;
+    background: rgba(48,154,236,0.09);
+  }
 
   .el-button {
     -webkit-appearance: none;
@@ -380,7 +305,7 @@
 
   .small_form_input {
     .el-form-item__content {
-      width: 150px;
+      width: 100px;
     }
     .el-input__inner {
       -webkit-appearance: none;
@@ -399,14 +324,14 @@
       padding: 0 15px;
       -webkit-transition: border-color .2s cubic-bezier(.645,.045,.355,1);
       transition: border-color .2s cubic-bezier(.645,.045,.355,1);
-      width: 90%;
+      width: 100%;
       font-family: "PingFang SC";
     }
   }
 
   .form_input {
     .el-form-item__content {
-      width: 160px;
+      width: 120px;
     }
     .el-input__inner {
       -webkit-appearance: none;
@@ -425,7 +350,7 @@
       padding: 0 15px;
       -webkit-transition: border-color .2s cubic-bezier(.645,.045,.355,1);
       transition: border-color .2s cubic-bezier(.645,.045,.355,1);
-      width: 90%;
+      width: 100%;
       font-family: "PingFang SC";
     }
   }
@@ -459,12 +384,12 @@
     font-family: "PingFang SC";
 
     .el-form-item__content {
-      width: 160px;
+      width: 210px;
       font-family: "PingFang SC";
     }
 
     .el-date-editor.el-input, .el-date-editor.el-input__inner {
-      width: 160px;
+      width: 210px;
     }
 
     .el-input__inner {
@@ -561,6 +486,10 @@
 
 <script>
   import {searchProject} from '../../api/api'
+  import {createNewProject} from '../../api/api'
+  import {updateProject} from '../../api/api'
+  import {deleteProject} from '../../api/api'
+
 export default {
   name: "tablepage",
   data() {
@@ -569,28 +498,45 @@ export default {
         //分页
           pageSize: 5,
           pageNum: 1,
-          pageTotal:''
+          pageTotal: 0,
+          currentPage: 1,
       },
       tableData: [
 
       ],
       formSearch: {
-          projectid:'',
-          projectname:'',
-          superior:'',
-          booktime:'',
-          submittime:'',
-          status:'',
-          pageNum:1,
-          pageSize:10
+        businessArea: "",
+        changeTime: "",
+        createTime: "",
+        createrId: "",
+        customerInfo: "",
+        deliveryTime: "",
+        id: "",
+        leader: "",
+        milepost: "",
+        projectFunction: "",
+        projectName: "",
+        scheduleTime: "",
+        status: "",
+        technology: "",
+        pageNum:1,
+        pageSize:5
     },
       formEdit: {
-        name: "",
-        city: "",
-        type: "",
-        age: null,
-        gender: null,
-        qq: ""
+        businessArea: "",
+        //changeTime: "",
+        //createTime: "",
+        //createrId: "",
+        customerInfo: "",
+        deliveryTime: "",
+        id: "",
+        leader: "",
+        milepost: "",
+        projectFunction: "",
+        projectName: "",
+        scheduleTime: "",
+        status: "",
+        technology: ""
       },
       formEditRules: {
         //校验规则
@@ -618,14 +564,12 @@ export default {
     onSearch() {
       //查询
       this.loading = true;
-      // if (this.formSearch.createDate) {
-      //   this.formSearch.startdate = this.searchCreateDate[0];
-      //   this.formSearch.enddate = this.searchCreateDate[1];
-      // }
-      // var param = Object.assign({}, this.formSearch, this.pageInfo);
-        searchProject(this.formSearch)
+      this.formSearch.pageNum = this.pageInfo.currentPage;
+      this.formSearch.pageSize = this.pageInfo.pageSize;
+      searchProject(this.formSearch)
         .then(response => {
           var json = response;
+          console.log(json);
           if (json.msg == "查询成功") {
             this.tableData = json.data.data;
             this.pageInfo.pageTotal = json.count;
@@ -649,52 +593,54 @@ export default {
       }
     },
     _save() {
-      this.$refs["formEdit"].validate(valid => {
-        if (valid) {
-          var param = Object.assign({}, this.formEdit);
-          this.$http
-            .post("/api/msg-api/add", param)
-            .then(response => {
-              var json = response.data;
-              if (json.status == "SUCCESS") {
-                this.$message({ message: "执行成功", type: "success" });
-                this.onSearch();
-                this.editDialogParam.show = false;
-              } else {
-                this.$message({ message: json.message, type: "error" });
-              }
-            })
-            .catch(error => {
-              this.$message({ message: "执行异常,请重试", type: "error" });
-            })
-            .finally(() => {});
-        }
-      });
+
+      console.log("调用_save:");
+      console.log(this.formEdit);
+
+      createNewProject(this.formEdit)
+        .then(response => {
+          var json = response;
+          console.log(json);
+        })
+        .catch(error => {
+          this.$message({ message: "执行异常,请重试", type: "error" });
+        })
+        .finally(() => {
+
+        });
+
     },
     _edit() {
-      this.$refs["formEdit"].validate(valid => {
-        if (valid) {
-          var param = Object.assign({}, this.formEdit);
-          this.$http
-            .post("/api/msg-api/update", param)
-            .then(response => {
-              var json = response.data;
-              if (json.status == "SUCCESS") {
-                this.$message({ message: "执行成功", type: "success" });
-                this.onSearch();
-                this.editDialogParam.show = false;
-              } else {
-                this.$message({ message: json.message, type: "error" });
-              }
-            })
-            .catch(error => {
-              this.$message({ message: "执行异常,请重试", type: "error" });
-            })
-            .finally(() => {});
-        }
-      });
+
+      updateProject(this.formEdit)
+        .then(response => {
+          var json = response;
+          console.log(json);
+        })
+        .catch(error => {
+          this.$message({ message: "执行异常,请重试", type: "error" });
+        })
+        .finally(() => {
+
+        });
     },
     onShowAdd() {
+      this.formEdit = {
+        businessArea: "",
+        changeTime: "",
+        createTime: "",
+        createrId: "",
+        customerInfo: "",
+        deliveryTime: "",
+        id: "",
+        leader: "",
+        milepost: "",
+        projectFunction: "",
+        projectName: "",
+        scheduleTime: "",
+        status: "",
+        technology: ""
+      }
       this.editDialogParam.title = "新增";//设置标题
       this.editDialogParam.show = true;//显示弹框
       this.editDialogParam.formEditDisabled=false;//设置可编辑
@@ -709,9 +655,11 @@ export default {
     },
     onShowDetail(rowData) {
 
-
       this.$router.push({
         name:'projectDetail',
+        query: {
+          id: Object.assign({},rowData).id
+        },
         params: {
           projectInfo: Object.assign({},rowData)
         }
@@ -727,7 +675,26 @@ export default {
     },
     onReset() {
       //重置
-      this.$refs["formSearch"].resetFields();
+      this.formSearch = {
+        businessArea: "",
+          changeTime: "",
+          createTime: "",
+          createrId: "",
+          customerInfo: "",
+          deliveryTime: "",
+          id: "",
+          leader: "",
+          milepost: "",
+          projectFunction: "",
+          projectName: "",
+          scheduleTime: "",
+          status: "",
+          technology: "",
+          pageNum:1,
+          pageSize:5
+      }
+      this.onSearch();
+      //this.$refs["formSearch"].resetFields();
     },
     format_type(row, column) {
       //类别转换
@@ -767,6 +734,7 @@ export default {
     handleCurrentChange(val) {
       this.pageInfo.currentPage = val;
       this.onSearch();
+      console.log(`当前为第 ${val} 页`);
     },
     handleDialogClose() {
       this.$refs["formEdit"].resetFields();

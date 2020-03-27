@@ -112,12 +112,16 @@ export default {
   methods: {
     //设置标签
     setTags(route) {
+
+      console.log("tag标签： ");
+      console.log(route);
+
       const isExsit = this.tagsList.some(item => {
         return item.path === route.fullPath;
       });
       !isExsit &&
         this.tagsList.push({
-          title: route.meta.title, //标签名
+          title: route.name=='projectDetail' ? route.meta.title+"-"+route.params.projectInfo.projectName : route.meta.title, //标签名
           name: route.name, //路由里的name对应vue页的name,标签列表里的name可以做vue页面缓存
           path: route.fullPath, //路由
           hideclose: route.meta.hideclose ? route.meta.hideclose : false //是否隐藏关闭
