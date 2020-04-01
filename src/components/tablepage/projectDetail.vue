@@ -135,13 +135,13 @@
                   default-expand-all
                   stripe class="visitor-table" align="center">
                   <el-table-column type="selection" width="30" align="center"></el-table-column>
-                  <el-table-column prop="id" label="组员id" align="center"></el-table-column>
-                  <el-table-column prop="name" label="姓名" width="60"></el-table-column>
-                  <el-table-column prop="role" label="角色" width="90"></el-table-column>
-                  <el-table-column prop="email" label="邮箱"></el-table-column>
-                  <el-table-column prop="department" label="部门" width="70"></el-table-column>
-                  <el-table-column prop="bossEmail" label="项目上级邮箱"></el-table-column>
-                  <el-table-column prop="phone" label="电话"></el-table-column>
+                  <el-table-column prop="userId" label="组员id" width="70" align="center"></el-table-column>
+                  <el-table-column prop="userName" label="姓名" width="60"></el-table-column>
+                  <el-table-column prop="userRole" label="角色" width="150"></el-table-column>
+                  <el-table-column prop="userMail" label="邮箱"></el-table-column>
+                  <el-table-column prop="userDepartment" label="部门" width="70"></el-table-column>
+                  <el-table-column prop="projectChargerMail" label="项目上级邮箱"></el-table-column>
+                  <el-table-column prop="userTel" label="电话"></el-table-column>
                   <el-table-column fixed="right" label="操作" align="center">
                     <template slot-scope="scope">
                       <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowGroupDetail(scope.row)"></i>
@@ -159,7 +159,7 @@
                   type="date"
                   placeholder="选择需要查询工时的日期"
                 ></el-date-picker>
-                <el-button style="margin-left: 1rem;" type="primary" @click="">查询</el-button>
+                <el-button style="margin-left: 1rem;" type="primary" @click="searchWorkTime()">查询</el-button>
               </div>
               <div>
                 <el-table
@@ -168,13 +168,13 @@
                   row-key="name"
                   default-expand-all
                   stripe class="visitor-table" align="center">
-                  <el-table-column prop="id" label="组员id" width="110" align="center"></el-table-column>
-                  <el-table-column prop="name" label="姓名"></el-table-column>
-                  <el-table-column prop="role" label="角色"></el-table-column>
-                  <el-table-column prop="function" label="完成功能"></el-table-column>
-                  <el-table-column prop="activity" label="完成活动"></el-table-column>
-                  <el-table-column prop="starttime" label="开始时间" :formatter="format_date"></el-table-column>
-                  <el-table-column prop="endtime" label="结束时间" :formatter="format_date"></el-table-column>
+                  <el-table-column prop="userId" label="组员id" width="90" align="center"></el-table-column>
+                  <el-table-column prop="userName" label="姓名" width="90"></el-table-column>
+                  <el-table-column prop="userRole" label="角色"></el-table-column>
+                  <el-table-column prop="finishedFunction" label="完成功能"></el-table-column>
+                  <el-table-column prop="finishedActivity" label="完成活动"></el-table-column>
+                  <el-table-column prop="startTime" label="开始时间" :formatter="format_date"></el-table-column>
+                  <el-table-column prop="finishTime" label="结束时间" :formatter="format_date"></el-table-column>
                 </el-table>
               </div>
             </el-tab-pane>
@@ -289,34 +289,8 @@
         :rules="formEditGroupRules"
         :disabled="editGroupDialogParam.formEditGroupDisabled"
       >
-        <el-form-item class="form_input_group" label="搜索组员" prop="name">
-          <el-autocomplete class="form_input_group"
-            v-model="formEditGroup.name"
-            :fetch-suggestions="querySearchAsync"
-            placeholder="搜索员工ID或姓名"
-            @select="handleSelect"
-          ></el-autocomplete>
-<!--          <el-input v-model="formEditGroup.name" placeholder="搜索员工ID或姓名"></el-input>-->
-        </el-form-item>
-        <el-form-item class="form_input_group" label="" prop="head">
-          <el-button style="background: #309aec;
-                                color: white;
-                                margin-left: 1rem;
-                                width: 4rem;
-                                border-color: #309aec;"
-                     round >搜索</el-button>
-        </el-form-item>
-        <el-form-item class="form_input_group" label="部门" prop="name">
-          <el-input v-model="formEditGroup.department" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item class="form_input_group" label="邮箱" prop="name">
-          <el-input v-model="formEditGroup.email" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item class="form_input_group" label="电话" prop="name">
-          <el-input v-model="formEditGroup.phone" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item class="form_input_group" label="项目上级邮箱" prop="name">
-          <el-input v-model="formEditGroup.bossEmail" placeholder=""></el-input>
+        <el-form-item class="form_input_group" label="员工ID" prop="name">
+          <el-input v-model="formEditGroup.id" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input_group" label="角色" prop="head">
           <el-input v-model="formEditGroup.role" placeholder=""></el-input>
@@ -333,9 +307,8 @@
 </template>
 
 <script>
-  import {searchProject, searchProjectSubFunction} from '../../api/api'
+  import {groupListSearch, searchProject, searchProjectSubFunction, workHourSearch} from '../../api/api'
   import {searchProjectFunction, addProjectFunction, updateProjectFunction} from '../../api/api'
-
 
   export default {
         name: "projectDetail",
@@ -379,15 +352,15 @@
               }
             ],
             timeList: [
-              {
-                id: "10165101240",
-                name: "组员1",
-                role: "开发人员",
-                function: "3142",
-                activity: "32321",
-                starttime: "",
-                endtime: ""
-              }
+              // {
+              //   id: "10165101240",
+              //   name: "组员1",
+              //   role: "开发人员",
+              //   function: "3142",
+              //   activity: "32321",
+              //   starttime: "",
+              //   endtime: ""
+              // }
             ],
             documentList: [{
                 type: "项目基础数据表",
@@ -533,7 +506,7 @@
 
         },
         mounted() {
-          console.log("111111111111111111");
+          console.log("进入projectDetail界面");
           console.log(this.$route);
           this.onChangeQueryId(this.$route.query.id);
         },
@@ -551,6 +524,27 @@
           }
         },
         methods: {
+          getAllGroupList(){
+
+            groupListSearch(this.formEdit.id)
+              .then(response => {
+                var json = response;
+                console.log(json);
+                if (json.count >0) {
+                  this.groupList = json.data.组员信息列表;
+                  console.log(this.groupList)
+                } else {
+                  this.$message({ message: '暂无组员信息', type: "warning" });
+                }
+              })
+              .catch(error => {
+                this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+              .finally(() => {
+                //this.loading = false;
+              });
+
+          },
           getAllFunction(projectId){
 
             this.loadingFunc = true
@@ -610,6 +604,7 @@
                 console.log(json);
                 if (json.msg == "查询成功") {
                   this.formEdit = json.data.data[0];
+                  this.getAllGroupList(this.formEdit.id);
                   this.getAllFunction(this.formEdit.id);
                 } else {
                   this.$message({ message: json.message, type: "warning" });
@@ -735,6 +730,12 @@
             }
             return this.$moment(date).format("YYYY-MM-DD HH:mm:ss");
           },
+          format_date1(time) {
+            if (time == undefined) {
+              return "";
+            }
+            return this.$moment(time).format("YYYY-MM-DD");
+          },
           handleChange(file, fileList) {
             this.fileList = fileList.slice(-3);
           },
@@ -754,6 +755,27 @@
             return (state) => {
               return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
             };
+          },
+          searchWorkTime(){
+
+            var workHourParams = 'projectId='+this.formEdit.id+'&id='+this.format_date1(this.formSearchTime);
+            workHourSearch(workHourParams)
+              .then(response => {
+                var json = response;
+                console.log(json);
+                if (json.count >0) {
+                  this.timeList = json.data.工时信息列表;
+                  console.log(this.timeList)
+                } else {
+                  this.$message({ message: '暂无工时信息', type: "warning" });
+                }
+              })
+              .catch(error => {
+                this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+              .finally(() => {
+                //this.loading = false;
+              });
           }
 
         }
@@ -977,7 +999,7 @@
   }
   .form_input_group {
     .el-form-item__content {
-      width: 800px;
+      width: 700px;
     }
     .el-input__inner {
       -webkit-appearance: none;

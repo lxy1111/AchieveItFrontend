@@ -37,3 +37,8 @@ export const deleteProjectSubFunction = params => { return axios.post(`/ProjectS
 export const searchDevice = params => { return axios.post(`/Device/Search`, params).then(res => res.data); };
 
 export const editDevice = params => { return axios.post(`/Device/Edit`, params).then(res => res.data); };
+
+export const workHourSearch = params => { return axios.post(`/WorkHourInfo/Search?`+params , params).then(res => res.data); };
+
+export const groupListSearch = params => { return axios.post(`/ProjectUserInfo/Search?projectId=`+params , params).then(res => res.data); };
+

@@ -40,7 +40,7 @@
         </el-collapse>
       </el-col>
       <el-col :span="3">
-        <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新建项目</el-button>
+        <el-button v-if="" style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新建项目</el-button>
       </el-col>
       <el-col :span="3">
         <el-button style="margin-top: 7px;" type="danger" round>批量删除</el-button>
