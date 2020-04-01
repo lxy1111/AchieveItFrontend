@@ -17,26 +17,26 @@
                   :disabled="editDialogParam.formEditDisabled"
                 >
                   <el-form-item class="form_input" label="项目id" prop="id">
-                    <el-input v-model="formEdit.id" placeholder=""></el-input>
+                    <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input" label="项目名称" prop="projectName">
                     <el-input v-model="formEdit.projectName" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item label="项目状态" prop="status">
-                    <button
-                            class="status_button" v-if="formEdit.status==0">申请立项</button>
-                    <button style="color: #00C1A0; background: rgba(0,193,160,0.09);"
-                            class="status_button" v-if="formEdit.status==1">已立项</button>
-                    <button @click="" style="color: #ab1b10; background: rgba(171,27,16,0.09);"
-                            class="status_button" v-if="formEdit.status==2">立即驳回</button>
-                    <button @click="" style="color: #0cab2f; background: rgba(12,171,47,0.09);"
-                            class="status_button" v-if="formEdit.status==3">进行中</button>
-                    <button @click="" style="color: #ab4d02; background: rgba(171,77,2,0.09);"
-                            class="status_button" v-if="formEdit.status==4">已交付</button>
-                    <button @click="" style="color: #838383; background: rgba(131,131,131,0.09);"
-                            class="status_button" v-if="formEdit.status==5">结束</button>
-                    <button @click="" style="color: #ab8c05; background: rgba(171,140,5,0.09);"
-                            class="status_button" v-if="formEdit.status==6">已归档</button>
+                    <el-button @click="onShowPending()"
+                            class="status_button" v-if="formEdit.status==0">申请立项</el-button>
+                    <el-button style="color: #00C1A0; background: rgba(0,193,160,0.09);"
+                            class="status_button" v-if="formEdit.status==1">已立项</el-button>
+                    <el-button @click="" style="color: #ab1b10; background: rgba(171,27,16,0.09);"
+                            class="status_button" v-if="formEdit.status==2">立即驳回</el-button>
+                    <el-button @click="" style="color: #0cab2f; background: rgba(12,171,47,0.09);"
+                            class="status_button" v-if="formEdit.status==3">进行中</el-button>
+                    <el-button @click="" style="color: #ab4d02; background: rgba(171,77,2,0.09);"
+                            class="status_button" v-if="formEdit.status==4">已交付</el-button>
+                    <el-button @click="" style="color: #838383; background: rgba(131,131,131,0.09);"
+                            class="status_button" v-if="formEdit.status==5">结束</el-button>
+                    <el-button @click="" style="color: #ab8c05; background: rgba(171,140,5,0.09);"
+                            class="status_button" v-if="formEdit.status==6">已归档</el-button>
                   </el-form-item>
                   <el-form-item class="form_select" label="项目上级" prop="leader">
                     <el-input v-model="formEdit.leader" placeholder=""></el-input>
@@ -70,13 +70,23 @@
                       placeholder="选择交付时间"
                     ></el-date-picker>
                   </el-form-item>
+                  <el-form-item>
+                    <el-button style="background: #309aec;
+                                  color: white;
+                                  margin-left: 1rem;
+                                  border-color: #309aec;"
+                               v-if="this.userInfo.userRole=='PM'"
+                               round @click="">保存更改</el-button>
+                  </el-form-item>
+
                 </el-form>
               </div>
             </el-tab-pane>
             <el-tab-pane label="功能列表">
               <el-row style="margin-top: 1rem;">
                 <el-col :span="20">
-                  <el-button style="background: #439ea8;
+                  <el-button v-if="this.userInfo.userRole=='PM'"
+                             style="background: #439ea8;
                                   color: white;
                                   margin-left: 1rem;
                                   width: 8rem;
@@ -90,7 +100,8 @@
                              round>导出至excel</el-button>
                 </el-col>
                 <el-col :span="4">
-                  <el-button style="background: #309aec;
+                  <el-button v-if="this.userInfo.userRole=='PM'"
+                             style="background: #309aec;
                                   color: white;
                                   margin-left: 1rem;
                                   border-color: #309aec;"
@@ -102,7 +113,8 @@
                   :data="functionList"
                   v-loading="loadingFunc"
                   style="width: 100%;margin-bottom: 20px; margin-top: 1rem;"
-                  row-key="name"
+                  row-key="id"
+                  :default-sort = "{prop: 'id', order: 'ascending'}"
                   default-expand-all
                   :tree-props="{children: 'subFunction', hasChildren: 'hasChildren'}"
                   stripe class="visitor-table" align="center">
@@ -112,8 +124,8 @@
                   <el-table-column fixed="right" label="操作" width="90" align="center">
                     <template slot-scope="scope">
                       <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
-                      <i style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditFunction(scope.row)"></i>
-                      <i style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteFunction(scope.row)"></i>
+                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditFunction(scope.row)"></i>
+                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteFunction(scope.row)"></i>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -121,7 +133,8 @@
             </el-tab-pane>
             <el-tab-pane label="组员管理">
               <el-row style="margin-top: 1rem;">
-                <el-button style="background: #309aec;
+                <el-button v-if="this.userInfo.userRole=='PM'"
+                           style="background: #309aec;
                                 color: white;
                                 margin-left: 1rem;
                                 border-color: #309aec;"
@@ -144,9 +157,9 @@
                   <el-table-column prop="userTel" label="电话"></el-table-column>
                   <el-table-column fixed="right" label="操作" align="center">
                     <template slot-scope="scope">
-                      <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowGroupDetail(scope.row)"></i>
-                      <i style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditGroup(scope.row)"></i>
-                      <i style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteGroup(scope.row)"></i>
+<!--                      <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowGroupDetail(scope.row)"></i>-->
+<!--                      <i style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditGroup(scope.row)"></i>-->
+                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteGroup(scope.row)"></i>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -187,26 +200,25 @@
                   default-expand-all
                   stripe class="visitor-table" align="center">
                   <el-table-column prop="type" label="文档类型" align="center"></el-table-column>
-                  <el-table-column label="上传入口" align="center">
-                    <template slot-scope="scope">
-                      <el-upload
-                        class="upload-demo"
-                        action=""
-                        :on-change="handleChange"
-                        :file-list="fileList">
-                        <i style="font-size: 1.1rem;" class="el-icon-upload2"></i>
-<!--                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
-                      </el-upload>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="下载文档" align="center">
-                    <template slot-scope="scope">
-                      <i style="font-size: 1.1rem;" class="el-icon-download"></i>
-                    </template>
-                  </el-table-column>
+<!--                  <el-table-column label="上传入口" align="center">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <el-upload-->
+<!--                        class="upload-demo"-->
+<!--                        action=""-->
+<!--                        :on-change="handleChange"-->
+<!--                        :file-list="fileList">-->
+<!--                        <i style="font-size: 1.1rem;" class="el-icon-upload2"></i>-->
+<!--                      </el-upload>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                  <el-table-column label="下载文档" align="center">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <i style="font-size: 1.1rem;" class="el-icon-download"></i>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
                   <el-table-column fixed="right" prop="whetherComplete" label="是否完整提交">
                     <template slot-scope="scope">
-                      <button @click="handleTodayVisit(scope.$index, scope.row)"
+                      <button @click=""
                               style="border-radius: 1rem;
                             border: 0px;
                             position: relative;
@@ -218,7 +230,7 @@
                             font-family: PingFang SC;
                             background: rgba(54,171,168,0.09);"
                               v-if="scope.row.whetherComplete==true">完整</button>
-                      <button @click="handleTodayVisit(scope.$index, scope.row)"
+                      <button @click=""
                               style="border-radius: 1rem;
                             border: 0px;
                             position: relative;
@@ -258,7 +270,7 @@
         :rules="formEditFunctionRules"
         :disabled="editFunctionDialogParam.formEditFunctionDisabled"
       >
-        <el-form-item class="form_input" v-show="this.editFunctionDialogParam.title!='新增功能'" label="功能id" prop="id"></el-input>
+        <el-form-item class="form_input" v-show="this.editFunctionDialogParam.title!='新增功能'" label="功能id" prop="id">
           <el-input disabled v-model="formEditFunction.id" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="功能名称" prop="functionName">
@@ -302,6 +314,19 @@
       </span>
     </el-dialog>
 
+    <el-dialog width="400px" align="center"
+      :title="changeProjectStatus.title"
+      :visible.sync="changeProjectStatus.show">
+      <el-radio-group v-model="radio1">
+        <el-radio-button label="1">审批通过</el-radio-button>
+        <el-radio-button label="2">立项驳回</el-radio-button>
+      </el-radio-group>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="changeProjectStatus.show = false">取 消</el-button>
+        <el-button v-show="this.changeProjectStatus.title=='审批项目'" type="primary" @click="pendingProject()">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 
 </template>
@@ -309,11 +334,19 @@
 <script>
   import {groupListSearch, searchProject, searchProjectSubFunction, workHourSearch} from '../../api/api'
   import {searchProjectFunction, addProjectFunction, updateProjectFunction} from '../../api/api'
+  import {approveProject, rejectProject} from "../../api/api";
 
   export default {
         name: "projectDetail",
         data () {
           return {
+            radio1: '1',
+            userInfo: {
+              userName: '',
+              userId: '',
+              userRole: '',
+              position: ''
+            },
             staffs: [
                 { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号" },
                 { "value": "Hot honey 首尔炸鸡（仙霞路）", "address": "上海市长宁区淞虹路661号" },
@@ -341,15 +374,15 @@
 
 
             groupList: [
-              {
-                id: "10165101240",
-                name: "组员1",
-                role: "开发人员",
-                email: "380923800@qq.com",
-                department: "技术部",
-                bossEmail: "10165101240@stu.ecnu.edu.cn",
-                phone: "18918058616"
-              }
+              // {
+              //   id: "10165101240",
+              //   name: "组员1",
+              //   role: "开发人员",
+              //   email: "380923800@qq.com",
+              //   department: "技术部",
+              //   bossEmail: "10165101240@stu.ecnu.edu.cn",
+              //   phone: "18918058616"
+              // }
             ],
             timeList: [
               // {
@@ -499,6 +532,11 @@
               show: false, //弹框显示
               formEditGroupDisabled:false,//编辑弹窗是否可编辑
             },
+            changeProjectStatus: {
+              title: "变更项目状态", //弹窗标题,值为:
+              show: false,
+              changeProjectStatusDisabled:true
+            },
             formSearchTime: ""
           }
         },
@@ -509,6 +547,9 @@
           console.log("进入projectDetail界面");
           console.log(this.$route);
           this.onChangeQueryId(this.$route.query.id);
+          this.userInfo.userName = sessionStorage.getItem("userName");
+          this.userInfo.userRole = sessionStorage.getItem("role");
+          this.userInfo.position = sessionStorage.getItem("position");
         },
         computed: {
           getQueryId: function() {
@@ -533,8 +574,6 @@
                 if (json.count >0) {
                   this.groupList = json.data.组员信息列表;
                   console.log(this.groupList)
-                } else {
-                  this.$message({ message: '暂无组员信息', type: "warning" });
                 }
               })
               .catch(error => {
@@ -557,26 +596,35 @@
                   this.functionList = json.data.data;
                   console.log("功能列表查询成功");
 
-                  // for (var i=0;i<json.count;i++){
-                  //
-                  //   console.log("正在获取是否有子功能；"+i);
-                  //   searchProjectSubFunction(this.functionList[i].id)
-                  //     .then(res => {
-                  //       console.log(res);
-                  //       if(res.msg == "查询成功"&&res.count>0){
-                  //         this.functionList[i].hasChildren = true;
-                  //       }else {
-                  //         this.$message({ message: json.message, type: "warning" });
-                  //       }
-                  //     })
-                  //     .catch(error => {
-                  //       this.$message({ message: "执行异常,请重试", type: "error" });
-                  //     })
-                  //     .finally(() => {
-                  //
-                  //     });
-                  //
-                  // }
+                  for (var i=0;i<json.count;i++){
+
+                    console.log("正在获取是否有子功能；"+i);
+                    searchProjectSubFunction(this.functionList[i].id)
+                      .then(res => {
+                        console.log(res);
+                        if(res.msg == "查询成功"&&res.count>0){
+                          console.log(i+"号功能有子功能");
+                          console.log(res.data.data)
+
+                          for (var j=0;j<res.count;j++){
+                            this.functionList.push({
+                              id: res.data.data[j].funcId+"."+res.data.data[j].id,
+                              functionName: res.data.data[j].functionName,
+                              personCharge: res.data.data[j].personCharge,
+                            });
+                          }
+
+                          console.log(this.functionList);
+                        }
+                      })
+                      .catch(error => {
+                        this.$message({ message: "执行异常,请重试", type: "error" });
+                      })
+                      .finally(() => {
+
+                      });
+
+                  }
 
 
                 } else {
@@ -673,7 +721,55 @@
             this.formEditGroup=Object.assign({},rowData);
 
           },
-          handleTodayVisit() {
+          onShowPending(){
+
+            if(this.userInfo.userRole=='PS'){
+              this.changeProjectStatus.show = true;
+              this.changeProjectStatus.title= '审批项目';
+            }
+
+          },
+          pendingProject(){
+
+            if (this.radio1=='1'){
+              approveProject(this.formEdit.id)
+                .then(response => {
+
+                  if (response.msg == "状态更新成功！") {
+
+                    this.changeProjectStatus.show = false;
+
+                  } else {
+                    this.$message({ message: response.msg, type: "warning" });
+                  }
+                })
+                .catch(error => {
+                  this.$message({ message: "执行异常,请重试", type: "error" });
+                })
+                .finally(() => {
+
+                });
+            } else if(this.radio1=='2'){
+
+              rejectProject(this.formEdit.id)
+                .then(response => {
+
+                  if (response.msg == "状态更新成功！") {
+
+                    this.changeProjectStatus.show = false;
+
+                  } else {
+                    this.$message({ message: response.msg, type: "warning" });
+                  }
+                })
+                .catch(error => {
+                  this.$message({ message: "执行异常,请重试", type: "error" });
+                })
+                .finally(() => {
+
+                });
+            }
+
 
           },
 

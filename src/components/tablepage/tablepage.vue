@@ -39,13 +39,22 @@
           </el-collapse-item>
         </el-collapse>
       </el-col>
-      <el-col :span="3">
-        <el-button v-if="" style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新建项目</el-button>
-      </el-col>
-      <el-col :span="3">
-        <el-button style="margin-top: 7px;" type="danger" round>批量删除</el-button>
+      <el-col :span="6" align="right">
+        <el-button v-if="this.userInfo.userRole=='PS'"
+                   style="width: 11rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"
+                   round @click="">仅显示我的待审核项目</el-button>
+        <el-button v-if="this.userInfo.userRole=='EPG'||this.userInfo.userRole=='QA'"
+                   style="width: 11rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"
+                   round @click="">仅显示我的待分配项目</el-button>
+        <el-button v-if="this.userInfo.userRole=='PS'||this.userInfo.userRole=='EPG'||this.userInfo.userRole=='QA'"
+                   style="width: 8rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"
+                   round @click="">显示全部项目</el-button>
+        <el-button v-if="this.userInfo.userRole=='PM'"
+                   style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec; margin-right: 7px;"
+                   round @click="onShowAdd">新建项目</el-button>
       </el-col>
     </el-row>
+
     <!-- 操作区 end -->
     <!--表格 start-->
 
@@ -58,7 +67,7 @@
       <el-table-column prop="deliveryTime" label="交付日" align="center" :formatter="format_date"></el-table-column>
       <el-table-column prop="status" align="center" label="状态" >
         <template slot-scope="scope">
-          <button @click=""
+          <button @click="onShowPending(scope.row)"
                   class="status_button" v-if="scope.row.status==0">申请立项</button>
           <button @click="" style="color: #00C1A0; background: rgba(0,193,160,0.09);"
                   class="status_button" v-if="scope.row.status==1">已立项</button>
@@ -77,7 +86,7 @@
       <el-table-column fixed="right" label="操作"  align="center">
         <template slot-scope="scope">
           <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowDetail(scope.row)"></i>
-          <i style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
+          <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
         </template>
       </el-table-column>
     </el-table>
@@ -111,8 +120,8 @@
         label-width="68px"
         :disabled="editDialogParam.formEditDisabled"
       >
-        <el-form-item class="form_input" label="项目id" prop="name">
-          <el-input v-model="formEdit.id" placeholder=""></el-input>
+        <el-form-item v-if="editDialogParam.title=='编辑'" class="form_input" label="项目id" prop="name">
+          <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="项目名称" prop="city">
           <el-input v-model="formEdit.projectName" placeholder=""></el-input>
@@ -156,6 +165,20 @@
       </span>
     </el-dialog>
     <!-- 新增，编辑，查看 end -->
+
+    <el-dialog width="400px" align="center"
+               :title="changeProjectStatus.title"
+               :visible.sync="changeProjectStatus.show">
+      <el-radio-group v-model="radio1">
+        <el-radio-button label="1">审批通过</el-radio-button>
+        <el-radio-button label="2">立项驳回</el-radio-button>
+      </el-radio-group>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="changeProjectStatus.show = false">取 消</el-button>
+        <el-button v-show="this.changeProjectStatus.title=='审批项目'" type="primary" @click="pendingProject()">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -166,7 +189,7 @@
 ._tablepage {
 
   .status_button {
-    border-radius: 1rem;
+    border-radius: 0.1rem;
     border: 0px;
     position: relative;
     width: 4.7rem;
@@ -485,15 +508,21 @@
 
 
 <script>
-  import {searchProject} from '../../api/api'
+  import {searchProject, approveProject, rejectProject} from '../../api/api'
   import {createNewProject} from '../../api/api'
-  import {updateProject} from '../../api/api'
+  import {updateProject, userRoleSearch} from '../../api/api'
   import {deleteProject} from '../../api/api'
 
 export default {
   name: "tablepage",
   data() {
     return {
+      userInfo: {
+        userName: '',
+        userId: '',
+        userRole: '',
+        position: ''
+      },
       pageInfo: {
         //分页
           pageSize: 5,
@@ -553,12 +582,23 @@ export default {
         show: false, //弹框显示
         formEditDisabled:false,//编辑弹窗是否可编辑
       },
+      changeProjectStatus: {
+        title: "变更项目状态", //弹窗标题,值为:
+        show: false,
+        changeProjectStatusDisabled:true
+      },
 
-      loading: false //加载提示
+      loading: false, //加载提示,
+      radio1: '1'
     };
   },
   mounted() {
+
     this.onSearch();
+    this.userInfo.userName = sessionStorage.getItem("userName");
+    this.userInfo.userRole = sessionStorage.getItem("role");
+    this.userInfo.position = sessionStorage.getItem("position");
+
   },
   methods: {
     onSearch() {
@@ -601,6 +641,8 @@ export default {
         .then(response => {
           var json = response;
           console.log(json);
+          this.editDialogParam.show = false;
+          this.onSearch();
         })
         .catch(error => {
           this.$message({ message: "执行异常,请重试", type: "error" });
@@ -738,7 +780,62 @@ export default {
     },
     handleDialogClose() {
       this.$refs["formEdit"].resetFields();
-    }
+    },
+
+    onShowPending(item){
+
+      if(this.userInfo.userRole=='PS'){
+        this.changeProjectStatus.show = true;
+        this.changeProjectStatus.title= '审批项目';
+        this.formEdit = item;
+      }
+
+    },
+    pendingProject(){
+
+      if (this.radio1=='1'){
+        approveProject(this.formEdit.id)
+          .then(response => {
+
+            if (response.msg == "状态更新成功！") {
+
+              this.changeProjectStatus.show = false;
+              this.onSearch();
+
+            } else {
+              this.$message({ message: response.msg, type: "warning" });
+            }
+          })
+          .catch(error => {
+            this.$message({ message: "执行异常,请重试", type: "error" });
+          })
+          .finally(() => {
+
+          });
+      } else if(this.radio1=='2'){
+
+        rejectProject(this.formEdit.id)
+          .then(response => {
+
+            if (response.msg == "状态更新成功！") {
+
+              this.changeProjectStatus.show = false;
+              this.onSearch();
+
+            } else {
+              this.$message({ message: response.msg, type: "warning" });
+            }
+          })
+          .catch(error => {
+            this.$message({ message: "执行异常,请重试", type: "error" });
+          })
+          .finally(() => {
+
+          });
+      }
+
+
+    },
   }
 };
 </script>

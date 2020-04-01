@@ -16,7 +16,7 @@
     </div>
     <div class="right">
       <ul>
-        <li class="nohover">{{position}}</li>
+<!--        <li class="nohover">{{position}}</li>-->
         <li>
           <i class="el-icon-rank fullscreen" @click="handleFullScreen"></i>
         </li>
@@ -26,7 +26,7 @@
         <li>
           <el-dropdown class="white font" trigger="click" placement="bottom" @command="handleCommand">
             <span class="el-dropdown-link">
-              {{username}}
+              {{position}}&nbsp&nbsp|&nbsp&nbsp{{username}}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
@@ -46,13 +46,17 @@ export default {
     return {
       navShow: false, //左侧导航是否折叠
       fullscreen: false, //全屏
-      position:'',//职位
+
+      position: '',
+      role:'',//职位
       username:'',//用户名
     };
   },
   mounted(){
-    //this.position=sessionStorage.getItem('position');
+
     this.username=sessionStorage.getItem('userName');
+    this.role=sessionStorage.getItem('role');
+    this.position=sessionStorage.getItem('position');
   },
   methods: {
     navChangeShow() {
@@ -95,7 +99,7 @@ export default {
          this.$router.replace('/login');
        }
        else if(command=='aboult'){
-         this.$message('QQ群:73110051');
+         this.$message('我是'+this.position+this.username);
        }
       }
   }

@@ -254,7 +254,7 @@
 }
 </style>
 <script>
-  import {requestLogin} from '../api/api';
+  import {requestLogin, projectRoleSearch} from '../api/api';
 export default {
   name: "login",
   data() {
@@ -279,7 +279,7 @@ export default {
       },
       loginState: "",
       dialogLoginFail:false,
-      loginMsg:""
+      loginMsg:"",
     };
   },
    mounted() {
@@ -298,7 +298,7 @@ export default {
     login() {
       var param = {
         password: this.formLogin.password,
-          username: this.formLogin.loginName,
+        username: this.formLogin.loginName,
       };
 
       requestLogin(param)
@@ -312,18 +312,33 @@ export default {
             var userInfo = json.data;
             sessionStorage.setItem("userName", param.username); //用户名
             sessionStorage.setItem("token", userInfo.token); //保存秘钥
+            sessionStorage.setItem("role", userInfo.role);
 
-            //var sysRoleVoList = json.data.sysRoleVoList;
-            var position = "黄金岗";
-            //for (var i = 0; i < sysRoleVoList.length; i++) {
-              //var item = sysRoleVoList[i];
-              // if (position == "") {
-              //   position += item.roleName;
-              // } else {
-              //   position += "|" + item.roleName;
-              // }
-            //}
-            sessionStorage.setItem("position", position); //用户职位
+            projectRoleSearch()
+              .then(response => {
+                console.log("成功获取角色列表:", response.data.data);
+
+                var position = "";
+                var sysRoleList = response.data.data;
+                for (var i = 0; i < sysRoleList.length; i++) {
+                  var item = sysRoleList[i];
+                  console.log(userInfo.role+" "+item.roleName);
+                  if (userInfo.role == item.roleName) {
+                    position = item.description;
+                    console.log(position+" "+item.description);
+                  }
+                  // else {
+                  //   position += "|" + item.description;
+                  // }
+                }
+                console.log("角色中文："+position);
+                sessionStorage.setItem("position", position); //用户职位
+
+            })
+              .catch(error => {
+              console.log("失败获取角色列表:", error);
+
+            });
 
             //登陆成功跳转主页
               this.$message({
@@ -334,15 +349,15 @@ export default {
             this.$router.replace({ path: "/index" });
           } else {
             this.errorInfo.isShowError = true;
-            this.errorInfo.text = json.message;
-              this.$message.error('登录失败');
+            this.errorInfo.text = json.msg;
+              this.$message.warning('登录失败：'+this.errorInfo.text);
           }
         })
         .catch(error => {
-          console.log("失败报文:", error);
-          this.errorInfo.isShowError = true;
-          this.errorInfo.text = "系统接口异常";
-        });
+        console.log("失败报文:", error);
+        this.errorInfo.isShowError = true;
+        this.errorInfo.text = "系统接口异常";
+      });
     }
   }
 };
