@@ -20,7 +20,9 @@
                     <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input" label="项目名称" prop="projectName">
+                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.projectName" placeholder=""></el-input>
                     <el-input v-model="formEdit.projectName" placeholder=""></el-input>
+
                   </el-form-item>
                   <el-form-item label="项目状态" prop="status">
                     <el-button @click="onShowPending()"
@@ -219,7 +221,7 @@
                   <el-table-column fixed="right" prop="whetherComplete" label="是否完整提交">
                     <template slot-scope="scope">
                       <button @click=""
-                              style="border-radius: 1rem;
+                              style="border-radius: 0.1rem;
                             border: 0px;
                             position: relative;
                             width: 3.5rem;
@@ -231,7 +233,7 @@
                             background: rgba(54,171,168,0.09);"
                               v-if="scope.row.whetherComplete==true">完整</button>
                       <button @click=""
-                              style="border-radius: 1rem;
+                              style="border-radius: 0.1rem;
                             border: 0px;
                             position: relative;
                             width: 3.5rem;
@@ -723,7 +725,7 @@
           },
           onShowPending(){
 
-            if(this.userInfo.userRole=='PS'){
+            if(this.userInfo.userRole=='Superior'){
               this.changeProjectStatus.show = true;
               this.changeProjectStatus.title= '审批项目';
             }
@@ -738,6 +740,8 @@
                   if (response.msg == "状态更新成功！") {
 
                     this.changeProjectStatus.show = false;
+                    this.getAllFunction();
+                    this.getAllGroupList();
 
                   } else {
                     this.$message({ message: response.msg, type: "warning" });
@@ -757,6 +761,8 @@
                   if (response.msg == "状态更新成功！") {
 
                     this.changeProjectStatus.show = false;
+                    this.getAllFunction();
+                    this.getAllGroupList();
 
                   } else {
                     this.$message({ message: response.msg, type: "warning" });
@@ -883,7 +889,7 @@
   font-family: "PingFang SC" !important;
 
   .status_button {
-    border-radius: 1rem;
+    border-radius: 0.1rem;
     border: 0px;
     position: relative;
     width: 4.7rem;
@@ -934,7 +940,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -975,7 +981,7 @@
   .el-button {
     -webkit-appearance: none;
     background-image: none;
-    border-radius: 3rem;
+    border-radius: 0.2rem;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     display: inline-block;
@@ -997,7 +1003,7 @@
   }
 
   .el-dialog {
-    border-radius: 2rem !important;
+    border-radius: 0.2rem !important;
     font-family: "PingFang SC" !important;
 
     .el-form-item__content {
@@ -1010,7 +1016,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -1033,7 +1039,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -1101,7 +1107,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -1126,7 +1132,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -1151,7 +1157,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -1176,7 +1182,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -1210,7 +1216,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;

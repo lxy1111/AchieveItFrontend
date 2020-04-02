@@ -40,13 +40,13 @@
         </el-collapse>
       </el-col>
       <el-col :span="6" align="right">
-        <el-button v-if="this.userInfo.userRole=='PS'"
+        <el-button v-if="this.userInfo.userRole=='Superior'"
                    style="width: 11rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"
                    round @click="">仅显示我的待审核项目</el-button>
-        <el-button v-if="this.userInfo.userRole=='EPG'||this.userInfo.userRole=='QA'"
+        <el-button v-if="this.userInfo.userRole=='EPGLeader'||this.userInfo.userRole=='QALeader'"
                    style="width: 11rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"
                    round @click="">仅显示我的待分配项目</el-button>
-        <el-button v-if="this.userInfo.userRole=='PS'||this.userInfo.userRole=='EPG'||this.userInfo.userRole=='QA'"
+        <el-button v-if="this.userInfo.userRole=='Superior'||this.userInfo.userRole=='EPGLeader'||this.userInfo.userRole=='QALeader'"
                    style="width: 8rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"
                    round @click="">显示全部项目</el-button>
         <el-button v-if="this.userInfo.userRole=='PM'"
@@ -85,7 +85,7 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作"  align="center">
         <template slot-scope="scope">
-          <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowDetail(scope.row)"></i>
+          <i v-if="scope.row.status!=0" style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowDetail(scope.row)"></i>
           <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
         </template>
       </el-table-column>
@@ -109,7 +109,7 @@
     <el-dialog
       :title="editDialogParam.title"
       :visible.sync="editDialogParam.show"
-      width="700px"
+      width="80%"
       @close="handleDialogClose"
     >
       <el-form
@@ -204,7 +204,7 @@
   .el-button {
     -webkit-appearance: none;
     background-image: none;
-    border-radius: 3rem;
+    border-radius: 0.2rem;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     display: inline-block;
@@ -221,7 +221,7 @@
   }
 
   .el-dialog {
-    border-radius: 2rem !important;
+    border-radius: 0.2rem !important;
     font-family: "PingFang SC" !important;
 
     .el-form-item__content {
@@ -234,7 +234,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -257,7 +257,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -305,7 +305,7 @@
   .demo-form-inline .el-button {
     -webkit-appearance: none;
     background-image: none;
-    border-radius: 2rem;
+    border-radius: 0.2rem;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     display: inline-block;
@@ -328,13 +328,13 @@
 
   .small_form_input {
     .el-form-item__content {
-      width: 100px;
+      width: 90px;
     }
     .el-input__inner {
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -354,13 +354,13 @@
 
   .form_input {
     .el-form-item__content {
-      width: 120px;
+      width: 100px;
     }
     .el-input__inner {
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -379,13 +379,13 @@
   }
   .form_select {
     .el-select {
-      width: 150px;
+      width: 100px;
     }
     .el-input__inner {
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -419,7 +419,7 @@
       -webkit-appearance: none;
       background-color: #FFF;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       border: 1px solid #DCDFE6;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -449,7 +449,7 @@
     .el-button {
       -webkit-appearance: none;
       background-image: none;
-      border-radius: 3rem;
+      border-radius: 0.2rem;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
       display: inline-block;
@@ -784,7 +784,7 @@ export default {
 
     onShowPending(item){
 
-      if(this.userInfo.userRole=='PS'){
+      if(this.userInfo.userRole=='Superior'){
         this.changeProjectStatus.show = true;
         this.changeProjectStatus.title= '审批项目';
         this.formEdit = item;

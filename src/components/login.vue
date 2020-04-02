@@ -314,31 +314,17 @@ export default {
             sessionStorage.setItem("token", userInfo.token); //保存秘钥
             sessionStorage.setItem("role", userInfo.role);
 
-            projectRoleSearch()
-              .then(response => {
-                console.log("成功获取角色列表:", response.data.data);
-
-                var position = "";
-                var sysRoleList = response.data.data;
-                for (var i = 0; i < sysRoleList.length; i++) {
-                  var item = sysRoleList[i];
-                  console.log(userInfo.role+" "+item.roleName);
-                  if (userInfo.role == item.roleName) {
-                    position = item.description;
-                    console.log(position+" "+item.description);
-                  }
-                  // else {
-                  //   position += "|" + item.description;
-                  // }
-                }
-                console.log("角色中文："+position);
-                sessionStorage.setItem("position", position); //用户职位
-
-            })
-              .catch(error => {
-              console.log("失败获取角色列表:", error);
-
-            });
+            if(userInfo.role=='PM'){
+              sessionStorage.setItem("position", "项目经理");
+            }else if(userInfo.role=='Superior'){
+              sessionStorage.setItem("position", "上级");
+            }else if(userInfo.role=='EPGLeader'){
+              sessionStorage.setItem("position", "EPG经理");
+            }else if(userInfo.role=='QALeader'){
+              sessionStorage.setItem("position", "QA经理");
+            }else if(userInfo.role=='Member'){
+              sessionStorage.setItem("position", "普通员工");
+            }
 
             //登陆成功跳转主页
               this.$message({

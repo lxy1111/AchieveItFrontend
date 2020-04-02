@@ -62,7 +62,7 @@
       <el-table-column prop="deviceowner" label="资产管理者" ></el-table-column>
       <el-table-column prop="status" label="设备状态" >
         <template slot-scope="scope">
-          <button style="border-radius: 1rem;
+          <button style="border-radius: 0.2rem;
                             border: 0px;
                             position: relative;
                             width: 4rem;
@@ -139,7 +139,7 @@
     .el-button {
       -webkit-appearance: none;
       background-image: none;
-      border-radius: 3rem;
+      border-radius: 0.2rem;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
       display: inline-block;
@@ -156,7 +156,7 @@
     }
 
     .el-dialog {
-      border-radius: 2rem !important;
+      border-radius: 0.2rem !important;
       font-family: "PingFang SC" !important;
 
       .el-form-item__content {
@@ -169,7 +169,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -192,7 +192,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -240,7 +240,7 @@
     .demo-form-inline .el-button {
       -webkit-appearance: none;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
       display: inline-block;
@@ -269,7 +269,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -295,7 +295,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -320,7 +320,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -354,7 +354,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -384,7 +384,7 @@
       .el-button {
         -webkit-appearance: none;
         background-image: none;
-        border-radius: 3rem;
+        border-radius: 0.2rem;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
         display: inline-block;

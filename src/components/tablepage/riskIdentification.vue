@@ -132,7 +132,7 @@
       <el-table-column fixed="right" prop="status" label="风险状态" >
         <template slot-scope="scope">
           <button @click="handleTodayVisit(scope.$index, scope.row)"
-                  style="border-radius: 1rem;
+                  style="border-radius: 0.2rem;
                             border: 0px;
                             position: relative;
                             width: 3.5rem;
@@ -144,7 +144,7 @@
                             background: rgba(54,171,168,0.09);"
                   v-if="scope.row.visitStatus=='non_arrival'">未到</button>
           <button @click="handleTodayVisit(scope.$index, scope.row)"
-                  style="border-radius: 1rem;
+                  style="border-radius: 0.2rem;
                             border: 0px;
                             position: relative;
                             width: 3.5rem;
@@ -156,7 +156,7 @@
                             background: rgba(0,193,160,0.09);"
                   v-if="scope.row.visitStatus=='in'">已进入</button>
           <button @click="handleTodayVisit(scope.$index, scope.row)"
-                  style="border-radius: 1rem;
+                  style="border-radius: 0.2rem;
                             border: 0px;
                             position: relative;
                             width: 4rem;
@@ -274,7 +274,7 @@
     .el-button {
       -webkit-appearance: none;
       background-image: none;
-      border-radius: 3rem;
+      border-radius: 0.2rem;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
       display: inline-block;
@@ -291,7 +291,7 @@
     }
 
     .el-dialog {
-      border-radius: 2rem !important;
+      border-radius: 0.2rem !important;
       font-family: "PingFang SC" !important;
 
       .el-form-item__content {
@@ -304,7 +304,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -327,7 +327,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -375,7 +375,7 @@
     .demo-form-inline .el-button {
       -webkit-appearance: none;
       background-image: none;
-      border-radius: 2rem;
+      border-radius: 0.2rem;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
       display: inline-block;
@@ -404,7 +404,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -430,7 +430,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -455,7 +455,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -489,7 +489,7 @@
         -webkit-appearance: none;
         background-color: #FFF;
         background-image: none;
-        border-radius: 2rem;
+        border-radius: 0.2rem;
         border: 1px solid #DCDFE6;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -519,7 +519,7 @@
       .el-button {
         -webkit-appearance: none;
         background-image: none;
-        border-radius: 3rem;
+        border-radius: 0.2rem;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
         display: inline-block;
