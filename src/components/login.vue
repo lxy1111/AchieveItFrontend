@@ -313,6 +313,8 @@ export default {
             sessionStorage.setItem("userName", param.username); //用户名
             sessionStorage.setItem("token", userInfo.token); //保存秘钥
             sessionStorage.setItem("role", userInfo.role);
+            sessionStorage.setItem("userId", userInfo.userId);
+
 
             if(userInfo.role=='PM'){
               sessionStorage.setItem("position", "项目经理");

@@ -6,7 +6,7 @@
 
     <!-- 操作区 start -->
     <el-row class="operate">
-      <el-col :span="18">
+      <el-col :span="17">
         <el-collapse>
           <el-collapse-item title="项目查询" name="1">
 
@@ -39,16 +39,27 @@
           </el-collapse-item>
         </el-collapse>
       </el-col>
-      <el-col :span="6" align="right">
-        <el-button v-if="this.userInfo.userRole=='Superior'"
-                   style="width: 11rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"
-                   round @click="">仅显示我的待审核项目</el-button>
-        <el-button v-if="this.userInfo.userRole=='EPGLeader'||this.userInfo.userRole=='QALeader'"
-                   style="width: 11rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"
-                   round @click="">仅显示我的待分配项目</el-button>
-        <el-button v-if="this.userInfo.userRole=='Superior'||this.userInfo.userRole=='EPGLeader'||this.userInfo.userRole=='QALeader'"
-                   style="width: 8rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"
-                   round @click="">显示全部项目</el-button>
+      <el-col :span="7" align="right">
+
+        <el-radio-group style="margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;" v-if="this.userInfo.userRole=='Superior'" v-model="radioSuperior">
+          <el-radio-button label="1">仅显示我的待审核</el-radio-button>
+          <el-radio-button label="2">显示全部项目</el-radio-button>
+        </el-radio-group>
+
+        <el-radio-group v-if="this.userInfo.userRole=='EPGLeader'||this.userInfo.userRole=='QALeader'" v-model="radioLeader">
+          <el-radio-button label="1">仅显示我的待分配</el-radio-button>
+          <el-radio-button label="2">显示全部项目</el-radio-button>
+        </el-radio-group>
+
+<!--        <el-button -->
+<!--                   style="width: 11rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"-->
+<!--                   round @click="showMyTask">仅显示我的待审核项目</el-button>-->
+<!--        <el-button -->
+<!--                   style="width: 11rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"-->
+<!--                   round @click="">仅显示我的待项目</el-button>-->
+<!--        <el-button v-if="this.userInfo.userRole=='Superior'||this.userInfo.userRole=='EPGLeader'||this.userInfo.userRole=='QALeader'"-->
+<!--                   style="width: 8rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"-->
+<!--                   round @click="onSearch">显示全部项目</el-button>-->
         <el-button v-if="this.userInfo.userRole=='PM'"
                    style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec; margin-right: 7px;"
                    round @click="onShowAdd">新建项目</el-button>
@@ -503,6 +514,23 @@
   .visitor-table .el-table__row>td{
     border: none !important;
   }
+  .el-radio-button__orig-radio:checked+.el-radio-button__inner {
+    color: #FFF;
+    background-color: rgb(241, 129, 10);
+    border-color: rgb(241, 129, 10);
+    -webkit-box-shadow: -1px 0 0 0 rgb(241, 129, 10);
+    box-shadow: -1px 0 0 0 rgb(241, 129, 10);
+  }
+  .el-radio-button__inner {
+    border: 1px solid rgb(241, 129, 10);
+    color: rgb(241, 129, 10);
+  }
+  .el-radio-button:first-child .el-radio-button__inner {
+    border-left: 1px solid rgb(241, 129, 10);
+    border-radius: 4px 0 0 4px;
+    -webkit-box-shadow: none!important;
+    box-shadow: none!important;
+  }
 }
 </style>
 
@@ -510,7 +538,7 @@
 <script>
   import {searchProject, approveProject, rejectProject} from '../../api/api'
   import {createNewProject} from '../../api/api'
-  import {updateProject, userRoleSearch} from '../../api/api'
+  import {updateProject, userRoleSearch, viewMyTask} from '../../api/api'
   import {deleteProject} from '../../api/api'
 
 export default {
@@ -589,7 +617,9 @@ export default {
       },
 
       loading: false, //加载提示,
-      radio1: '1'
+      radio1: '1',
+      radioSuperior: '2',
+      radioLeader: '2'
     };
   },
   mounted() {
@@ -598,7 +628,20 @@ export default {
     this.userInfo.userName = sessionStorage.getItem("userName");
     this.userInfo.userRole = sessionStorage.getItem("role");
     this.userInfo.position = sessionStorage.getItem("position");
+    this.userInfo.userId = sessionStorage.getItem("userId");
 
+  },
+  watch:{
+    radioSuperior: {
+      handler(newValue, oldValue) {
+        console.log(newValue, oldValue);
+        if (newValue=='1'){
+          this.showMyTask();
+        } else {
+          this.onSearch();
+        }
+      }
+    }
   },
   methods: {
     onSearch() {
@@ -836,6 +879,28 @@ export default {
 
 
     },
+    showMyTask(){
+
+      viewMyTask(this.userInfo.userId)
+        .then(response => {
+
+          this.tableData=[];
+          if (response.msg == "查询成功！") {
+
+            this.tableData = response.data.data;
+
+          } else {
+            this.$message({ message: response.msg, type: "warning" });
+          }
+        })
+        .catch(error => {
+          this.$message({ message: "执行异常,请重试", type: "error" });
+        })
+        .finally(() => {
+
+        });
+    }
+
   }
 };
 </script>
