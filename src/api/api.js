@@ -3,7 +3,7 @@ import dev from '../../config/dev.env'
 
 let base = '';
 
-axios.defaults.baseURL="/api";
+axios.defaults.baseURL="http://47.100.187.197:8080";
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
