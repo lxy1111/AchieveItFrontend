@@ -252,6 +252,110 @@
             <el-tab-pane label="缺陷管理">
               缺陷管理
             </el-tab-pane>
+            <el-tab-pane label="风险管理">
+              <div>
+                <el-table :data="riskList" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">
+                  <el-table-column type="selection" width="30" align="center"></el-table-column>
+                  <el-table-column prop="id" label="风险id"  align="center"></el-table-column>
+                  <el-table-column prop="type" label="风险类型" ></el-table-column>
+                  <el-table-column prop="description" label="风险描述"   :formatter="format_type"></el-table-column>
+                  <el-table-column prop="level" label="风险级别" show-overflow-tooltip tooltip-effect="dark" ></el-table-column>
+                  <el-table-column prop="effect" label="风险影响度"  ></el-table-column>
+                  <el-table-column prop="strategy" label="风险应对策略"></el-table-column>
+                  <el-table-column prop="responsible" label="风险责任人"  ></el-table-column>
+                  <!--      <el-table-column prop="gender" label="性别"  :formatter="format_gender"></el-table-column>-->
+                  <el-table-column prop="frequency" label="风险跟踪频度"  ></el-table-column>
+                  <el-table-column prop="relevant" label="风险相关者"  ></el-table-column>
+                  <el-table-column fixed="right" prop="status" label="风险状态" >
+                    <template slot-scope="scope">
+                      <button @click="handleTodayVisit(scope.$index, scope.row)"
+                              style="border-radius: 0.2rem;
+                            border: 0px;
+                            position: relative;
+                            width: 3.5rem;
+                            height: 1.4rem;
+                            color: #36aba8;
+                            font-size: 0.8rem;
+                            font-weight: bolder;
+                            font-family: PingFang SC;
+                            background: rgba(54,171,168,0.09);"
+                              v-if="scope.row.visitStatus=='non_arrival'">未到</button>
+                      <button @click="handleTodayVisit(scope.$index, scope.row)"
+                              style="border-radius: 0.2rem;
+                            border: 0px;
+                            position: relative;
+                            width: 3.5rem;
+                            height: 1.4rem;
+                            color: #00C1A0;
+                            font-size: 0.8rem;
+                            font-weight: bolder;
+                            font-family: PingFang SC;
+                            background: rgba(0,193,160,0.09);"
+                              v-if="scope.row.visitStatus=='in'">已进入</button>
+                      <button @click="handleTodayVisit(scope.$index, scope.row)"
+                              style="border-radius: 0.2rem;
+                            border: 0px;
+                            position: relative;
+                            width: 4rem;
+                            height: 1.5rem;
+                            color: #309aec;
+                            font-size: 0.83rem;
+                            font-weight: bolder;
+                            font-family: PingFang SC;
+                            background: rgba(48,154,236,0.09);"
+                      >未处理</button>
+                    </template>
+                  </el-table-column>
+                  <el-table-column fixed="right" label="操作" align="center">
+                    <template slot-scope="scope">
+                      <el-button style="background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">风险跟踪</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+
+                <!--表格 end-->
+
+                <!--分页 start-->
+<!--                <el-pagination-->
+<!--                  @size-change="handleSizeChange"-->
+<!--                  @current-change="handleCurrentChange"-->
+<!--                  :current-page="pageInfo.currentPage"-->
+<!--                  :page-sizes="[5, 10, 50, 100]"-->
+<!--                  :page-size="pageInfo.pageSize"-->
+<!--                  layout="total, sizes, prev, pager, next, jumper"-->
+<!--                  :total="pageInfo.pageTotal"-->
+<!--                ></el-pagination>-->
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="设备管理">
+              <el-col :span="3">
+                <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新增设备</el-button>
+              </el-col>
+              <el-col :span="2">
+                <el-button style="margin-top: 7px;" type="danger" round>批量删除</el-button>
+              </el-col>
+            <el-table :data="deviceList" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">
+              <el-table-column type="selection" width="30" align="center"></el-table-column>
+              <el-table-column prop="id" label="设备id"  align="center"></el-table-column>
+              <el-table-column prop="deviceowner" label="资产管理者" ></el-table-column>
+              <el-table-column prop="status" label="设备状态" >
+                <template slot-scope="scope">
+                  <button style="border-radius: 0.2rem;
+                            border: 0px;
+                            position: relative;
+                            width: 4rem;
+                            height: 1.5rem;
+                            color: #309aec;
+                            font-size: 0.83rem;
+                            font-weight: bolder;
+                            font-family: PingFang SC;
+                            background: rgba(48,154,236,0.09);"
+                  >项目状态</button>
+                </template>
+              </el-table-column>
+              <el-table-column prop="deadline" label="资产使用期限(天)"></el-table-column>
+            </el-table>
+            </el-tab-pane>
           </el-tabs>
         </el-card>
       </el-col>
@@ -284,7 +388,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editFunctionDialogParam.show = false">取 消</el-button>
-        <el-button v-show="this.editFunctionDialogParam.title!='查看功能'" type="primary" @click="onAddFunction();">确 定</el-button>
+        <el-button v-show="this.editFunctionDialogParam.title!='查看功能'" type="primary" @click="onAddFunction()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -312,7 +416,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editGroupDialogParam.show = false">取 消</el-button>
-        <el-button v-show="this.editGroupDialogParam.title!='查看组员'" type="primary" @click="onAddGroup();">确 定</el-button>
+        <el-button v-show="this.editGroupDialogParam.title!='查看组员'" type="primary" @click="onAddGroup()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -334,8 +438,8 @@
 </template>
 
 <script>
-  import {groupListSearch, searchProject, searchProjectSubFunction, workHourSearch} from '../../api/api'
-  import {searchProjectFunction, addProjectFunction, updateProjectFunction} from '../../api/api'
+  import {groupListSearch, searchProject, searchProjectSubFunction,searchDevice, workHourSearch} from '../../api/api'
+  import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
   import {approveProject, rejectProject} from "../../api/api";
 
   export default {
@@ -366,6 +470,8 @@
             // }
             ],
             functionList: [],
+              riskList:[],
+              deviceList:[],
             loadingFunc: false,
             formSearchFunc: {
               functionName: "",
@@ -397,6 +503,9 @@
               //   endtime: ""
               // }
             ],
+              riskData:{
+
+              },
             documentList: [{
                 type: "项目基础数据表",
                 whetherComplete: true
@@ -586,6 +695,78 @@
               });
 
           },
+            getAllRisks(projectId){
+
+                this.loadingFunc = true
+                let param={
+                    "description": "",
+                    "effect": '',
+                    "frequency": '',
+                    "id": '',
+                    "level": '',
+                    "pageNum": 1,
+                    "pageSize": 10,
+                    "relevant": "",
+                    "responsible": "",
+                    "status": '',
+                    "strategy": "",
+                    "type": "",
+                    projectID:projectId
+                }
+                searchRisk(param)
+                    .then(response => {
+                        var json = response;
+                        console.log(json);
+                        if (json.msg == "查询成功") {
+
+                            this.riskList = json.data.riskList;
+                            console.log("功能列表查询成功");
+
+                        } else {
+                            this.$message({ message: json.message, type: "warning" });
+                        }
+                    })
+                    .catch(error => {
+                        this.$message({ message: "执行异常,请重试", type: "error" });
+                    })
+                    .finally(() => {
+                        this.loadingFunc = false;
+                    });
+
+            },
+            getDevices(projectId){
+
+                this.loadingFunc = true
+                let param={
+                    deadline: "",
+                    deviceowner: "",
+                    id: "",
+                    pageNum: 1,
+                    pageSize: 10,
+                    status: "",
+                    projectID:projectId
+                }
+                searchDevice(param)
+                    .then(response => {
+                        var json = response;
+                        console.log(json);
+                        if (json.msg == "查询成功") {
+
+                            this.deviceList = json.data.deviceList;
+                            console.log("功能列表查询成功");
+
+                        } else {
+                            this.$message({ message: json.message, type: "warning" });
+                        }
+                    })
+                    .catch(error => {
+                        this.$message({ message: "执行异常,请重试", type: "error" });
+                    })
+                    .finally(() => {
+                        this.loadingFunc = false;
+                    });
+
+            },
           getAllFunction(projectId){
 
             this.loadingFunc = true
@@ -656,6 +837,9 @@
                   this.formEdit = json.data.data[0];
                   this.getAllGroupList(this.formEdit.id);
                   this.getAllFunction(this.formEdit.id);
+                   this.getAllRisks(this.formEdit.id)
+                    this.getDevices(this.formEdit.id)
+
                 } else {
                   this.$message({ message: json.message, type: "warning" });
                 }
