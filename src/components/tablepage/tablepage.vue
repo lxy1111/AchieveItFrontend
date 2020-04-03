@@ -50,16 +50,6 @@
           <el-radio-button label="1">仅显示我的待分配</el-radio-button>
           <el-radio-button label="2">显示全部项目</el-radio-button>
         </el-radio-group>
-
-<!--        <el-button -->
-<!--                   style="width: 11rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"-->
-<!--                   round @click="showMyTask">仅显示我的待审核项目</el-button>-->
-<!--        <el-button -->
-<!--                   style="width: 11rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"-->
-<!--                   round @click="">仅显示我的待项目</el-button>-->
-<!--        <el-button v-if="this.userInfo.userRole=='Superior'||this.userInfo.userRole=='EPGLeader'||this.userInfo.userRole=='QALeader'"-->
-<!--                   style="width: 8rem; margin-top: 7px; background: #fff; color: rgb(241, 129, 10); border-color: rgb(241, 129, 10); margin-right: 7px;"-->
-<!--                   round @click="onSearch">显示全部项目</el-button>-->
         <el-button v-if="this.userInfo.userRole=='PM'"
                    style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec; margin-right: 7px;"
                    round @click="onShowAdd">新建项目</el-button>
@@ -69,7 +59,12 @@
     <!-- 操作区 end -->
     <!--表格 start-->
 
-    <el-table :data="tableData" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">
+    <el-table
+      :data="tableData"
+      class="visitor-table"
+      style="width: 100%"
+      align="center"
+      v-loading="loading">
       <el-table-column type="selection" width="30" align="center"></el-table-column>
       <el-table-column prop="id" label="项目id" width="80" align="center"></el-table-column>
       <el-table-column prop="projectName" label="项目名称" width="90" align="center"></el-table-column>
@@ -881,7 +876,7 @@ export default {
     },
     showMyTask(){
 
-      viewMyTask(this.userInfo.userId)
+      viewMyTask()
         .then(response => {
 
           this.tableData=[];

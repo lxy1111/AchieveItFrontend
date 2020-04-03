@@ -72,7 +72,7 @@ export default {
         }
       }
     }
-    
+
   }
   // 手写flex布局样式
   .headContainer {

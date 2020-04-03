@@ -24,7 +24,7 @@ export const approveProject = params => { return axios.post(`/ProjectInfo/Approv
 
 export const rejectProject = params => { return axios.post(`/ProjectInfo/RejectProject?projectId=`+params, params).then(res => res.data); };
 
-export const viewMyTask = params => { return axios.post(`/ProjectInfo/MyTask?id=`+params, params).then(res => res.data); };
+export const viewMyTask = params => { return axios.post(`/ProjectInfo/MyTask`, params).then(res => res.data); };
 
 
 
