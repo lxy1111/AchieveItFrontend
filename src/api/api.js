@@ -14,6 +14,8 @@ export const requestLogin = params => { return axios.post(`/Login/LogOn`, params
 
 export const searchProject = params => { return axios.post(`/ProjectInfo/Search`, params).then(res => res.data); };
 
+export const searchRisk = params => { return axios.post(`/Risk/Search`, params).then(res => res.data); };
+
 export const createNewProject = params => { return axios.post(`/ProjectInfo/Add`, params).then(res => res.data); };
 
 export const deleteProject = params => { return axios.post(`/ProjectInfo/Delete`, params).then(res => res.data); };
