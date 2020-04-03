@@ -20,7 +20,6 @@
                     <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input" label="项目名称" prop="projectName">
-                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.projectName" placeholder=""></el-input>
                     <el-input v-model="formEdit.projectName" placeholder=""></el-input>
 
                   </el-form-item>

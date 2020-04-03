@@ -53,7 +53,7 @@
 
   font-family: "PingFang SC";
   .el-menu-item, .el-submenu__title {
-    height: 33%;
+    height: 50%;
   }
   .menu {
     height: 100%;
@@ -113,14 +113,14 @@ export default {
 
           ]
         },
-        {
-          icon: "el-icon-data-analysis",
-          path: "riskIdentification",
-          title: "风险管理",
-          subs: [
-
-          ]
-        },
+        // {
+        //   icon: "el-icon-data-analysis",
+        //   path: "riskIdentification",
+        //   title: "风险管理",
+        //   subs: [
+        //
+        //   ]
+        // },
         {
           icon: "el-icon-s-platform",
           path: "deviceManagement",
