@@ -222,7 +222,7 @@
                   <el-table-column prop="status" width="150" align="center" label="状态" >
                     <template slot-scope="scope">
                       <button @click=""
-                              class="status_button" v-if="">已提交</button>
+                              class="status_button" v-if="scope.row.status==0">已提交</button>
                       <button @click="" style="color: #00C1A0; background: rgba(0,193,160,0.09);"
                               class="status_button" v-if="scope.row.status==1">已确认</button>
                       <button @click="" style="color: #ab1b10; background: rgba(171,27,16,0.09);"
@@ -257,11 +257,16 @@
                   <el-table-column prop="status" width="150" align="center" label="状态" >
                     <template slot-scope="scope">
                       <button @click=""
-                              class="status_button" v-if="">已提交</button>
+                              class="status_button" v-if="scope.row.status==0">已提交</button>
                       <button @click="" style="color: #00C1A0; background: rgba(0,193,160,0.09);"
                               class="status_button" v-if="scope.row.status==1">已确认</button>
                       <button @click="" style="color: #ab1b10; background: rgba(171,27,16,0.09);"
                               class="status_button" v-if="scope.row.status==2">已驳回</button>
+                    </template>
+                  </el-table-column>
+                  <el-table-column fixed="right" label="操作" width="90"  align="center">
+                    <template slot-scope="scope">
+                      <i v-if="scope.row.status=='0'||scope.row.status=='2'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -568,7 +573,7 @@
 <script>
   import {groupListSearch, searchProject, searchProjectSubFunction,searchDevice, workHourSearch} from '../../api/api'
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
-  import {approveProject, rejectProject, updateProject} from "../../api/api";
+  import {approveProject, rejectProject, updateProject, myWorkHourSearch} from "../../api/api";
 
   export default {
         name: "projectDetail",
@@ -888,7 +893,7 @@
           this.userInfo.userRole = sessionStorage.getItem("role");
           this.userInfo.position = sessionStorage.getItem("position");
           this.userInfo.userId = sessionStorage.getItem("userId");
-
+          this.getMyWorkHour();
         },
         computed: {
           getQueryId: function() {
@@ -904,6 +909,26 @@
           }
         },
         methods: {
+          getMyWorkHour(){
+
+            var params='projectId='+this.formEdit.id+'&userId='+this.userInfo.userId;
+            myWorkHourSearch(params)
+              .then(response => {
+                var json = response;
+                console.log(json);
+                if (json.count >0) {
+                  this.myTimeList = json.data.成员工时信息列表;
+                  console.log(this.myTimeList)
+                }
+              })
+              .catch(error => {
+                this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+              .finally(() => {
+                //this.loading = false;
+              });
+
+          },
           getAllGroupList(){
 
             groupListSearch(this.formEdit.id)
