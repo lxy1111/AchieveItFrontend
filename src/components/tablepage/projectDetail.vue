@@ -20,7 +20,8 @@
                     <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input" label="项目名称" prop="projectName">
-                    <el-input v-model="formEdit.projectName" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.projectName" placeholder=""></el-input>
+                    <el-input v-else disabled v-model="formEdit.projectName" placeholder=""></el-input>
 
                   </el-form-item>
                   <el-form-item label="项目状态" prop="status">
@@ -40,25 +41,38 @@
                             class="status_button" v-if="formEdit.status==6">已归档</el-button>
                   </el-form-item>
                   <el-form-item class="form_select" label="项目上级" prop="leader">
-                    <el-input v-model="formEdit.leader" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.leader" placeholder=""></el-input>
+                    <el-input v-else disabled v-model="formEdit.leader" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input_big" label="客户信息" prop="customerInfo">
-                    <el-input v-model="formEdit.customerInfo" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.customerInfo" placeholder=""></el-input>
+                    <el-input v-else disabled v-model="formEdit.customerInfo" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input_big" label="主要里程碑" prop="milepost">
-                    <el-input v-model="formEdit.milepost" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.milepost" placeholder=""></el-input>
+                    <el-input v-else disabled v-model="formEdit.milepost" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input" label="主要功能" prop="projectFunction">
-                    <el-input type="textarea" autosize v-model="formEdit.projectFunction" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'" type="textarea" autosize v-model="formEdit.projectFunction" placeholder=""></el-input>
+                    <el-input v-else disabled type="textarea" autosize v-model="formEdit.projectFunction" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input_big" label="采用技术" prop="technology">
-                    <el-input v-model="formEdit.technology" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.technology" placeholder=""></el-input>
+                    <el-input v-else disabled v-model="formEdit.technology" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input" label="业务领域" prop="businessArea">
-                    <el-input v-model="formEdit.businessArea" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.businessArea" placeholder=""></el-input>
+                    <el-input v-else disabled v-model="formEdit.businessArea" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_date" label="预定时间" prop="scheduleTime">
                     <el-date-picker
+                      v-if="userInfo.userRole=='PM'"
+                      v-model="formEdit.scheduleTime"
+                      type="datetime"
+                      placeholder="选择预定时间"
+                    ></el-date-picker>
+                    <el-date-picker
+                      v-else disabled
                       v-model="formEdit.scheduleTime"
                       type="datetime"
                       placeholder="选择预定时间"
@@ -66,6 +80,13 @@
                   </el-form-item>
                   <el-form-item class="form_date" label="交付时间" prop="deliveryTime">
                     <el-date-picker
+                      v-if="userInfo.userRole=='PM'"
+                      v-model="formEdit.deliveryTime"
+                      type="datetime"
+                      placeholder="选择交付时间"
+                    ></el-date-picker>
+                    <el-date-picker
+                      v-else disabled
                       v-model="formEdit.deliveryTime"
                       type="datetime"
                       placeholder="选择交付时间"
@@ -77,7 +98,7 @@
                                   margin-left: 1rem;
                                   border-color: #309aec;"
                                v-if="this.userInfo.userRole=='PM'"
-                               round @click="">保存更改</el-button>
+                               round @click="saveEdit">保存更改</el-button>
                   </el-form-item>
 
                 </el-form>
@@ -257,7 +278,7 @@
                   <el-table-column type="selection" width="30" align="center"></el-table-column>
                   <el-table-column prop="id" label="风险id"  align="center"></el-table-column>
                   <el-table-column prop="type" label="风险类型" ></el-table-column>
-                  <el-table-column prop="description" label="风险描述"   :formatter="format_type"></el-table-column>
+                  <el-table-column prop="description" label="风险描述"></el-table-column>
                   <el-table-column prop="level" label="风险级别" show-overflow-tooltip tooltip-effect="dark" ></el-table-column>
                   <el-table-column prop="effect" label="风险影响度"  ></el-table-column>
                   <el-table-column prop="strategy" label="风险应对策略"></el-table-column>
@@ -439,7 +460,7 @@
 <script>
   import {groupListSearch, searchProject, searchProjectSubFunction,searchDevice, workHourSearch} from '../../api/api'
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
-  import {approveProject, rejectProject} from "../../api/api";
+  import {approveProject, rejectProject, updateProject} from "../../api/api";
 
   export default {
         name: "projectDetail",
@@ -909,8 +930,16 @@
           onShowPending(){
 
             if(this.userInfo.userRole=='Superior'){
-              this.changeProjectStatus.show = true;
-              this.changeProjectStatus.title= '审批项目';
+
+              if (this.userInfo.userName==item.leader){
+                this.changeProjectStatus.show = true;
+                this.changeProjectStatus.title= '审批项目';
+              } else {
+                this.$alert('您不是该项目的上级，没有审批权限！', '没有权限', {
+                  confirmButtonText: '确定'
+                });
+              }
+
             }
 
           },
@@ -1061,6 +1090,46 @@
               .finally(() => {
                 //this.loading = false;
               });
+          },
+          _edit() {
+
+            updateProject(this.formEdit)
+              .then(response => {
+                var json = response;
+                console.log(json);
+              })
+              .catch(error => {
+                this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+              .finally(() => {
+
+              });
+          },
+          saveEdit(){
+
+            this.$confirm('是否保存修改？', '确认信息', {
+              distinguishCancelAndClose: true,
+              confirmButtonText: '保存',
+              cancelButtonText: '放弃修改'
+            })
+              .then(() => {
+
+                this._edit();
+
+                this.$message({
+                  type: 'info',
+                  message: '保存修改'
+                });
+              })
+              .catch(action => {
+                this.$message({
+                  type: 'info',
+                  message: action === 'cancel'
+                    ? '放弃保存并离开页面'
+                    : '停留在当前页面'
+                })
+              });
+
           }
 
         }
