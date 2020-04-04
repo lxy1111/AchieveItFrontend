@@ -28,6 +28,14 @@ export const rejectProject = params => { return axios.post(`/ProjectInfo/RejectP
 
 export const viewMyTask = params => { return axios.post(`/ProjectInfo/MyTask`, params).then(res => res.data); };
 
+export const getEPGLeaderTask = params => { return axios.post(`/ProjectInfo/GetEPGLeaderProject`, params).then(res => res.data); };
+
+export const getQALeaderTask = params => { return axios.post(`/ProjectInfo/GetQALeaderProject`, params).then(res => res.data); };
+
+export const getMemberTask = params => { return axios.post(`/ProjectInfo/GetMemberProject`, params).then(res => res.data); };
+
+export const getPMTask = params => { return axios.post(`/ProjectInfo/MyProject`, params).then(res => res.data); };
+
 
 
 export const addProjectFunction = params => { return axios.post(`/ProjectFunction/Add`, params).then(res => res.data); };

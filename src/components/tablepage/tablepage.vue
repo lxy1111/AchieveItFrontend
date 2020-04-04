@@ -108,13 +108,14 @@
                   class="status_button" v-if="scope.row.status==6">已归档</button>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="60"  align="center">
+      <el-table-column fixed="right" label="操作" width="90"  align="center">
         <template slot-scope="scope">
           <i v-if="scope.row.status!=0&&
               (scope.row.createrId==userInfo.userId||userInfo.userRole=='Superior')"
              style="font-size: 1.1rem;" class="el-icon-zoom-in"
              @click="onShowDetail(scope.row)"></i>
           <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
+          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId" style="font-size: 1.1rem;" class="el-icon-delete" @click=""></i>
         </template>
       </el-table-column>
     </el-table>
@@ -206,6 +207,8 @@
       <el-input v-if="this.changeProjectStatus.title=='分配QA'" placeholder="请填写分配给该项目的QA"></el-input>
 
       <span v-if="this.changeProjectStatus.title=='变更项目状态'">是否完成所有配置，确定将该项目状态变更为“进行中”？</span>
+      <span v-if="this.changeProjectStatus.title=='交付项目'">是否确定将该项目状态变更为“已交付”？</span>
+      <span v-if="this.changeProjectStatus.title=='结束项目'">是否确定将该项目状态变更为“已结束”？</span>
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="changeProjectStatus.show = false">取 消</el-button>
@@ -573,14 +576,20 @@
     -webkit-box-shadow: none!important;
     box-shadow: none!important;
   }
+  .el-message-box__btns button:nth-child(2) {
+    margin-left: 10px;
+    background-color: #439ea8 !important;
+    border-color: #439ea8 !important;
+    font-family: "PingFang SC" !important;
+  }
 }
 </style>
 
 
 <script>
   import {searchProject, approveProject, rejectProject} from '../../api/api'
-  import {createNewProject} from '../../api/api'
-  import {updateProject, userRoleSearch, viewMyTask} from '../../api/api'
+  import {createNewProject, getEPGLeaderTask, getQALeaderTask, getMemberTask} from '../../api/api'
+  import {updateProject, userRoleSearch, viewMyTask, getPMTask} from '../../api/api'
   import {deleteProject} from '../../api/api'
 
 export default {
@@ -1001,15 +1010,20 @@ export default {
       //////////////////////////////////////////////////////调用改变项目状态接口
 
       if(this.userInfo.userRole=='PM'){
-        this.$confirm('是否确定将该项目状态变更为“已交付”？', '变更项目状态', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
 
-        }).catch(() => {
+        this.changeProjectStatus.show = true;
+        this.changeProjectStatus.title= '交付项目';
+        this.formEdit = item;
 
-        });
+        // this.$confirm('是否确定将该项目状态变更为“已交付”？', '变更项目状态', {
+        //   confirmButtonText: '确定',
+        //   cancelButtonText: '取消',
+        //   type: 'warning'
+        // }).then(() => {
+        //
+        // }).catch(() => {
+        //
+        // });
       }
 
     },
@@ -1017,15 +1031,20 @@ export default {
 
       //////////////////////////////////////////////////////调用改变项目状态接口
       if(this.userInfo.userRole=='PM'){
-        this.$confirm('是否确定将该项目状态变更为“已结束”？', '变更项目状态', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
 
-        }).catch(() => {
+        this.changeProjectStatus.show = true;
+        this.changeProjectStatus.title= '结束项目';
+        this.formEdit = item;
 
-        });
+        // this.$confirm('是否确定将该项目状态变更为“已结束”？', '变更项目状态', {
+        //   confirmButtonText: '确定',
+        //   cancelButtonText: '取消',
+        //   type: 'warning'
+        // }).then(() => {
+        //
+        // }).catch(() => {
+        //
+        // });
       }
     },
     changeProjectStatusTo6(){
@@ -1088,7 +1107,7 @@ export default {
 
 
     },
-    showMyTask(){
+    showMyTask(){   //项目上级获取自己待审批的项目
 
       // viewMyTask()
       //   .then(response => {
@@ -1108,7 +1127,6 @@ export default {
       //   .finally(() => {
       //
       //   });
-
 
       this.loading = true;
       searchProject({
@@ -1139,19 +1157,18 @@ export default {
     showPMTask(){
       //查询
       this.loading = true;
-      searchProject({
+      getPMTask({
         pageNum: this.pageInfo.pageNum,
-        pageSize: this.pageInfo.pageSize,
-        createrId: this.userInfo.userId
+        pageSize: this.pageInfo.pageSize
       })
         .then(response => {
           var json = response;
           console.log(json);
-          if (json.msg == "查询成功") {
+          if (json.msg == "查询成功！") {
             this.tableData = json.data.data;
             this.pageInfo.pageTotal = json.count;
           } else {
-            this.$message({ message: json.message, type: "warning" });
+            this.$message({ message: json.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -1164,18 +1181,18 @@ export default {
     showMemberTask(){
                          /////////////////////////////////////////////查询普通员工自己参与的项目
       this.loading = true;
-      searchProject({
+      getMemberTask({
         pageNum: this.pageInfo.pageNum,
         pageSize: this.pageInfo.pageSize,
       })
         .then(response => {
           var json = response;
           console.log(json);
-          if (json.msg == "查询成功") {
+          if (json.msg == "查询成功！") {
             this.tableData = json.data.data;
             this.pageInfo.pageTotal = json.count;
           } else {
-            this.$message({ message: json.message, type: "warning" });
+            this.$message({ message: json.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -1188,27 +1205,55 @@ export default {
     showLeaderTask(){
       //查询
       this.loading = true;
-      searchProject({
-        pageNum: this.pageInfo.pageNum,
-        pageSize: this.pageInfo.pageSize,
-        status: 1
-      })
-        .then(response => {
-          var json = response;
-          console.log(json);
-          if (json.msg == "查询成功") {
-            this.tableData = json.data.data;
-            this.pageInfo.pageTotal = json.count;
-          } else {
-            this.$message({ message: json.message, type: "warning" });
-          }
+
+      if (this.userInfo.userRole=='EPGLeader'){
+
+        getEPGLeaderTask({
+          pageNum: this.pageInfo.pageNum,
+          pageSize: this.pageInfo.pageSize
         })
-        .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          .then(response => {
+            var json = response;
+            console.log(json);
+            if (json.msg == "查询成功！") {
+              this.tableData = json.data.data;
+              this.pageInfo.pageTotal = json.count;
+            } else {
+              this.$message({ message: json.msg, type: "warning" });
+            }
+          })
+          .catch(error => {
+            this.$message({ message: "执行异常,请重试", type: "error" });
+          })
+          .finally(() => {
+            this.loading = false;
+          });
+
+      } else if(this.userInfo.userRole=='QALeader'){
+
+        getQALeaderTask({
+          pageNum: this.pageInfo.pageNum,
+          pageSize: this.pageInfo.pageSize
         })
-        .finally(() => {
-          this.loading = false;
-        });
+          .then(response => {
+            var json = response;
+            console.log(json);
+            if (json.msg == "查询成功！") {
+              this.tableData = json.data.data;
+              this.pageInfo.pageTotal = json.count;
+            } else {
+              this.$message({ message: json.msg, type: "warning" });
+            }
+          })
+          .catch(error => {
+            this.$message({ message: "执行异常,请重试", type: "error" });
+          })
+          .finally(() => {
+            this.loading = false;
+          });
+
+      }
+
     }
 
   }
