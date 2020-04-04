@@ -326,35 +326,35 @@
 <!--                ></el-pagination>-->
               </div>
             </el-tab-pane>
-            <el-tab-pane label="设备管理">
-              <el-col :span="3">
-                <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新增设备</el-button>
-              </el-col>
-              <el-col :span="2">
-                <el-button style="margin-top: 7px;" type="danger" round>批量删除</el-button>
-              </el-col>
-            <el-table :data="deviceList" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">
-              <el-table-column type="selection" width="30" align="center"></el-table-column>
-              <el-table-column prop="id" label="设备id"  align="center"></el-table-column>
-              <el-table-column prop="deviceowner" label="资产管理者" ></el-table-column>
-              <el-table-column prop="status" label="设备状态" >
-                <template slot-scope="scope">
-                  <button style="border-radius: 0.2rem;
-                            border: 0px;
-                            position: relative;
-                            width: 4rem;
-                            height: 1.5rem;
-                            color: #309aec;
-                            font-size: 0.83rem;
-                            font-weight: bolder;
-                            font-family: PingFang SC;
-                            background: rgba(48,154,236,0.09);"
-                  >项目状态</button>
-                </template>
-              </el-table-column>
-              <el-table-column prop="deadline" label="资产使用期限(天)"></el-table-column>
-            </el-table>
-            </el-tab-pane>
+<!--            <el-tab-pane label="设备管理">-->
+<!--              <el-col :span="3">-->
+<!--                <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新增设备</el-button>-->
+<!--              </el-col>-->
+<!--              <el-col :span="2">-->
+<!--                <el-button style="margin-top: 7px;" type="danger" round>批量删除</el-button>-->
+<!--              </el-col>-->
+<!--            <el-table :data="deviceList" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">-->
+<!--              <el-table-column type="selection" width="30" align="center"></el-table-column>-->
+<!--              <el-table-column prop="id" label="设备id"  align="center"></el-table-column>-->
+<!--              <el-table-column prop="deviceowner" label="资产管理者" ></el-table-column>-->
+<!--              <el-table-column prop="status" label="设备状态" >-->
+<!--                <template slot-scope="scope">-->
+<!--                  <button style="border-radius: 0.2rem;-->
+<!--                            border: 0px;-->
+<!--                            position: relative;-->
+<!--                            width: 4rem;-->
+<!--                            height: 1.5rem;-->
+<!--                            color: #309aec;-->
+<!--                            font-size: 0.83rem;-->
+<!--                            font-weight: bolder;-->
+<!--                            font-family: PingFang SC;-->
+<!--                            background: rgba(48,154,236,0.09);"-->
+<!--                  >项目状态</button>-->
+<!--                </template>-->
+<!--              </el-table-column>-->
+<!--              <el-table-column prop="deadline" label="资产使用期限(天)"></el-table-column>-->
+<!--            </el-table>-->
+<!--            </el-tab-pane>-->
           </el-tabs>
         </el-card>
       </el-col>
