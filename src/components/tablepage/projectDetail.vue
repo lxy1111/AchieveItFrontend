@@ -188,15 +188,24 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="工时管理" class="choose-time">
-              <div style="margin-top: 1rem;">
-                <el-date-picker
-                  v-model="formSearchTime"
-                  type="date"
-                  placeholder="选择需要查询工时的日期"
-                ></el-date-picker>
-                <el-button style="margin-left: 1rem;" type="primary" @click="searchWorkTime()">查询</el-button>
-              </div>
-              <div>
+              <el-row style="margin-top: 1rem;">
+                <el-col :span="12" align="left">
+                  <span style="font-weight: bold;">
+                    查询项目工时
+                  </span>
+                </el-col>
+                <el-col :span="12" align="right">
+                  <el-date-picker v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'"
+                    v-model="formSearchTime"
+                    type="date"
+                    placeholder="选择需要查询工时的日期"
+                  ></el-date-picker>
+                  <el-button  v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'"
+                    style="margin-left: 1rem;" type="primary" @click="searchWorkTime()">查询工时</el-button>
+                </el-col>
+              </el-row>
+              <div style="margin-bottom: 3rem;"
+                   v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'">
                 <el-table
                   :data="timeList"
                   style="width: 100%;margin-bottom: 20px; margin-top: 1rem;"
@@ -210,8 +219,53 @@
                   <el-table-column prop="finishedActivity" label="完成活动"></el-table-column>
                   <el-table-column prop="startTime" label="开始时间" :formatter="format_date"></el-table-column>
                   <el-table-column prop="finishTime" label="结束时间" :formatter="format_date"></el-table-column>
+                  <el-table-column prop="status" width="150" align="center" label="状态" >
+                    <template slot-scope="scope">
+                      <button @click=""
+                              class="status_button" v-if="">已提交</button>
+                      <button @click="" style="color: #00C1A0; background: rgba(0,193,160,0.09);"
+                              class="status_button" v-if="scope.row.status==1">已确认</button>
+                      <button @click="" style="color: #ab1b10; background: rgba(171,27,16,0.09);"
+                              class="status_button" v-if="scope.row.status==2">已驳回</button>
+                    </template>
+                  </el-table-column>
                 </el-table>
               </div>
+              <el-divider></el-divider>
+              <el-row style="margin-top: 1rem;">
+                <el-col :span="16">
+                  <span style="font-weight: bold;">
+                    我的工时
+                  </span>
+                </el-col>
+                <el-col :span="8" align="right">
+                  <el-button style="background: #cf9236;color: white;margin-left: 1rem;width: 8rem;border-color: #cf9236;"
+                             @click="formMyTimeDialogParam.show=true"
+                             round>汇报我的工时</el-button>
+                </el-col>
+                <el-table
+                  :data="myTimeList"
+                  style="width: 100%;margin-bottom: 20px; margin-top: 3rem;"
+                  row-key="name"
+                  default-expand-all
+                  stripe class="visitor-table" align="center">
+                  <el-table-column prop="startTime" label="日期" :formatter="format_date2"></el-table-column>
+                  <el-table-column prop="finishedFunction" label="完成功能"></el-table-column>
+                  <el-table-column prop="finishedActivity" label="完成活动"></el-table-column>
+                  <el-table-column prop="startTime" label="开始时间" :formatter="format_date"></el-table-column>
+                  <el-table-column prop="finishTime" label="结束时间" :formatter="format_date"></el-table-column>
+                  <el-table-column prop="status" width="150" align="center" label="状态" >
+                    <template slot-scope="scope">
+                      <button @click=""
+                              class="status_button" v-if="">已提交</button>
+                      <button @click="" style="color: #00C1A0; background: rgba(0,193,160,0.09);"
+                              class="status_button" v-if="scope.row.status==1">已确认</button>
+                      <button @click="" style="color: #ab1b10; background: rgba(171,27,16,0.09);"
+                              class="status_button" v-if="scope.row.status==2">已驳回</button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-row>
             </el-tab-pane>
             <el-tab-pane label="归档管理">
               <div>
@@ -328,7 +382,7 @@
                   </el-table-column>
                   <el-table-column fixed="right" label="操作" align="center">
                     <template slot-scope="scope">
-                      <el-button style="background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">风险跟踪</el-button>
+                      <el-button style="background: #309aec; color: white; border-color: #309aec;" round @click="">风险跟踪</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -349,7 +403,7 @@
             </el-tab-pane>
             <el-tab-pane label="设备管理">
               <el-col :span="3">
-                <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新增设备</el-button>
+                <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="">新增设备</el-button>
               </el-col>
               <el-col :span="2">
                 <el-button style="margin-top: 7px;" type="danger" round>批量删除</el-button>
@@ -453,6 +507,60 @@
       </div>
     </el-dialog>
 
+    <el-dialog
+      :title="formMyTimeDialogParam.title"
+      :visible.sync="formMyTimeDialogParam.show"
+      width="700px"
+      @close="handleDialogClose"
+    >
+      <el-form
+        :inline="true"
+        :model="formMyTime"
+        ref="formEditFunction"
+        class="demo-form-inline-dialog"
+        label-width="68px"
+        :disabled="formMyTimeDialogParam.formMyTimeDisabled"
+      >
+        <el-form-item class="form_input" label="员工id" prop="userId">
+          <el-input disabled v-model="userInfo.userId" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input" label="员工姓名" prop="userName">
+          <el-input disabled v-model="userInfo.userName" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input" label="完成功能" prop="function">
+          <el-cascader
+            v-model="formMyTime.function"
+            :options="functionOptions"
+            @change="handleChange"></el-cascader>
+        </el-form-item>
+        <el-form-item class="form_input" label="完成活动" prop="function">
+          <el-cascader
+            v-model="formMyTime.activity"
+            :options="activityOptions"
+            @change="handleChange"></el-cascader>
+        </el-form-item>
+        <el-form-item class="form_date" label="开始时间" prop="startTime">
+          <el-date-picker
+            v-model="formMyTime.startTime"
+            type="datetime"
+            placeholder="选择开始时间"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item class="form_date" label="结束时间" prop="endTime">
+          <el-date-picker
+            v-model="formMyTime.endTime"
+            type="datetime"
+            placeholder="选择结束时间"
+          ></el-date-picker>
+        </el-form-item>
+
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="formMyTimeDialogParam.show = false">取 消</el-button>
+        <el-button type="primary" @click="submitMyTime">提交</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 
 </template>
@@ -466,6 +574,89 @@
         name: "projectDetail",
         data () {
           return {
+            functionOptions:[
+
+            ],
+            activityOptions:[
+              {
+                value: '工程活动',
+                label: '工程活动',
+                children: [{
+                  value: '需求开发',
+                  label: '需求开发'
+                }, {
+                  value: '设计',
+                  label: '设计'
+                }, {
+                  value: '编码',
+                  label: '编码'
+                }, {
+                  value: '单体测试',
+                  label: '单体测试'
+                }, {
+                  value: '集成测试',
+                  label: '集成测试'
+                }, {
+                  value: '系统测试',
+                  label: '系统测试'
+                }, {
+                  value: '交付',
+                  label: '交付'
+                }, {
+                  value: '维护',
+                  label: '维护'
+                }]
+              },{
+                value: '管理活动',
+                label: '管理活动',
+                children: [{
+                  value: '范围管理',
+                  label: '范围管理'
+                }, {
+                  value: '计划与调整',
+                  label: '计划与调整'
+                }, {
+                  value: '监控与分析',
+                  label: '监控与分析'
+                }, {
+                  value: '联络与沟通',
+                  label: '联络与沟通'
+                }]
+              }, {
+                value: '外包活动',
+                label: '外包活动',
+                children: [{
+                  value: '外包管理',
+                  label: '外包管理'
+                }, {
+                  value: '外包验收',
+                  label: '外包验收'
+                }, {
+                  value: '外包支持',
+                  label: '外包支持'
+                }]
+              }, {
+                value: '支持活动',
+                label: '支持活动',
+                children: [{
+                  value: '配置管理',
+                  label: '配置管理'
+                }, {
+                  value: 'QA审计',
+                  label: 'QA审计'
+                }, {
+                  value: '会议报告总结',
+                  label: '会议报告总结'
+                }, {
+                  value: '培训',
+                  label: '培训'
+                }, {
+                  value: '其他',
+                  label: '其他'
+                }]
+              }
+            ],
+
             radio1: '1',
             userInfo: {
               userName: '',
@@ -523,6 +714,7 @@
               //   endtime: ""
               // }
             ],
+            myTimeList: [],
               riskData:{
 
               },
@@ -668,7 +860,21 @@
               show: false,
               changeProjectStatusDisabled:true
             },
-            formSearchTime: ""
+            formMyTimeDialogParam: {
+              title: "汇报我的工时", //弹窗标题,值为:新增功能，查看功能，编辑功能
+              show: false, //弹框显示
+              formMyTimeDisabled:false,//编辑弹窗是否可编辑
+            },
+            formSearchTime: "",
+
+            formMyTime: {
+              date: '',
+              function: '',
+              activity: '',
+              startTime: '',
+              endTime: ''
+
+            }
           }
         },
         created() {
@@ -681,6 +887,8 @@
           this.userInfo.userName = sessionStorage.getItem("userName");
           this.userInfo.userRole = sessionStorage.getItem("role");
           this.userInfo.position = sessionStorage.getItem("position");
+          this.userInfo.userId = sessionStorage.getItem("userId");
+
         },
         computed: {
           getQueryId: function() {
@@ -1044,6 +1252,13 @@
             }
             return this.$moment(date).format("YYYY-MM-DD HH:mm:ss");
           },
+          format_date2(row, column) {
+            var date = row[column.property];
+            if (date == undefined) {
+              return "";
+            }
+            return this.$moment(date).format("YYYY-MM-DD");
+          },
           format_date1(time) {
             if (time == undefined) {
               return "";
@@ -1073,23 +1288,36 @@
           searchWorkTime(){
 
             var workHourParams = 'projectId='+this.formEdit.id+'&id='+this.format_date1(this.formSearchTime);
-            workHourSearch(workHourParams)
-              .then(response => {
-                var json = response;
-                console.log(json);
-                if (json.count >0) {
-                  this.timeList = json.data.工时信息列表;
-                  console.log(this.timeList)
-                } else {
-                  this.$message({ message: '暂无工时信息', type: "warning" });
-                }
-              })
-              .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
-              })
-              .finally(() => {
-                //this.loading = false;
-              });
+            if (this.formSearchTime==''){
+              this.$message({ message: '查询日期不能为空！', type: "warning" });
+
+            }else {
+
+              workHourSearch(workHourParams)
+                .then(response => {
+                  var json = response;
+                  console.log(json);
+                  if (json.count >=0) {
+                    this.timeList = json.data.工时信息列表;
+                    console.log(this.timeList)
+
+                    if (json.count ==0){
+                      this.$message({ message: '该日期下暂无工时记录！', type: "warning" });
+                    }
+
+                  } else {
+                    this.$message({ message: json.msg, type: "warning" });
+                  }
+                })
+                .catch(error => {
+                  this.$message({ message: "执行异常,请重试", type: "error" });
+                })
+                .finally(() => {
+                  //this.loading = false;
+                });
+
+            }
+
           },
           _edit() {
 
@@ -1129,6 +1357,28 @@
                     : '停留在当前页面'
                 })
               });
+
+          },
+          submitMyTime(){
+
+            this.$confirm('是否确认提交我的工时?', '提交工时', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+            }).then(() => {
+
+                             ///////////////////////////////////////////调用提交我的工时接口
+              this.formMyTimeDialogParam.show = false;
+              this.$message({
+                type: 'success',
+                message: '提交成功!'
+              });
+
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消工时提交'
+              });
+            });
 
           }
 

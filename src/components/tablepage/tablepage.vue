@@ -110,7 +110,10 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="60"  align="center">
         <template slot-scope="scope">
-          <i v-if="scope.row.status!=0&&scope.row.createrId==userInfo.userId" style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowDetail(scope.row)"></i>
+          <i v-if="scope.row.status!=0&&
+              (scope.row.createrId==userInfo.userId||userInfo.userRole=='Superior')"
+             style="font-size: 1.1rem;" class="el-icon-zoom-in"
+             @click="onShowDetail(scope.row)"></i>
           <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
         </template>
       </el-table-column>
@@ -888,12 +891,61 @@ export default {
     },
     handleSizeChange(val) {
       this.pageInfo.pageSize = val;
-      this.onSearch();
+
+      if (this.userInfo.userRole=='Superior'){
+        if (this.radioSuperior=='1'){
+          this.showMyTask();
+        } else if (this.radioSuperior=='2') {
+          this.onSearch();
+        }
+      }
+
+      if (this.userInfo.userRole=='PM'){
+        if (this.radioPM=='1'){
+          this.showPMTask();
+        } else if (this.radioPM=='2') {
+          this.onSearch();
+        }
+      }
+
+      if (this.userInfo.userRole=='EPGLeader'||this.userInfo.userRole=='QALeader'){
+        if (this.radioLeader=='1'){
+          this.showLeaderTask();
+        } else if (this.radioLeader=='2') {
+          this.onSearch();
+        }
+      }
+
       console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
       this.pageInfo.currentPage = val;
-      this.onSearch();
+      this.pageInfo.pageNum = val;
+
+      if (this.userInfo.userRole=='Superior'){
+        if (this.radioSuperior=='1'){
+          this.showMyTask();
+        } else if (this.radioSuperior=='2') {
+          this.onSearch();
+        }
+      }
+
+      if (this.userInfo.userRole=='PM'){
+        if (this.radioPM=='1'){
+          this.showPMTask();
+        } else if (this.radioPM=='2') {
+          this.onSearch();
+        }
+      }
+
+      if (this.userInfo.userRole=='EPGLeader'||this.userInfo.userRole=='QALeader'){
+        if (this.radioLeader=='1'){
+          this.showLeaderTask();
+        } else if (this.radioLeader=='2') {
+          this.onSearch();
+        }
+      }
+
       console.log(`当前为第 ${val} 页`);
     },
     handleDialogClose() {
@@ -1060,9 +1112,10 @@ export default {
 
       this.loading = true;
       searchProject({
-        pageNum: 1,
-        pageSize: 5,
-        leader: this.userInfo.userName
+        pageNum: this.pageInfo.pageNum,
+        pageSize: this.pageInfo.pageSize,
+        leader: this.userInfo.userName,
+        status: 1
       })
         .then(response => {
           var json = response;
@@ -1087,8 +1140,8 @@ export default {
       //查询
       this.loading = true;
       searchProject({
-        pageNum: 1,
-        pageSize: 5,
+        pageNum: this.pageInfo.pageNum,
+        pageSize: this.pageInfo.pageSize,
         createrId: this.userInfo.userId
       })
         .then(response => {
@@ -1112,8 +1165,8 @@ export default {
                          /////////////////////////////////////////////查询普通员工自己参与的项目
       this.loading = true;
       searchProject({
-        pageNum: 1,
-        pageSize: 5
+        pageNum: this.pageInfo.pageNum,
+        pageSize: this.pageInfo.pageSize,
       })
         .then(response => {
           var json = response;
@@ -1136,8 +1189,8 @@ export default {
       //查询
       this.loading = true;
       searchProject({
-        pageNum: 1,
-        pageSize: 5,
+        pageNum: this.pageInfo.pageNum,
+        pageSize: this.pageInfo.pageSize,
         status: 1
       })
         .then(response => {
