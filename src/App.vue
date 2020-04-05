@@ -26,5 +26,16 @@ body,
 a {
   text-decoration: none;
 }
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+  background-color: whitesmoke;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: rgba(0, 0, 0, .1);
+  border-radius: 10px;
+}
 /*基础样式 end*/
 </style>

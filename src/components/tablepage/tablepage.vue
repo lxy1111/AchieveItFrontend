@@ -75,22 +75,46 @@
     <el-table
       :data="tableData"
       class="visitor-table"
-      style="width: 100%"
+      style="width: 100%; max-height: 78%;"
       align="center" stripe
+      tooltip-effect="dark"
+      show-overflow-tooltip
+      :row-style="{height:'1rem'}"
       v-loading="loading">
       <el-table-column type="selection" width="28" align="center"></el-table-column>
-      <el-table-column prop="id" label="项目id" width="80" align="center"></el-table-column>
-      <el-table-column prop="projectName" label="项目名称" width="80" align="center"></el-table-column>
-      <el-table-column prop="leader" label="项目上级" width="75" align="center"></el-table-column>
-      <el-table-column prop="createrId" label="项目经理id" width="82" align="center"></el-table-column>
-      <el-table-column prop="customerInfo" label="客户信息" width="80" align="center"></el-table-column>
-      <el-table-column prop="milepost" label="主要里程碑" width="85" align="center"></el-table-column>
-      <el-table-column prop="projectFunction" label="主要功能" width="80" align="center"></el-table-column>
-      <el-table-column prop="technology" label="采用技术" width="80" align="center"></el-table-column>
-      <el-table-column prop="businessArea" label="业务领域" width="80" align="center"></el-table-column>
-      <el-table-column prop="scheduleTime" label="预定时间" align="center" :formatter="format_date"></el-table-column>
-      <el-table-column prop="deliveryTime" label="交付日" align="center" :formatter="format_date"></el-table-column>
-      <el-table-column prop="status" width="90" align="center" label="状态" >
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form class="demo-table-expand">
+              <el-form-item label="客户信息">
+                <span v-model="props.row.customerInfo">{{ props.row.customerInfo }}</span>
+              </el-form-item>
+              <el-form-item label="主要里程碑">
+                <span>{{ props.row.milepost }}</span>
+              </el-form-item>
+              <el-form-item label="采用技术">
+                <span>{{ props.row.technology }}</span>
+              </el-form-item>
+              <el-form-item label="业务领域">
+                <span>{{ props.row.businessArea }}</span>
+              </el-form-item>
+              <el-form-item label="主要功能">
+                <span>{{ props.row.projectFunction}}</span>
+              </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column prop="id" label="项目id" width="90" align="center"></el-table-column>
+      <el-table-column prop="projectName" label="项目名称" show-overflow-tooltip tooltip-effect="dark" align="center"></el-table-column>
+      <el-table-column prop="leader" label="项目上级" show-overflow-tooltip tooltip-effect="dark" align="center"></el-table-column>
+      <el-table-column prop="createrId" label="项目经理id" width="90" align="center"></el-table-column>
+<!--      <el-table-column prop="customerInfo" label="客户信息" show-overflow-tooltip tooltip-effect="dark" width="150" align="center"></el-table-column>-->
+<!--      <el-table-column prop="milepost" label="主要里程碑" show-overflow-tooltip tooltip-effect="dark" width="150" align="center"></el-table-column>-->
+<!--      <el-table-column prop="projectFunction" label="主要功能" show-overflow-tooltip tooltip-effect="dark" width="250" align="center"></el-table-column>-->
+<!--      <el-table-column prop="technology" label="采用技术" show-overflow-tooltip tooltip-effect="dark" width="120" align="center"></el-table-column>-->
+<!--      <el-table-column prop="businessArea" label="业务领域" show-overflow-tooltip tooltip-effect="dark" width="120" align="center"></el-table-column>-->
+      <el-table-column prop="scheduleTime" label="预定时间" show-overflow-tooltip tooltip-effect="dark" align="center" :formatter="format_date"></el-table-column>
+      <el-table-column prop="deliveryTime" label="交付日" show-overflow-tooltip tooltip-effect="dark" align="center" :formatter="format_date"></el-table-column>
+      <el-table-column fixed="right"  prop="status" width="100" align="center" label="状态" >
         <template slot-scope="scope">
           <button @click="onShowPending(scope.row)"
                   class="status_button" v-if="scope.row.status==0">申请立项</button>
@@ -108,7 +132,7 @@
                   class="status_button" v-if="scope.row.status==6">已归档</button>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="90"  align="center">
+      <el-table-column fixed="right" label="操作" width="100"  align="center">
         <template slot-scope="scope">
           <i v-if="scope.row.status!=0&&
               (scope.row.createrId==userInfo.userId||userInfo.userRole=='Superior')"
@@ -231,6 +255,60 @@
 </template>
 
 <style lang="scss">
+  .demo-table-expand {
+    font-family: "PingFang SC";
+    background-color: #fcfcfc;
+    border-radius: 4px;
+    box-shadow:  0px 2px 10px rgba(0, 0, 0, .12);
+    margin-left: 90px;
+    margin-right: 90px;
+    margin-bottom: 30px;
+    margin-top: 5px;
+  }
+  .demo-table-expand label {
+    width: 100px;
+    color: #439ea8;
+    margin-right: 20px;
+    font-size: 0.8rem;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 90%;
+    margin-left: 5%;
+    font-size: 0.8rem;
+  }
+  .visitor-table th{
+    padding: 5px 0 !important;
+  }
+  .visitor-table td{
+    padding: 5px 0 !important;
+  }
+  .visitor-table .cell {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    white-space: normal;
+    word-break: break-all;
+    font-size: 0.8rem;
+    font-family: "PingFang SC";
+    color: black;
+  }
+  .visitor-table th> .cell {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    white-space: normal;
+    word-break: break-all;
+    font-size: 0.8rem;
+    color: black;
+    font-family: "PingFang SC";
+    font-weight: normal;
+  }
+  .el-table__row>td{
+    border: none !important;
+  }
+  .visitor-table .el-table__row>td{
+    border: none !important;
+  }
   .el-main {
     padding: 8px !important;
   }
@@ -527,37 +605,6 @@
     display: inline-block;
     width: 82px !important;
     font-family: "PingFang SC";
-  }
-  .visitor-table th{
-    padding: 4px 0 !important;
-  }
-  .visitor-table td{
-    padding: 4px 0 !important;
-  }
-  .visitor-table .cell {
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    white-space: normal;
-    word-break: break-all;
-    font-size: 0.8rem;
-    font-family: "PingFang SC";
-    color: black;
-  }
-  .visitor-table th> .cell {
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    white-space: normal;
-    word-break: break-all;
-    font-size: 0.8rem;
-    color: black;
-    font-family: "PingFang SC";
-    font-weight: normal;
-  }
-  .el-table__row>td{
-    border: none !important;
-  }
-  .visitor-table .el-table__row>td{
-    border: none !important;
   }
   .el-radio-button__orig-radio:checked+.el-radio-button__inner {
     color: #FFF;
