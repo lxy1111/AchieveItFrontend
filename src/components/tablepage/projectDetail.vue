@@ -137,13 +137,35 @@
                   style="width: 100%;margin-bottom: 20px; margin-top: 1rem;"
                   row-key="id"
                   :default-sort = "{prop: 'id', order: 'ascending'}"
-                  default-expand-all
+
                   :tree-props="{children: 'subFunction', hasChildren: 'hasChildren'}"
                   stripe class="visitor-table" align="center">
+                  <el-table-column type="expand" >
+                      <template slot-scope="props">
+                      <el-table  :data="props.row.projectSubFuncs"
+                                 style="width: 100%;margin-bottom: 20px; margin-top: 1rem;"
+                                 row-key="id"
+                                 stripe class="visitor-table" align="center">
+                        <el-table-column label="子功能id" prop="id" align="center" >
+                        </el-table-column>
+                        <el-table-column label="子功能名称" prop="functionName"  align="center">
+                        </el-table-column>
+                        <el-table-column label="负责人" prop="personCharge" align="center" >
+                        </el-table-column>
+                        <el-table-column fixed="right" label="操作"  align="center">
+                          <template slot-scope="scope">
+                            <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
+                            <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditFunction(scope.row)"></i>
+                            <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteFunction(scope.row)"></i>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                      </template>
+                  </el-table-column>
                   <el-table-column prop="id" label="功能id" align="center"></el-table-column>
-                  <el-table-column prop="functionName" label="功能名称"></el-table-column>
-                  <el-table-column prop="personCharge" label="负责人"></el-table-column>
-                  <el-table-column fixed="right" label="操作" width="90" align="center">
+                  <el-table-column prop="functionName" label="功能名称" align="center"></el-table-column>
+                  <el-table-column prop="personCharge" label="负责人" align="center"></el-table-column>
+                  <el-table-column fixed="right" label="操作"  align="center">
                     <template slot-scope="scope">
                       <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
                       <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditFunction(scope.row)"></i>
@@ -406,6 +428,7 @@
 <!--                ></el-pagination>-->
               </div>
             </el-tab-pane>
+
             <el-tab-pane label="设备管理">
               <el-col :span="3">
                 <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="">新增设备</el-button>
@@ -435,6 +458,37 @@
               <el-table-column prop="deadline" label="资产使用期限(天)"></el-table-column>
             </el-table>
             </el-tab-pane>
+
+<!--            <el-tab-pane label="设备管理">-->
+<!--              <el-col :span="3">-->
+<!--                <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新增设备</el-button>-->
+<!--              </el-col>-->
+<!--              <el-col :span="2">-->
+<!--                <el-button style="margin-top: 7px;" type="danger" round>批量删除</el-button>-->
+<!--              </el-col>-->
+<!--            <el-table :data="deviceList" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">-->
+<!--              <el-table-column type="selection" width="30" align="center"></el-table-column>-->
+<!--              <el-table-column prop="id" label="设备id"  align="center"></el-table-column>-->
+<!--              <el-table-column prop="deviceowner" label="资产管理者" ></el-table-column>-->
+<!--              <el-table-column prop="status" label="设备状态" >-->
+<!--                <template slot-scope="scope">-->
+<!--                  <button style="border-radius: 0.2rem;-->
+<!--                            border: 0px;-->
+<!--                            position: relative;-->
+<!--                            width: 4rem;-->
+<!--                            height: 1.5rem;-->
+<!--                            color: #309aec;-->
+<!--                            font-size: 0.83rem;-->
+<!--                            font-weight: bolder;-->
+<!--                            font-family: PingFang SC;-->
+<!--                            background: rgba(48,154,236,0.09);"-->
+<!--                  >项目状态</button>-->
+<!--                </template>-->
+<!--              </el-table-column>-->
+<!--              <el-table-column prop="deadline" label="资产使用期限(天)"></el-table-column>-->
+<!--            </el-table>-->
+<!--            </el-tab-pane>-->
+
           </el-tabs>
         </el-card>
       </el-col>
@@ -685,7 +739,11 @@
             //   url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
             // }
             ],
-            functionList: [],
+            functionList: [{
+                subfunlist:{
+
+                }
+            }],
               riskList:[],
               deviceList:[],
             loadingFunc: false,
@@ -1021,7 +1079,7 @@
 
             },
           getAllFunction(projectId){
-
+              let that=this
             this.loadingFunc = true
             searchProjectFunction(projectId)
               .then(response => {
@@ -1032,35 +1090,38 @@
                   this.functionList = json.data.data;
                   console.log("功能列表查询成功");
 
-                  for (var i=0;i<json.count;i++){
-
-                    console.log("正在获取是否有子功能；"+i);
-                    searchProjectSubFunction(this.functionList[i].id)
-                      .then(res => {
-                        console.log(res);
-                        if(res.msg == "查询成功"&&res.count>0){
-                          console.log(i+"号功能有子功能");
-                          console.log(res.data.data)
-
-                          for (var j=0;j<res.count;j++){
-                            this.functionList.push({
-                              id: res.data.data[j].funcId+"."+res.data.data[j].id,
-                              functionName: res.data.data[j].functionName,
-                              personCharge: res.data.data[j].personCharge,
-                            });
-                          }
-
-                          console.log(this.functionList);
-                        }
-                      })
-                      .catch(error => {
-                        this.$message({ message: "执行异常,请重试", type: "error" });
-                      })
-                      .finally(() => {
-
-                      });
-
-                  }
+                  // for (var i=0;i<json.count;i++){
+                  //
+                  //   console.log("正在获取是否有子功能；"+i);
+                  //   searchProjectSubFunction(this.functionList[i].id)
+                  //     .then(res => {
+                  //       console.log(res);
+                  //       if(res.msg == "查询成功"&&res.count>0){
+                  //         console.log(i+"号功能有子功能");
+                  //         console.log(res.data.data)
+                  //         let sub=res.data.data
+                  //           // that.functionList[i].subfunlist=sub
+                  //
+                  //           // })
+                  //         // for (var j=0;j<res.count;j++){
+                  //         //   this.functionList.push({
+                  //         //     id: res.data.data[j].funcId+"."+res.data.data[j].id,
+                  //         //     functionName: res.data.data[j].functionName,
+                  //         //     personCharge: res.data.data[j].personCharge,
+                  //         //   });
+                  //         // }
+                  //
+                  //         console.log(this.functionList);
+                  //       }
+                  //     })
+                  //     .catch(error => {
+                  //       this.$message({ message: error, type: "error" });
+                  //     })
+                  //     .finally(() => {
+                  //
+                  //     });
+                  //
+                  // }
 
 
                 } else {
@@ -1098,7 +1159,7 @@
                 }
               })
               .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
+                this.$message({ message: error, type: "error" });
               })
               .finally(() => {
                 this.loading = false;

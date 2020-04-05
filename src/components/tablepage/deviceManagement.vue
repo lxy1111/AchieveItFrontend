@@ -30,12 +30,13 @@
               <el-form-item class="form_input" label="设备状态" prop="status">
                 <el-input v-model="formSearch.status" placeholder=""></el-input>
               </el-form-item>
-              <el-form-item class="form_date" label="资产使用期限" prop="deadline">
-                <el-date-picker
-                  v-model="formSearch.deadline"
-                  type="date"
-                  placeholder="选择资产使用期限"
-                ></el-date-picker>
+              <el-form-item class="form_input" label="资产使用期限" prop="deadline">
+<!--                <el-date-picker-->
+<!--                  v-model="formSearch.deadline"-->
+<!--                  type="date"-->
+<!--                  placeholder="选择资产使用期限"-->
+<!--                ></el-date-picker>-->
+                <el-input v-model="formSearch.deadline" placeholder=""></el-input>
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="onSearch">查询</el-button>
@@ -46,7 +47,7 @@
           </el-collapse-item>
         </el-collapse>
       </el-col>
-      <el-col :span="3">
+      <el-col :span="2">
         <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新增设备</el-button>
       </el-col>
       <el-col :span="2">
@@ -67,15 +68,28 @@
                             position: relative;
                             width: 4rem;
                             height: 1.5rem;
+                            color: #5daf34;
+                            font-size: 0.83rem;
+                            font-weight: bolder;
+                            font-family: PingFang SC;
+                            background: rgba(48,154,236,0.09);"
+                  v-if="scope.row.status==1"
+          >已归还</button>
+          <button style="border-radius: 0.2rem;
+                            border: 0px;
+                            position: relative;
+                            width: 4rem;
+                            height: 1.5rem;
                             color: #309aec;
                             font-size: 0.83rem;
                             font-weight: bolder;
                             font-family: PingFang SC;
                             background: rgba(48,154,236,0.09);"
-          >项目状态</button>
+                  v-if="scope.row.status==2"
+          >使用中</button>
         </template>
       </el-table-column>
-      <el-table-column prop="deadline" label="资产使用期限" :formatter="format_date"></el-table-column>
+      <el-table-column prop="deadline" label="资产使用期限(天)" ></el-table-column>
     </el-table>
 
     <!--表格 end-->
@@ -452,7 +466,7 @@
                 pageInfo: {
                     //分页
                     currentPage: 1,
-                    pageSize: 5,
+                    pageSize: 10,
                     pageTotal: 0
                 },
                 tableData: [
