@@ -260,10 +260,10 @@
     background-color: #fcfcfc;
     border-radius: 4px;
     box-shadow:  0px 2px 10px rgba(0, 0, 0, .12);
-    margin-left: 90px;
-    margin-right: 90px;
+    margin-left: 50px;
+    margin-right: 50px;
     margin-bottom: 30px;
-    margin-top: 5px;
+    margin-top: 10px;
   }
   .demo-table-expand label {
     width: 100px;

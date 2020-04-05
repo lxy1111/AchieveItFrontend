@@ -68,9 +68,13 @@ export const workHourSearch = params => { return axios.post(`/WorkHourInfo/Searc
 
 export const myWorkHourSearch = params => { return axios.post(`/WorkHourInfo/MyWorkHours?`+params , params).then(res => res.data); };
 
+export const workHourAdd = params => { return axios.post(`/WorkHourInfo/Add` , params).then(res => res.data); };
+
 
 
 export const groupListSearch = params => { return axios.post(`/ProjectUserInfo/Search?projectId=`+params , params).then(res => res.data); };
+
+export const groupListAdd = params => { return axios.post(`/ProjectUserInfo/Add?id=`+params , params).then(res => res.data); };
 
 
 
