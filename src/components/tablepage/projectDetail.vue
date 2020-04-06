@@ -709,20 +709,6 @@
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
   import {approveProject, rejectProject, updateProject, myWorkHourSearch,updateProjectSubFunction,addProjectSubFunction} from "../../api/api";
 
-  import {
-    groupListSearch,
-    searchProject,
-    searchProjectSubFunction,
-    searchDevice,
-    workHourSearch,
-    userRoleSearch, workHourAdd
-  } from '../../api/api'
-  import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
-  import {approveProject, rejectProject, updateProject, myWorkHourSearch, groupListAdd} from "../../api/api";
-  import axios from 'axios';
-  axios.defaults.baseURL="http://47.100.187.197:8080";
-  axios.defaults.headers.post['Content-Type'] = 'application/json';
-
 
   export default {
         name: "projectDetail",
