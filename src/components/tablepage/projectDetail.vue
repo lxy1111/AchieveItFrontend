@@ -155,8 +155,8 @@
                         <el-table-column fixed="right" label="操作"  align="center">
                           <template slot-scope="scope">
                             <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
-                            <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditFunction(scope.row)"></i>
-                            <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteFunction(scope.row)"></i>
+                            <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditSubFunction(scope.row)"></i>
+                            <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteSubFunction(scope.row)"></i>
                           </template>
                         </el-table-column>
                       </el-table>
@@ -167,7 +167,9 @@
                   <el-table-column prop="personCharge" label="负责人" align="center"></el-table-column>
                   <el-table-column fixed="right" label="操作"  align="center">
                     <template slot-scope="scope">
+                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-circle-plus-outline" @click="onShowAddSubFunction(scope.row)"></i>
                       <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
+
                       <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditFunction(scope.row)"></i>
                       <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteFunction(scope.row)"></i>
                     </template>
@@ -458,8 +460,7 @@
 <!--              <el-table-column prop="deadline" label="资产使用期限(天)"></el-table-column>-->
 <!--            </el-table>-->
 <!--            </el-tab-pane>-->
-=======
->>>>>>> 4315f4531ce680abcf67a5dda7dd0208d0ccc955
+
 
             <el-tab-pane label="设备管理">
               <el-col :span="3">
@@ -491,8 +492,6 @@
             </el-table>
             </el-tab-pane>
 
-<<<<<<< HEAD
-=======
 <!--            <el-tab-pane label="设备管理">-->
 <!--              <el-col :span="3">-->
 <!--                <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新增设备</el-button>-->
@@ -523,7 +522,6 @@
 <!--            </el-table>-->
 <!--            </el-tab-pane>-->
 
->>>>>>> 4315f4531ce680abcf67a5dda7dd0208d0ccc955
           </el-tabs>
         </el-card>
       </el-col>
@@ -559,6 +557,38 @@
         <el-button v-show="this.editFunctionDialogParam.title!='查看功能'" type="primary" @click="onAddFunction()">确 定</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      :title="editSubFunctionDialogParam.title"
+      :visible.sync="editSubFunctionDialogParam.show"
+      width="700px"
+      @close="handleDialogClose"
+    >
+      <el-form
+        :inline="true"
+        :model="formEditSubFunction"
+        ref="formEditFunction"
+        class="demo-form-inline-dialog"
+        label-width="68px"
+        :rules="formEditFunctionRules"
+        :disabled="editSubFunctionDialogParam.formEditSubFunctionDisabled"
+      >
+        <el-form-item class="form_input" v-show="this.editSubFunctionDialogParam.title!='新增功能'" label="功能id" prop="id">
+          <el-input disabled v-model="formEditSubFunction.id" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input" label="子功能名称" prop="functionName">
+          <el-input v-model="formEditSubFunction.functionName" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input" label="负责人" prop="personCharge">
+          <el-input v-model="formEditSubFunction.personCharge" placeholder=""></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editSubFunctionDialogParam.show = false">取 消</el-button>
+        <el-button v-show="this.editSubFunctionDialogParam.title!='查看功能'" type="primary" @click="onAddSubFunction()">确 定</el-button>
+      </span>
+    </el-dialog>
+
 
     <el-dialog
       :title="editGroupDialogParam.title"
@@ -660,9 +690,9 @@
 </template>
 
 <script>
-  import {groupListSearch, searchProject, searchProjectSubFunction,searchDevice, workHourSearch} from '../../api/api'
+  import {groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
-  import {approveProject, rejectProject, updateProject, myWorkHourSearch} from "../../api/api";
+  import {approveProject, rejectProject, updateProject, myWorkHourSearch,updateProjectSubFunction,addProjectSubFunction} from "../../api/api";
 
   export default {
         name: "projectDetail",
@@ -671,6 +701,7 @@
             functionOptions:[
 
             ],
+              functiontype:'',
             activityOptions:[
               {
                 value: '工程活动',
@@ -890,6 +921,12 @@
                 personCharge: "",
                 projectId: ""
             },
+              formEditSubFunction: {
+                  //id: "",
+                  functionName: "",
+                  personCharge: "",
+                  projectId: ""
+              },
             formEditGroup: {
               id: "",
               name: "",
@@ -953,6 +990,11 @@
               show: false, //弹框显示
               formEditGroupDisabled:false,//编辑弹窗是否可编辑
             },
+              editSubFunctionDialogParam: {
+                  title: "新增功能", //弹窗标题,值为:新增功能，查看功能，编辑功能
+                  show: false, //弹框显示
+                  formEditSubFunctionDisabled:false,//编辑弹窗是否可编辑
+              },
             changeProjectStatus: {
               title: "变更项目状态", //弹窗标题,值为:
               show: false,
@@ -1210,6 +1252,21 @@
             this.editFunctionDialogParam.show = true;//显示弹框
             this.editFunctionDialogParam.formEditFunctionDisabled=false;//设置可编辑
           },
+            onShowAddSubFunction(rowData) {
+                this.formEditSubFunction=Object.assign({},rowData);
+                // this.formEditSubFunction={
+                //     funcId:rowData,
+                //     functionName: "",
+                //     personCharge: ""
+                // }
+                this.formEditSubFunction.functionName=''
+                this.formEditSubFunction.personCharge=''
+                this.formEditSubFunction.funcId=this.formEditSubFunction.id
+                this.editSubFunctionDialogParam.title = "新增功能";//设置标题
+                this.editSubFunctionDialogParam.show = true;//显示弹框
+                this.editSubFunctionDialogParam.formEditSubFunctionDisabled=false;//设置可编辑
+
+            },
           onShowEditFunction(rowData) {
             this.editFunctionDialogParam.title = "编辑功能";
             this.editFunctionDialogParam.show = true;
@@ -1218,9 +1275,58 @@
 
 
           },
-          onShowDeleteFunction(rowData) {
+            onShowEditSubFunction(rowData) {
+                this.editSubFunctionDialogParam.title = "编辑功能";
+                this.editSubFunctionDialogParam.show = true;
+                this.editSubFunctionDialogParam.formEditFunctionDisabled=false;
+                this.formEditSubFunction=Object.assign({},rowData);
 
+
+            },
+          onShowDeleteFunction(rowData) {
+              this.$confirm('此操作将删除功能, 是否继续?', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+              }).then(() => {
+                  deleteProjectFunction(rowData.id).then(response=>{
+                      this.getAllFunction(this.formEdit.id)
+                      this.$message({
+                          type:'success',
+                          message:'删除成功'
+                      })
+
+                  })
+
+              }).catch(() => {
+                  this.$message({
+                      type: 'info',
+                      message: '已取消删除'
+                  });
+              });
           },
+            onShowDeleteSubFunction(rowData) {
+                this.$confirm('此操作将删除子功能, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    deleteProjectSubFunction(rowData.id).then(response=>{
+                        this.getAllFunction(this.formEdit.id)
+                        this.$message({
+                            type:'success',
+                            message:'删除成功'
+                        })
+
+                    })
+
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
           onShowFunctionDetail(rowData) {
 
             this.editFunctionDialogParam.title = "查看功能";
@@ -1331,6 +1437,14 @@
               this._editFunction();
             }
           },
+            onAddSubFunction() {
+                if (this.editSubFunctionDialogParam.title == "新增功能") {
+                    this._saveSubFunction();
+                }
+                else if(this.editSubFunctionDialogParam.title == "编辑功能"){
+                    this._editSubFunction();
+                }
+            },
           _saveFunction() {
 
             this.formEditFunction.projectId=this.formEdit.id;
@@ -1340,6 +1454,10 @@
                 console.log(json);
                 this.editFunctionDialogParam.show = false;
                 this.getAllFunction(this.formEditFunction.projectId);
+                this.$message({
+                    type:'success',
+                    message:'成功'
+                })
               })
               .catch(error => {
                 this.$message({ message: "执行异常,请重试", type: "error" });
@@ -1348,6 +1466,27 @@
 
               });
           },
+            _saveSubFunction() {
+                addProjectSubFunction(this.formEditSubFunction)
+                    .then(response => {
+                        if(response.msg=='新增成功！'){
+                            this.$message({
+                                type:'success',
+                                message:'新增成功！'
+                            })
+                        }
+                        var json = response;
+                        console.log(json);
+                        this.editSubFunctionDialogParam.show = false;
+                        this.getAllFunction(this.formEdit.id);
+                    })
+                    .catch(error => {
+                        this.$message({ message: "执行异常,请重试", type: "error" });
+                    })
+                    .finally(() => {
+
+                    });
+            },
           _editFunction() {
 
             this.formEditFunction.projectId=this.formEdit.id;
@@ -1366,6 +1505,22 @@
               });
 
           },
+            _editSubFunction() {
+                updateProjectSubFunction(this.formEditSubFunction)
+                    .then(response => {
+                        var json = response;
+                        console.log(json);
+                        this.editSubFunctionDialogParam.show = false;
+                        this.getAllFunction(this.formEdit.id);
+                    })
+                    .catch(error => {
+                        this.$message({ message: "执行异常,请重试", type: "error" });
+                    })
+                    .finally(() => {
+
+                    });
+
+            },
           format_date(row, column) {
             var date = row[column.property];
             if (date == undefined) {

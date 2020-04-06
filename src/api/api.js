@@ -10,7 +10,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 export const requestLogin = params => { return axios.post(`/Login/LogOn`, params).then(res => res.data); };
 
-
+export const addDevice = params => { return axios.post(`/Device/add`, params).then(res => res.data); };
 
 export const searchProject = params => { return axios.post(`/ProjectInfo/Search`, params).then(res => res.data); };
 
@@ -40,7 +40,7 @@ export const getPMTask = params => { return axios.post(`/ProjectInfo/MyProject`,
 
 export const addProjectFunction = params => { return axios.post(`/ProjectFunction/Add`, params).then(res => res.data); };
 
-export const deleteProjectFunction = params => { return axios.post(`/ProjectFunction/Delete`, params).then(res => res.data); };
+export const deleteProjectFunction = params => { return axios.post(`/ProjectFunction/Delete?id=`+params, params).then(res => res.data); };
 
 export const updateProjectFunction = params => { return axios.post(`/ProjectFunction/Edit`, params).then(res => res.data); };
 
@@ -54,7 +54,7 @@ export const addProjectSubFunction = params => { return axios.post(`/ProjectSubF
 
 export const updateProjectSubFunction = params => { return axios.post(`/ProjectSubFunction/SubEdit`, params).then(res => res.data); };
 
-export const deleteProjectSubFunction = params => { return axios.post(`/ProjectSubFunction/SubDelete`, params).then(res => res.data); };
+export const deleteProjectSubFunction = params => { return axios.post(`/ProjectSubFunction/SubDelete?id=`+params, params).then(res => res.data); };
 
 
 
