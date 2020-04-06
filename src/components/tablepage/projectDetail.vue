@@ -198,7 +198,7 @@
                   <el-table-column prop="userName" label="姓名" width="60"></el-table-column>
                   <el-table-column prop="userRole" label="角色" width="150"></el-table-column>
                   <el-table-column prop="userMail" label="邮箱"></el-table-column>
-                  <el-table-column prop="userDepartment" label="部门" width="70"></el-table-column>
+                  <el-table-column prop="userDepartment" label="部门" width="100"></el-table-column>
                   <el-table-column prop="projectChargerMail" label="项目上级邮箱"></el-table-column>
                   <el-table-column prop="userTel" label="电话"></el-table-column>
                   <el-table-column fixed="right" label="操作" align="center">
@@ -462,6 +462,7 @@
 <!--            </el-tab-pane>-->
 
 
+
 <!--            <el-tab-pane label="设备管理">-->
 <!--              <el-col :span="3">-->
 <!--                <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="">新增设备</el-button>-->
@@ -492,6 +493,7 @@
 <!--            </el-table>-->
 <!--            </el-tab-pane>-->
 
+
 <!--            <el-tab-pane label="设备管理">-->
 <!--              <el-col :span="3">-->
 <!--                <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新增设备</el-button>-->
@@ -521,6 +523,7 @@
 <!--              <el-table-column prop="deadline" label="资产使用期限(天)"></el-table-column>-->
 <!--            </el-table>-->
 <!--            </el-tab-pane>-->
+
 
           </el-tabs>
         </el-card>
@@ -593,7 +596,7 @@
     <el-dialog
       :title="editGroupDialogParam.title"
       :visible.sync="editGroupDialogParam.show"
-      width="700px"
+      width="500px"
       @close="handleDialogClose"
     >
       <el-form
@@ -605,16 +608,26 @@
         :rules="formEditGroupRules"
         :disabled="editGroupDialogParam.formEditGroupDisabled"
       >
-        <el-form-item class="form_input_group" label="员工ID" prop="name">
+        <el-form-item class="form_input_group" label="当前项目ID" prop="projectId">
+          <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input_group" label="新增组员ID" prop="name">
           <el-input v-model="formEditGroup.id" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input_group" label="角色" prop="head">
-          <el-input v-model="formEditGroup.role" placeholder=""></el-input>
+          <el-select v-model="formEditGroup.role" placeholder="">
+            <el-option
+              v-for="item in roleOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editGroupDialogParam.show = false">取 消</el-button>
-        <el-button v-show="this.editGroupDialogParam.title!='查看组员'" type="primary" @click="onAddGroup()">确 定</el-button>
+        <el-button v-show="this.editGroupDialogParam.title=='新增组员'" type="primary" @click="onAddGroup()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -640,7 +653,6 @@
       <el-form
         :inline="true"
         :model="formMyTime"
-        ref="formEditFunction"
         class="demo-form-inline-dialog"
         label-width="68px"
         :disabled="formMyTimeDialogParam.formMyTimeDisabled"
@@ -651,17 +663,19 @@
         <el-form-item class="form_input" label="员工姓名" prop="userName">
           <el-input disabled v-model="userInfo.userName" placeholder=""></el-input>
         </el-form-item>
-        <el-form-item class="form_input" label="完成功能" prop="function">
+        <el-form-item class="form_input" label="完成功能" prop="finishedFunction">
           <el-cascader
-            v-model="formMyTime.function"
+            v-model="formMyTime.finishedFunction"
             :options="functionOptions"
-            @change="handleChange"></el-cascader>
+            @change="handleChange">
+          </el-cascader>
         </el-form-item>
-        <el-form-item class="form_input" label="完成活动" prop="function">
+        <el-form-item class="form_input" label="完成活动" prop="finishedActivity">
           <el-cascader
-            v-model="formMyTime.activity"
+            v-model="formMyTime.finishedActivity"
             :options="activityOptions"
-            @change="handleChange"></el-cascader>
+            @change="handleChange">
+          </el-cascader>
         </el-form-item>
         <el-form-item class="form_date" label="开始时间" prop="startTime">
           <el-date-picker
@@ -670,9 +684,9 @@
             placeholder="选择开始时间"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item class="form_date" label="结束时间" prop="endTime">
+        <el-form-item class="form_date" label="结束时间" prop="finishTime">
           <el-date-picker
-            v-model="formMyTime.endTime"
+            v-model="formMyTime.finishTime"
             type="datetime"
             placeholder="选择结束时间"
           ></el-date-picker>
@@ -690,9 +704,11 @@
 </template>
 
 <script>
+
   import {groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
   import {approveProject, rejectProject, updateProject, myWorkHourSearch,updateProjectSubFunction,addProjectSubFunction} from "../../api/api";
+
 
   export default {
         name: "projectDetail",
@@ -929,13 +945,30 @@
               },
             formEditGroup: {
               id: "",
-              name: "",
-              role: "",
-              department: '',
-              phone: '',
-              email: '',
-              bossEmail: ''
+              role: ""
             },
+            roleOptions: [{
+              value: '项目上级',
+              label: '项目上级'
+            }, {
+              value: '组织级配置管理员',
+              label: '组织级配置管理员'
+            }, {
+              value: '项目改进小组',
+              label: '项目改进小组'
+            }, {
+              value: '质量监控',
+              label: '质量监控'
+            }, {
+              value: '项目经理',
+              label: '项目经理'
+            }, {
+              value: '项目资产管理员',
+              label: '项目资产管理员'
+            }, {
+              value: '项目成员',
+              label: '项目成员'
+            }],
             formSearch: {
               name: "2213",
               city: "213",
@@ -1008,12 +1041,13 @@
             formSearchTime: "",
 
             formMyTime: {
-              date: '',
-              function: '',
-              activity: '',
+              projectId: '',
+              userId: '',
+              userName: '',
+              finishedFunction: '',
+              finishedActivity: '',
               startTime: '',
-              endTime: ''
-
+              finishTime: ''
             }
           }
         },
@@ -1028,7 +1062,6 @@
           this.userInfo.userRole = sessionStorage.getItem("role");
           this.userInfo.position = sessionStorage.getItem("position");
           this.userInfo.userId = sessionStorage.getItem("userId");
-          this.getMyWorkHour();
         },
         computed: {
           getQueryId: function() {
@@ -1051,7 +1084,7 @@
               .then(response => {
                 var json = response;
                 console.log(json);
-                if (json.count >0) {
+                if (json.count >=0) {
                   this.myTimeList = json.data.成员工时信息列表;
                   console.log(this.myTimeList)
                 }
@@ -1064,13 +1097,13 @@
               });
 
           },
-          getAllGroupList(){
+          getAllGroupList(item){
 
-            groupListSearch(this.formEdit.id)
+            groupListSearch(item)
               .then(response => {
                 var json = response;
                 console.log(json);
-                if (json.count >0) {
+                if (json.count >=0) {
                   this.groupList = json.data.组员信息列表;
                   console.log(this.groupList)
                 }
@@ -1156,7 +1189,7 @@
 
             },
           getAllFunction(projectId){
-              let that=this
+            let that=this
             this.loadingFunc = true
             searchProjectFunction(projectId)
               .then(response => {
@@ -1166,6 +1199,18 @@
 
                   this.functionList = json.data.data;
                   console.log("功能列表查询成功");
+                  this.functionOptions = [];
+
+                  for (var i=0; i<json.count;i++){
+
+                    this.functionOptions.push({
+                      value: this.functionList[i].functionName,
+                      label: this.functionList[i].functionName
+                    })
+
+                  }
+
+                  console.log(this.functionOptions)
 
                   // for (var i=0;i<json.count;i++){
                   //
@@ -1228,8 +1273,9 @@
                   this.formEdit = json.data.data[0];
                   this.getAllGroupList(this.formEdit.id);
                   this.getAllFunction(this.formEdit.id);
-                   this.getAllRisks(this.formEdit.id)
-                    this.getDevices(this.formEdit.id)
+                  this.getAllRisks(this.formEdit.id)
+                  this.getDevices(this.formEdit.id)
+                  this.getMyWorkHour();
 
                 } else {
                   this.$message({ message: json.message, type: "warning" });
@@ -1427,7 +1473,7 @@
           },
 
           handleDialogClose() {       //功能弹窗关闭
-            this.$refs["formEditFunction"].resetFields();
+            //this.$refs["formEditFunction"].resetFields();
           },
           onAddFunction() {
             if (this.editFunctionDialogParam.title == "新增功能") {
@@ -1437,6 +1483,7 @@
               this._editFunction();
             }
           },
+
             onAddSubFunction() {
                 if (this.editSubFunctionDialogParam.title == "新增功能") {
                     this._saveSubFunction();
@@ -1445,6 +1492,45 @@
                     this._editSubFunction();
                 }
             },
+
+          onAddGroup() {
+            if (this.editGroupDialogParam.title == "新增组员") {
+              this._saveGroup();
+            }
+          },
+          _saveGroup() {
+
+            userRoleSearch(this.userInfo.userId)
+              .then(res => {
+                console.log(res);
+
+              })
+              .catch(error => {
+                this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+              .finally(() => {
+
+              });
+
+            var params = {
+              "projectId": this.formEdit.id,
+              "roleDescription": this.formEditGroup.role,
+              "userId": this.formEditGroup.id
+            }
+            axios.post(`/ProjectUserInfo/Add?id=5` , params)
+              .then(res => {
+                console.log(res);
+                this.editGroupDialogParam.show=false;
+              })
+              .catch(error => {
+                this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+              .finally(() => {
+
+              });
+
+          },
+
           _saveFunction() {
 
             this.formEditFunction.projectId=this.formEdit.id;
@@ -1541,8 +1627,10 @@
             }
             return this.$moment(time).format("YYYY-MM-DD");
           },
-          handleChange(file, fileList) {
-            this.fileList = fileList.slice(-3);
+          handleChange(value) {
+
+            console.log(value)
+            //this.fileList = fileList.slice(-3);
           },
           handleSelect(item) {
             console.log(item);
@@ -1643,6 +1731,24 @@
             }).then(() => {
 
                              ///////////////////////////////////////////调用提交我的工时接口
+
+              this.formMyTime.projectId = this.formEdit.id;
+              this.formMyTime.userId = this.userInfo.userId;
+              this.formMyTime.userName = this.userInfo.userName;
+              this.formMyTime.finishedFunction = this.formMyTime.finishedFunction[0];
+              this.formMyTime.finishedActivity = this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1];
+
+              workHourAdd(this.formMyTime)
+                .then(res=>{
+                  console.log(res);
+                  this.getMyWorkHour();
+                })
+                .catch(err=>{
+
+                })
+
+
+
               this.formMyTimeDialogParam.show = false;
               this.$message({
                 type: 'success',
