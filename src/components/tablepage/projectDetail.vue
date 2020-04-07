@@ -272,7 +272,7 @@
                 </el-col>
                 <el-col :span="8" align="right">
                   <el-button style="background: #cf9236;color: white;margin-left: 1rem;width: 8rem;border-color: #cf9236;"
-                             @click="formMyTimeDialogParam.show=true"
+                             @click="onAddMyTime"
                              round>汇报我的工时</el-button>
                 </el-col>
                 <el-table
@@ -299,7 +299,7 @@
                   </el-table-column>
                   <el-table-column fixed="right" label="操作" width="80"  align="center">
                     <template slot-scope="scope">
-                      <i v-if="scope.row.status=='0'||scope.row.status=='2'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
+                      <i v-if="scope.row.status=='0'||scope.row.status=='2'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditTime(scope.row)"></i>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -706,7 +706,8 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="formMyTimeDialogParam.show = false">取 消</el-button>
-        <el-button type="primary" @click="submitMyTime">提交</el-button>
+        <el-button v-if="formMyTimeDialogParam.title=='汇报我的工时'" type="primary" @click="submitMyTime">提交</el-button>
+        <el-button v-if="formMyTimeDialogParam.title=='编辑我的工时'" type="primary" @click="editMyTime">提交</el-button>
       </span>
     </el-dialog>
 
@@ -718,7 +719,15 @@
 
   import {groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
-  import {approveProject, rejectProject, updateProject, myWorkHourSearch,updateProjectSubFunction,addProjectSubFunction} from "../../api/api";
+  import {approveProject, workHourEdit,workHourAdd,
+    rejectProject, deleteProjectGroup,
+    updateProject,
+    myWorkHourSearch,
+    updateProjectSubFunction,
+    addProjectSubFunction} from "../../api/api";
+  import axios from 'axios';
+  axios.defaults.baseURL="http://47.100.187.197:8080";
+  axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 
   export default {
@@ -1300,6 +1309,30 @@
               });
 
           },
+          onAddMyTime(){
+
+            this.formMyTime = {
+              projectId: '',
+              userId: '',
+              userName: '',
+              finishedFunction: '',
+              finishedActivity: '',
+              startTime: '',
+              finishTime: ''
+            }
+            this.formMyTimeDialogParam.title = '汇报我的工时';
+            this.formMyTimeDialogParam.show = true;
+            this.formMyTimeDialogParam.formMyTimeDisabled = false;
+
+          },
+          onShowEditTime(item){
+
+            this.formMyTime = item;
+            this.formMyTimeDialogParam.title = '编辑我的工时';
+            this.formMyTimeDialogParam.show = true;
+            this.formMyTimeDialogParam.formMyTimeDisabled = false;
+
+          },
           onShowAddFunction() {
             this.formEditFunction={
               functionName: "",
@@ -1409,6 +1442,29 @@
           },
           onShowDeleteGroup(rowData) {
 
+            console.log(rowData)
+            this.$confirm('此操作将删除组员, 是否继续?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              var params = 'projectId='+this.formEdit.id+'&userId='+rowData.userId;
+              deleteProjectGroup(params).then(response=>{
+                this.getAllGroupList(this.formEdit.id)
+                this.$message({
+                  type:'success',
+                  message:'删除成功'
+                })
+
+              })
+
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消删除'
+              });
+            });
+
           },
           onShowGroupDetail(rowData) {
 
@@ -1511,17 +1567,17 @@
           },
           _saveGroup() {
 
-            userRoleSearch(this.userInfo.userId)
-              .then(res => {
-                console.log(res);
-
-              })
-              .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
-              })
-              .finally(() => {
-
-              });
+            // userRoleSearch(this.userInfo.userId)
+            //   .then(res => {
+            //     console.log(res);
+            //
+            //   })
+            //   .catch(error => {
+            //     this.$message({ message: "执行异常,请重试", type: "error" });
+            //   })
+            //   .finally(() => {
+            //
+            //   });
 
             var params = {
               "projectId": this.formEdit.id,
@@ -1532,6 +1588,7 @@
               .then(res => {
                 console.log(res);
                 this.editGroupDialogParam.show=false;
+                this.getAllGroupList(this.formEdit.id);
               })
               .catch(error => {
                 this.$message({ message: "执行异常,请重试", type: "error" });
@@ -1764,6 +1821,45 @@
                 })
 
 
+              this.formMyTimeDialogParam.show = false;
+              this.$message({
+                type: 'success',
+                message: '提交成功!'
+              });
+
+            }).catch((err) => {
+              console.log(err)
+              this.$message({
+                type: 'info',
+                message: '已取消工时提交'
+              });
+            });
+
+          },
+          editMyTime(){
+
+            this.$confirm('是否确认编辑并提交提交我的工时?', '提交编辑', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+            }).then(() => {
+
+              console.log(this.formMyTime)
+
+              workHourEdit({
+                workHourId: this.formMyTime.id,
+                startTime: this.formMyTime.startTime,
+                finishTime: this.formMyTime.finishTime,
+                finishedActivity: this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1],
+                finishedFunction: this.formMyTime.finishedFunction[0],
+              })
+                .then(res=>{
+                  console.log(res);
+                  this.getMyWorkHour();
+                })
+                .catch(err=>{
+
+                })
+
 
               this.formMyTimeDialogParam.show = false;
               this.$message({
@@ -1774,7 +1870,7 @@
             }).catch(() => {
               this.$message({
                 type: 'info',
-                message: '已取消工时提交'
+                message: '已取消工时编辑'
               });
             });
 
