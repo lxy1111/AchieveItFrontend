@@ -128,16 +128,12 @@
           <el-input v-model="formEdit.deviceowner" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_date" label="资产交付期限" prop="createDate">
-          <el-date-picker
-            v-model="formEdit.deadline"
-            type="date"
-            placeholder="选择预定时间"
-          ></el-date-picker>
+          <el-input v-model="formEdit.deadline" placeholder=""></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogParam.show = false">取 消</el-button>
-        <el-button v-show="this.editDialogParam.title!='查看'" type="primary" @click="onAdd();">确 定</el-button>
+        <el-button v-show="this.editDialogParam.title!='查看'" type="primary" @click="onAdd()">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 新增，编辑，查看 end -->
@@ -457,7 +453,7 @@
 
 
 <script>
-  import {editDevice, searchDevice} from "../../api/api";
+  import {editDevice,addDevice, searchDevice} from "../../api/api";
 
     export default {
         name: "deviceManagement",
@@ -547,7 +543,17 @@
 
               console.log("新增设备------调用_save:");
               console.log(this.formEdit);
+                addDevice(this.formEdit).then(response=>{
+                    var json = response;
+                    console.log(json);
+                    if (json.msg == "查询成功") {
+                        this.$message({message:'成功',type:'success'})
+                        this.onSearch()
+                    } else {
+                        this.$message({ message: json.message, type: "warning" });
+                    }
 
+                })
             },
             _edit() {
 
@@ -574,9 +580,15 @@
                   status: ""
                 };
 
+
+
                 this.editDialogParam.title = "新增";//设置标题
                 this.editDialogParam.show = true;//显示弹框
                 this.editDialogParam.formEditDisabled=false;//设置可编辑
+
+
+
+
             },
             onShowEdit(rowData) {
                 this.editDialogParam.title = "编辑";
