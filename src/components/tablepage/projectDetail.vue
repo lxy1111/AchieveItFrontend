@@ -69,12 +69,16 @@
                       v-if="userInfo.userRole=='PM'"
                       v-model="formEdit.scheduleTime"
                       type="datetime"
+
+
                       placeholder="选择预定时间"
                     ></el-date-picker>
                     <el-date-picker
                       v-else disabled
                       v-model="formEdit.scheduleTime"
                       type="datetime"
+
+
                       placeholder="选择预定时间"
                     ></el-date-picker>
                   </el-form-item>
@@ -83,12 +87,16 @@
                       v-if="userInfo.userRole=='PM'"
                       v-model="formEdit.deliveryTime"
                       type="datetime"
+
+
                       placeholder="选择交付时间"
                     ></el-date-picker>
                     <el-date-picker
                       v-else disabled
                       v-model="formEdit.deliveryTime"
                       type="datetime"
+
+
                       placeholder="选择交付时间"
                     ></el-date-picker>
                   </el-form-item>
@@ -222,7 +230,7 @@
                     type="date"
                     placeholder="选择需要查询工时的日期"
                   ></el-date-picker>
-                  <el-button  v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'"
+                  <el-button v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'"
                     style="margin-left: 1rem;" type="primary" @click="searchWorkTime()">查询工时</el-button>
                 </el-col>
               </el-row>
@@ -272,11 +280,12 @@
                   default-expand-all
                   stripe class="visitor-table" align="center">
                   <el-table-column prop="startTime" label="日期" :formatter="format_date2"></el-table-column>
+                  <el-table-column prop="userRole" label="角色"></el-table-column>
                   <el-table-column prop="finishedFunction" label="完成功能"></el-table-column>
                   <el-table-column prop="finishedActivity" label="完成活动"></el-table-column>
                   <el-table-column prop="startTime" label="开始时间" :formatter="format_date"></el-table-column>
                   <el-table-column prop="finishTime" label="结束时间" :formatter="format_date"></el-table-column>
-                  <el-table-column prop="status" width="150" align="center" label="状态" >
+                  <el-table-column prop="status" width="120" align="center" label="状态" >
                     <template slot-scope="scope">
                       <button @click=""
                               class="status_button" v-if="scope.row.status==0">已提交</button>
@@ -286,7 +295,7 @@
                               class="status_button" v-if="scope.row.status==2">已驳回</button>
                     </template>
                   </el-table-column>
-                  <el-table-column fixed="right" label="操作" width="90"  align="center">
+                  <el-table-column fixed="right" label="操作" width="80"  align="center">
                     <template slot-scope="scope">
                       <i v-if="scope.row.status=='0'||scope.row.status=='2'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
                     </template>
@@ -643,6 +652,7 @@
         </el-form-item>
         <el-form-item class="form_date" label="开始时间" prop="startTime">
           <el-date-picker
+            value-
             v-model="formMyTime.startTime"
             type="datetime"
             placeholder="选择开始时间"
@@ -650,6 +660,7 @@
         </el-form-item>
         <el-form-item class="form_date" label="结束时间" prop="finishTime">
           <el-date-picker
+            value-
             v-model="formMyTime.finishTime"
             type="datetime"
             placeholder="选择结束时间"
@@ -1452,10 +1463,13 @@
 
           },
           format_date(row, column) {
+
             var date = row[column.property];
             if (date == undefined) {
               return "";
             }
+            console.log(date)
+            console.log(this.$moment(date).format("YYYY-MM-DD HH:mm:ss"))
             return this.$moment(date).format("YYYY-MM-DD HH:mm:ss");
           },
           format_date2(row, column) {
@@ -1581,6 +1595,8 @@
               this.formMyTime.userName = this.userInfo.userName;
               this.formMyTime.finishedFunction = this.formMyTime.finishedFunction[0];
               this.formMyTime.finishedActivity = this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1];
+
+              console.log(this.formMyTime)
 
               workHourAdd(this.formMyTime)
                 .then(res=>{

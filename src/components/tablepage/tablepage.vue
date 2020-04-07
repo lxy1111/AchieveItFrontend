@@ -135,7 +135,8 @@
       <el-table-column fixed="right" label="操作" width="100"  align="center">
         <template slot-scope="scope">
           <i v-if="scope.row.status!=0&&
-              (scope.row.createrId==userInfo.userId||userInfo.userRole=='Superior')"
+              (scope.row.createrId==userInfo.userId||
+               (userInfo.userRole=='Superior'&&scope.row.leader==userInfo.userName))"
              style="font-size: 1.1rem;" class="el-icon-zoom-in"
              @click="onShowDetail(scope.row)"></i>
           <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
@@ -835,6 +836,7 @@ export default {
           var json = response;
           console.log(json);
           this.editDialogParam.show = false;
+          this.onSearch();
         })
         .catch(error => {
           this.$message({ message: "执行异常,请重试", type: "error" });
