@@ -1,4 +1,5 @@
 import axios from 'axios';
+import qs from 'qs'
 import dev from '../../config/dev.env'
 
 let base = '';
@@ -10,7 +11,9 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 export const requestLogin = params => { return axios.post(`/Login/LogOn`, params).then(res => res.data); };
 
-export const addDevice = params => { return axios.post(`/Device/add`, params).then(res => res.data); };
+export const addDevice = params => { return axios.post(`/Device/Add`, params).then(res => res.data); };
+
+export const deleteDevice = params => { return axios.post(`/Device/Delete`,params).then(res => res.data); };
 
 export const searchProject = params => { return axios.post(`/ProjectInfo/Search`, params).then(res => res.data); };
 
@@ -18,7 +21,7 @@ export const searchRisk = params => { return axios.post(`/Risk/Search`, params).
 
 export const createNewProject = params => { return axios.post(`/ProjectInfo/Add`, params).then(res => res.data); };
 
-export const deleteProject = params => { return axios.post(`/ProjectInfo/Delete`, params).then(res => res.data); };
+export const deleteProject = params => { return axios.post(`/ProjectInfo/Delete?`+params, params).then(res => res.data); };
 
 export const updateProject = params => { return axios.post(`/ProjectInfo/Edit`, params).then(res => res.data); };
 
@@ -35,6 +38,8 @@ export const getQALeaderTask = params => { return axios.post(`/ProjectInfo/GetQA
 export const getMemberTask = params => { return axios.post(`/ProjectInfo/GetMemberProject`, params).then(res => res.data); };
 
 export const getPMTask = params => { return axios.post(`/ProjectInfo/MyProject`, params).then(res => res.data); };
+
+export const setProjectStatus = params => { return axios.post(`/ProjectInfo/SetStatus?`+params, params).then(res => res.data); };
 
 
 
@@ -70,11 +75,16 @@ export const myWorkHourSearch = params => { return axios.post(`/WorkHourInfo/MyW
 
 export const workHourAdd = params => { return axios.post(`/WorkHourInfo/Add` , params).then(res => res.data); };
 
+export const workHourEdit = params => { return axios.post(`/WorkHourInfo/Edit` , params).then(res => res.data); };
+
 
 
 export const groupListSearch = params => { return axios.post(`/ProjectUserInfo/Search?projectId=`+params , params).then(res => res.data); };
 
 export const groupListAdd = params => { return axios.post(`/ProjectUserInfo/Add?id=`+params , params).then(res => res.data); };
+
+export const deleteProjectGroup = params => { return axios.post(`/ProjectUserInfo/Delete?`+params , params).then(res => res.data); };
+
 
 
 
