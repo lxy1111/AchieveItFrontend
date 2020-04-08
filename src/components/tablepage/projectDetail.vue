@@ -69,12 +69,16 @@
                       v-if="userInfo.userRole=='PM'"
                       v-model="formEdit.scheduleTime"
                       type="datetime"
+
+
                       placeholder="选择预定时间"
                     ></el-date-picker>
                     <el-date-picker
                       v-else disabled
                       v-model="formEdit.scheduleTime"
                       type="datetime"
+
+
                       placeholder="选择预定时间"
                     ></el-date-picker>
                   </el-form-item>
@@ -83,12 +87,16 @@
                       v-if="userInfo.userRole=='PM'"
                       v-model="formEdit.deliveryTime"
                       type="datetime"
+
+
                       placeholder="选择交付时间"
                     ></el-date-picker>
                     <el-date-picker
                       v-else disabled
                       v-model="formEdit.deliveryTime"
                       type="datetime"
+
+
                       placeholder="选择交付时间"
                     ></el-date-picker>
                   </el-form-item>
@@ -142,24 +150,24 @@
                   stripe class="visitor-table" align="center">
                   <el-table-column type="expand" >
                       <template slot-scope="props">
-                      <el-table  :data="props.row.projectSubFuncs"
-                                 style="width: 100%;margin-bottom: 20px; margin-top: 1rem;"
-                                 row-key="id"
-                                 stripe class="visitor-table" align="center">
-                        <el-table-column label="子功能id" prop="id" align="center" >
-                        </el-table-column>
-                        <el-table-column label="子功能名称" prop="functionName"  align="center">
-                        </el-table-column>
-                        <el-table-column label="负责人" prop="personCharge" align="center" >
-                        </el-table-column>
-                        <el-table-column fixed="right" label="操作"  align="center">
-                          <template slot-scope="scope">
-                            <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
-                            <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditSubFunction(scope.row)"></i>
-                            <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteSubFunction(scope.row)"></i>
-                          </template>
-                        </el-table-column>
-                      </el-table>
+                        <el-table  :data="props.row.projectSubFuncs"
+                                   style="width: 93%; margin-left: 5%; margin-bottom: 20px; margin-top: 1rem; background-color: #fcfcfc;border-radius: 4px;box-shadow:  0px 2px 10px rgba(0, 0, 0, .12); "
+                                   row-key="id"
+                                   stripe class="visitor-table" align="center">
+                          <el-table-column label="子功能id" prop="id" align="center" >
+                          </el-table-column>
+                          <el-table-column label="子功能名称" prop="functionName"  align="center">
+                          </el-table-column>
+                          <el-table-column label="负责人" prop="personCharge" align="center" >
+                          </el-table-column>
+                          <el-table-column fixed="right" label="操作"  align="center">
+                            <template slot-scope="scope">
+                              <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
+                              <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditSubFunction(scope.row)"></i>
+                              <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteSubFunction(scope.row)"></i>
+                            </template>
+                          </el-table-column>
+                        </el-table>
                       </template>
                   </el-table-column>
                   <el-table-column prop="id" label="功能id" align="center"></el-table-column>
@@ -167,7 +175,7 @@
                   <el-table-column prop="personCharge" label="负责人" align="center"></el-table-column>
                   <el-table-column fixed="right" label="操作"  align="center">
                     <template slot-scope="scope">
-                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-circle-plus-outline" @click="onShowAddSubFunction(scope.row)"></i>
+                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-plus" @click="onShowAddSubFunction(scope.row)"></i>
                       <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
 
                       <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditFunction(scope.row)"></i>
@@ -224,7 +232,7 @@
                     type="date"
                     placeholder="选择需要查询工时的日期"
                   ></el-date-picker>
-                  <el-button  v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'"
+                  <el-button v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'"
                     style="margin-left: 1rem;" type="primary" @click="searchWorkTime()">查询工时</el-button>
                 </el-col>
               </el-row>
@@ -264,7 +272,7 @@
                 </el-col>
                 <el-col :span="8" align="right">
                   <el-button style="background: #cf9236;color: white;margin-left: 1rem;width: 8rem;border-color: #cf9236;"
-                             @click="formMyTimeDialogParam.show=true"
+                             @click="onAddMyTime"
                              round>汇报我的工时</el-button>
                 </el-col>
                 <el-table
@@ -274,11 +282,12 @@
                   default-expand-all
                   stripe class="visitor-table" align="center">
                   <el-table-column prop="startTime" label="日期" :formatter="format_date2"></el-table-column>
+                  <el-table-column prop="userRole" label="角色"></el-table-column>
                   <el-table-column prop="finishedFunction" label="完成功能"></el-table-column>
                   <el-table-column prop="finishedActivity" label="完成活动"></el-table-column>
                   <el-table-column prop="startTime" label="开始时间" :formatter="format_date"></el-table-column>
                   <el-table-column prop="finishTime" label="结束时间" :formatter="format_date"></el-table-column>
-                  <el-table-column prop="status" width="150" align="center" label="状态" >
+                  <el-table-column prop="status" width="120" align="center" label="状态" >
                     <template slot-scope="scope">
                       <button @click=""
                               class="status_button" v-if="scope.row.status==0">已提交</button>
@@ -288,9 +297,9 @@
                               class="status_button" v-if="scope.row.status==2">已驳回</button>
                     </template>
                   </el-table-column>
-                  <el-table-column fixed="right" label="操作" width="90"  align="center">
+                  <el-table-column fixed="right" label="操作" width="80"  align="center">
                     <template slot-scope="scope">
-                      <i v-if="scope.row.status=='0'||scope.row.status=='2'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
+                      <i v-if="scope.row.status=='0'||scope.row.status=='2'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditTime(scope.row)"></i>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -679,6 +688,7 @@
         </el-form-item>
         <el-form-item class="form_date" label="开始时间" prop="startTime">
           <el-date-picker
+            value-
             v-model="formMyTime.startTime"
             type="datetime"
             placeholder="选择开始时间"
@@ -686,6 +696,7 @@
         </el-form-item>
         <el-form-item class="form_date" label="结束时间" prop="finishTime">
           <el-date-picker
+            value-
             v-model="formMyTime.finishTime"
             type="datetime"
             placeholder="选择结束时间"
@@ -695,7 +706,8 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="formMyTimeDialogParam.show = false">取 消</el-button>
-        <el-button type="primary" @click="submitMyTime">提交</el-button>
+        <el-button v-if="formMyTimeDialogParam.title=='汇报我的工时'" type="primary" @click="submitMyTime">提交</el-button>
+        <el-button v-if="formMyTimeDialogParam.title=='编辑我的工时'" type="primary" @click="editMyTime">提交</el-button>
       </span>
     </el-dialog>
 
@@ -707,7 +719,15 @@
 
   import {groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
-  import {approveProject, rejectProject, updateProject, myWorkHourSearch,updateProjectSubFunction,addProjectSubFunction} from "../../api/api";
+  import {approveProject, workHourEdit,workHourAdd,
+    rejectProject, deleteProjectGroup,
+    updateProject,
+    myWorkHourSearch,
+    updateProjectSubFunction,
+    addProjectSubFunction} from "../../api/api";
+  import axios from 'axios';
+  axios.defaults.baseURL="http://47.100.187.197:8080";
+  axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 
   export default {
@@ -1289,6 +1309,30 @@
               });
 
           },
+          onAddMyTime(){
+
+            this.formMyTime = {
+              projectId: '',
+              userId: '',
+              userName: '',
+              finishedFunction: '',
+              finishedActivity: '',
+              startTime: '',
+              finishTime: ''
+            }
+            this.formMyTimeDialogParam.title = '汇报我的工时';
+            this.formMyTimeDialogParam.show = true;
+            this.formMyTimeDialogParam.formMyTimeDisabled = false;
+
+          },
+          onShowEditTime(item){
+
+            this.formMyTime = item;
+            this.formMyTimeDialogParam.title = '编辑我的工时';
+            this.formMyTimeDialogParam.show = true;
+            this.formMyTimeDialogParam.formMyTimeDisabled = false;
+
+          },
           onShowAddFunction() {
             this.formEditFunction={
               functionName: "",
@@ -1398,6 +1442,29 @@
           },
           onShowDeleteGroup(rowData) {
 
+            console.log(rowData)
+            this.$confirm('此操作将删除组员, 是否继续?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              var params = 'projectId='+this.formEdit.id+'&userId='+rowData.userId;
+              deleteProjectGroup(params).then(response=>{
+                this.getAllGroupList(this.formEdit.id)
+                this.$message({
+                  type:'success',
+                  message:'删除成功'
+                })
+
+              })
+
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消删除'
+              });
+            });
+
           },
           onShowGroupDetail(rowData) {
 
@@ -1500,17 +1567,17 @@
           },
           _saveGroup() {
 
-            userRoleSearch(this.userInfo.userId)
-              .then(res => {
-                console.log(res);
-
-              })
-              .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
-              })
-              .finally(() => {
-
-              });
+            // userRoleSearch(this.userInfo.userId)
+            //   .then(res => {
+            //     console.log(res);
+            //
+            //   })
+            //   .catch(error => {
+            //     this.$message({ message: "执行异常,请重试", type: "error" });
+            //   })
+            //   .finally(() => {
+            //
+            //   });
 
             var params = {
               "projectId": this.formEdit.id,
@@ -1521,6 +1588,7 @@
               .then(res => {
                 console.log(res);
                 this.editGroupDialogParam.show=false;
+                this.getAllGroupList(this.formEdit.id);
               })
               .catch(error => {
                 this.$message({ message: "执行异常,请重试", type: "error" });
@@ -1608,10 +1676,13 @@
 
             },
           format_date(row, column) {
+
             var date = row[column.property];
             if (date == undefined) {
               return "";
             }
+            console.log(date)
+            console.log(this.$moment(date).format("YYYY-MM-DD HH:mm:ss"))
             return this.$moment(date).format("YYYY-MM-DD HH:mm:ss");
           },
           format_date2(row, column) {
@@ -1738,6 +1809,8 @@
               this.formMyTime.finishedFunction = this.formMyTime.finishedFunction[0];
               this.formMyTime.finishedActivity = this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1];
 
+              console.log(this.formMyTime)
+
               workHourAdd(this.formMyTime)
                 .then(res=>{
                   console.log(res);
@@ -1747,6 +1820,45 @@
 
                 })
 
+
+              this.formMyTimeDialogParam.show = false;
+              this.$message({
+                type: 'success',
+                message: '提交成功!'
+              });
+
+            }).catch((err) => {
+              console.log(err)
+              this.$message({
+                type: 'info',
+                message: '已取消工时提交'
+              });
+            });
+
+          },
+          editMyTime(){
+
+            this.$confirm('是否确认编辑并提交提交我的工时?', '提交编辑', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+            }).then(() => {
+
+              console.log(this.formMyTime)
+
+              workHourEdit({
+                workHourId: this.formMyTime.id,
+                startTime: this.formMyTime.startTime,
+                finishTime: this.formMyTime.finishTime,
+                finishedActivity: this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1],
+                finishedFunction: this.formMyTime.finishedFunction[0],
+              })
+                .then(res=>{
+                  console.log(res);
+                  this.getMyWorkHour();
+                })
+                .catch(err=>{
+
+                })
 
 
               this.formMyTimeDialogParam.show = false;
@@ -1758,7 +1870,7 @@
             }).catch(() => {
               this.$message({
                 type: 'info',
-                message: '已取消工时提交'
+                message: '已取消工时编辑'
               });
             });
 
@@ -1771,7 +1883,6 @@
 <style lang="scss">
 ._detailpage {
   font-family: "PingFang SC" !important;
-
   .status_button {
     border-radius: 0.1rem;
     border: 0px;

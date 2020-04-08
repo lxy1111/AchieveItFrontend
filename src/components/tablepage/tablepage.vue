@@ -122,11 +122,11 @@
                   class="status_button" v-if="scope.row.status==1">已立项</button>
           <button @click="" style="color: #ab1b10; background: rgba(171,27,16,0.09);"
                   class="status_button" v-if="scope.row.status==2">立即驳回</button>
-          <button @click="changeProjectStatusTo4" style="color: #0cab2f; background: rgba(12,171,47,0.09);"
+          <button @click="onShowChangeProjectStatusTo4(scope.row)" style="color: #0cab2f; background: rgba(12,171,47,0.09);"
                   class="status_button" v-if="scope.row.status==3">进行中</button>
-          <button @click="changeProjectStatusTo5" style="color: #ab4d02; background: rgba(171,77,2,0.09);"
+          <button @click="onShowChangeProjectStatusTo5(scope.row)" style="color: #ab4d02; background: rgba(171,77,2,0.09);"
                   class="status_button" v-if="scope.row.status==4">已交付</button>
-          <button @click="changeProjectStatusTo6" style="color: #838383; background: rgba(131,131,131,0.09);"
+          <button @click="onShowChangeProjectStatusTo6(scope.row)" style="color: #838383; background: rgba(131,131,131,0.09);"
                   class="status_button" v-if="scope.row.status==5">结束</button>
           <button @click="" style="color: #ab8c05; background: rgba(171,140,5,0.09);"
                   class="status_button" v-if="scope.row.status==6">已归档</button>
@@ -135,11 +135,12 @@
       <el-table-column fixed="right" label="操作" width="100"  align="center">
         <template slot-scope="scope">
           <i v-if="scope.row.status!=0&&
-              (scope.row.createrId==userInfo.userId||userInfo.userRole=='Superior')"
+              (scope.row.createrId==userInfo.userId||
+               (userInfo.userRole=='Superior'&&scope.row.leader==userInfo.userName))"
              style="font-size: 1.1rem;" class="el-icon-zoom-in"
              @click="onShowDetail(scope.row)"></i>
           <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
-          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId" style="font-size: 1.1rem;" class="el-icon-delete" @click=""></i>
+          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDelete(scope.row)"></i>
         </template>
       </el-table-column>
     </el-table>
@@ -227,12 +228,14 @@
         <el-radio-button label="1">审批通过</el-radio-button>
         <el-radio-button label="2">立项驳回</el-radio-button>
       </el-radio-group>
-      <el-input v-if="this.changeProjectStatus.title=='分配EPG'" placeholder="请填写分配给该项目的EPG"></el-input>
-      <el-input v-if="this.changeProjectStatus.title=='分配QA'" placeholder="请填写分配给该项目的QA"></el-input>
+      <el-input v-if="this.changeProjectStatus.title=='分配EPG'" v-model="epgId" placeholder="请填写分配给该项目的EPG"></el-input>
+      <el-input v-if="this.changeProjectStatus.title=='分配QA'" v-model="qaId" placeholder="请填写分配给该项目的QA"></el-input>
 
       <span v-if="this.changeProjectStatus.title=='变更项目状态'">是否完成所有配置，确定将该项目状态变更为“进行中”？</span>
       <span v-if="this.changeProjectStatus.title=='交付项目'">是否确定将该项目状态变更为“已交付”？</span>
-      <span v-if="this.changeProjectStatus.title=='结束项目'">是否确定将该项目状态变更为“已结束”？</span>
+      <span v-if="this.changeProjectStatus.title=='结束项目'">是否确定将该项目状态变更为“结束”？</span>
+      <span v-if="this.changeProjectStatus.title=='项目已归档'">是否确定将该项目状态变更为“已归档”？</span>
+
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="changeProjectStatus.show = false">取 消</el-button>
@@ -241,13 +244,22 @@
                    @click="pendingProject()">确 定</el-button>
         <el-button v-show="this.changeProjectStatus.title=='分配EPG'"
                    type="primary"
-                   @click="">确 定</el-button>
+                   @click="distributeEpg()">确 定</el-button>
         <el-button v-show="this.changeProjectStatus.title=='分配QA'"
                    type="primary"
-                   @click="">确 定</el-button>
+                   @click="distributeQa()">确 定</el-button>
         <el-button v-show="this.changeProjectStatus.title=='变更项目状态'"
                    type="primary"
                    @click="changeProjectStatusTo3()">确 定</el-button>
+        <el-button v-show="this.changeProjectStatus.title=='交付项目'"
+                   type="primary"
+                   @click="changeProjectStatusTo4()">确 定</el-button>
+        <el-button v-show="this.changeProjectStatus.title=='结束项目'"
+                   type="primary"
+                   @click="changeProjectStatusTo5()">确 定</el-button>
+        <el-button v-show="this.changeProjectStatus.title=='项目已归档'"
+                   type="primary"
+                   @click="changeProjectStatusTo6()">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -637,12 +649,17 @@
   import {searchProject, approveProject, rejectProject} from '../../api/api'
   import {createNewProject, getEPGLeaderTask, getQALeaderTask, getMemberTask} from '../../api/api'
   import {updateProject, userRoleSearch, viewMyTask, getPMTask} from '../../api/api'
-  import {deleteProject} from '../../api/api'
+  import {deleteProject, setProjectStatus} from '../../api/api'
+  import axios from 'axios';
+  axios.defaults.baseURL="http://47.100.187.197:8080";
+  axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 export default {
   name: "tablepage",
   data() {
     return {
+      epgId: '',
+      qaId: '',
       userInfo: {
         userName: '',
         userId: '',
@@ -835,6 +852,7 @@ export default {
           var json = response;
           console.log(json);
           this.editDialogParam.show = false;
+          this.onSearch();
         })
         .catch(error => {
           this.$message({ message: "执行异常,请重试", type: "error" });
@@ -846,18 +864,13 @@ export default {
     onShowAdd() {
       this.formEdit = {
         businessArea: "",
-        changeTime: "",
-        createTime: "",
-        createrId: "",
         customerInfo: "",
         deliveryTime: "",
-        id: "",
         leader: "",
         milepost: "",
         projectFunction: "",
         projectName: "",
         scheduleTime: "",
-        status: "",
         technology: ""
       }
       this.editDialogParam.title = "新增";//设置标题
@@ -868,6 +881,34 @@ export default {
       this.editDialogParam.title = "编辑";
       this.editDialogParam.show = true;
       this.editDialogParam.formEditDisabled=false;
+
+      this.formEdit=Object.assign({},rowData);
+      this.formEdit.gender+='';
+    },
+    onShowDelete(rowData) {
+
+      this.$confirm('此操作将删除项目, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+
+        var params = 'ids%5B%5D='+rowData.id
+        deleteProject(params).then(response=>{
+          this.onSearch();
+          this.$message({
+            type:'success',
+            message:'删除成功'
+          })
+
+        })
+
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
 
       this.formEdit=Object.assign({},rowData);
       this.formEdit.gender+='';
@@ -1046,68 +1087,160 @@ export default {
 
       }
     },
+    onShowChangeProjectStatusTo4(item){
+      if(this.userInfo.userRole=='PM'&&item.createrId==this.userInfo.userId){
+        this.changeProjectStatus.show = true;
+        this.changeProjectStatus.title= '交付项目';
+        this.formEdit = item;
+      }
+    },
+    onShowChangeProjectStatusTo5(item){
+      if(this.userInfo.userRole=='PM'&&item.createrId==this.userInfo.userId){
+        this.changeProjectStatus.show = true;
+        this.changeProjectStatus.title= '结束项目';
+        this.formEdit = item;
+      }
+    },
+    onShowChangeProjectStatusTo6(item){
+      if(this.userInfo.userRole=='CMO'){           ////////////现在这个测不了
+        this.changeProjectStatus.show = true;
+        this.changeProjectStatus.title= '项目已归档';
+        this.formEdit = item;
+      }
+    },
     changeProjectStatusTo3(){
 
             //////////////////////////////////////////////////////调用改变项目状态接口
 
-      this.changeProjectStatus.show = false;
+      var params = 'projectId='+this.formEdit.id+'&statusId=3'
+      setProjectStatus(params)
+        .then(response => {
+
+          if (response.msg == "状态更新成功！") {
+
+            this.changeProjectStatus.show = false;
+            this.onSearch();
+
+          } else {
+            this.$message({ message: response.msg, type: "warning" });
+          }
+        })
+        .catch(error => {
+          this.$message({ message: "执行异常,请重试", type: "error" });
+        })
+        .finally(() => {
+
+        });
+
     },
     changeProjectStatusTo4(){
 
       //////////////////////////////////////////////////////调用改变项目状态接口
 
-      if(this.userInfo.userRole=='PM'){
+      var params = 'projectId='+this.formEdit.id+'&statusId=4'
+      setProjectStatus(params)
+        .then(response => {
 
-        this.changeProjectStatus.show = true;
-        this.changeProjectStatus.title= '交付项目';
-        this.formEdit = item;
+          if (response.msg == "状态更新成功！") {
 
-        // this.$confirm('是否确定将该项目状态变更为“已交付”？', '变更项目状态', {
-        //   confirmButtonText: '确定',
-        //   cancelButtonText: '取消',
-        //   type: 'warning'
-        // }).then(() => {
-        //
-        // }).catch(() => {
-        //
-        // });
-      }
+            this.changeProjectStatus.show = false;
+            this.onSearch();
+
+          } else {
+            this.$message({ message: response.msg, type: "warning" });
+          }
+        })
+        .catch(error => {
+          this.$message({ message: "执行异常,请重试", type: "error" });
+        })
+        .finally(() => {
+
+        });
 
     },
     changeProjectStatusTo5(){
 
-      //////////////////////////////////////////////////////调用改变项目状态接口
-      if(this.userInfo.userRole=='PM'){
+      var params = 'projectId='+this.formEdit.id+'&statusId=5'
+      setProjectStatus(params)
+        .then(response => {
 
-        this.changeProjectStatus.show = true;
-        this.changeProjectStatus.title= '结束项目';
-        this.formEdit = item;
+          if (response.msg == "状态更新成功！") {
 
-        // this.$confirm('是否确定将该项目状态变更为“已结束”？', '变更项目状态', {
-        //   confirmButtonText: '确定',
-        //   cancelButtonText: '取消',
-        //   type: 'warning'
-        // }).then(() => {
-        //
-        // }).catch(() => {
-        //
-        // });
-      }
+            this.changeProjectStatus.show = false;
+            this.onSearch();
+
+          } else {
+            this.$message({ message: response.msg, type: "warning" });
+          }
+        })
+        .catch(error => {
+          this.$message({ message: "执行异常,请重试", type: "error" });
+        })
+        .finally(() => {
+
+        });
     },
     changeProjectStatusTo6(){
 
-      //////////////////////////////////////////////////////调用改变项目状态接口
-      if(this.userInfo.userRole=='组织及配置管理员'){        ////////////////////这个角色目前还没有
-        this.$confirm('是否确定将该项目状态变更为“已归档”？', '变更项目状态', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
+      var params = 'projectId='+this.formEdit.id+'&statusId=6'
+      setProjectStatus(params)
+        .then(response => {
 
-        }).catch(() => {
+          if (response.msg == "状态更新成功！") {
+
+            this.changeProjectStatus.show = false;
+            this.onSearch();
+
+          } else {
+            this.$message({ message: response.msg, type: "warning" });
+          }
+        })
+        .catch(error => {
+          this.$message({ message: "执行异常,请重试", type: "error" });
+        })
+        .finally(() => {
 
         });
+    },
+    distributeEpg(){
+
+      var params = {
+        "projectId": this.formEdit.id,
+        "roleDescription": '项目改进小组',
+        "userId": this.epgId
       }
+      axios.post(`/ProjectUserInfo/Add?id=3` , params)
+        .then(res => {
+          console.log(res);
+          this.editGroupDialogParam.show=false;
+        })
+        .catch(error => {
+          this.$message({ message: "执行异常,请重试", type: "error" });
+        })
+        .finally(() => {
+
+        });
+
+    },
+    distributeQa(){
+
+      var params = {
+        "projectId": this.formEdit.id,
+        "roleDescription": '质量监控',
+        "userId": this.qaId
+      }
+      axios.post(`/ProjectUserInfo/Add?id=4` , params)
+        .then(res => {
+          console.log(res);
+          this.editGroupDialogParam.show=false;
+        })
+        .catch(error => {
+          this.$message({ message: "执行异常,请重试", type: "error" });
+        })
+        .finally(() => {
+
+        });
+
     },
     pendingProject(){
 
@@ -1204,18 +1337,41 @@ export default {
     showPMTask(){
       //查询
       this.loading = true;
-      getPMTask({
+      // getPMTask({
+      //   pageNum: this.pageInfo.pageNum,
+      //   pageSize: this.pageInfo.pageSize
+      // })
+      //   .then(response => {
+      //     var json = response;
+      //     console.log(json);
+      //     if (json.msg == "查询成功！") {
+      //       this.tableData = json.data.data;
+      //       this.pageInfo.pageTotal = json.count;
+      //     } else {
+      //       this.$message({ message: json.msg, type: "warning" });
+      //     }
+      //   })
+      //   .catch(error => {
+      //     this.$message({ message: "执行异常,请重试", type: "error" });
+      //   })
+      //   .finally(() => {
+      //     this.loading = false;
+      //   });
+
+
+      searchProject({
         pageNum: this.pageInfo.pageNum,
-        pageSize: this.pageInfo.pageSize
+        pageSize: this.pageInfo.pageSize,
+        createrId: this.userInfo.userId
       })
         .then(response => {
           var json = response;
           console.log(json);
-          if (json.msg == "查询成功！") {
+          if (json.msg == "查询成功") {
             this.tableData = json.data.data;
             this.pageInfo.pageTotal = json.count;
           } else {
-            this.$message({ message: json.msg, type: "warning" });
+            this.$message({ message: json.message, type: "warning" });
           }
         })
         .catch(error => {
