@@ -134,13 +134,16 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100"  align="center">
         <template slot-scope="scope">
-          <i v-if="scope.row.status!=0&&
+          <i v-if="scope.row.status==5&&userInfo.userRole=='CM'"
+             style="font-size: 1.1rem;" class="el-icon-zoom-in"
+             @click="onShowDetail(scope.row)"></i>
+          <i v-if="scope.row.status!=0&&scope.row.status!=5&&scope.row.status!=6&&
               (scope.row.createrId==userInfo.userId||
                (userInfo.userRole=='Superior'&&scope.row.leader==userInfo.userName))"
              style="font-size: 1.1rem;" class="el-icon-zoom-in"
              @click="onShowDetail(scope.row)"></i>
-          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
-          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDelete(scope.row)"></i>
+          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId&&scope.row.status<5" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
+          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId&&scope.row.status<5" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDelete(scope.row)"></i>
         </template>
       </el-table-column>
     </el-table>
@@ -181,7 +184,8 @@
           <el-input v-model="formEdit.projectName" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_select" label="项目上级" prop="type">
-          <el-input v-model="formEdit.leader" placeholder=""></el-input>
+          <el-input v-if="editDialogParam.title=='编辑'" disabled v-model="formEdit.leader" placeholder=""></el-input>
+          <el-input v-else v-model="formEdit.leader" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="客户信息" prop="age">
           <el-input v-model="formEdit.customerInfo" placeholder=""></el-input>
@@ -228,6 +232,7 @@
         <el-radio-button label="1">审批通过</el-radio-button>
         <el-radio-button label="2">立项驳回</el-radio-button>
       </el-radio-group>
+
       <el-input v-if="this.changeProjectStatus.title=='分配EPG'" v-model="epgId" placeholder="请填写分配给该项目的EPG"></el-input>
       <el-input v-if="this.changeProjectStatus.title=='分配QA'" v-model="qaId" placeholder="请填写分配给该项目的QA"></el-input>
 
@@ -736,7 +741,8 @@ export default {
       radioSuperior: '2',
       radioLeader: '2',
       radioPM: '2',
-      radioMember: '2'
+      radioMember: '2',
+      radioTime: '1'
 
     };
   },
@@ -1013,6 +1019,10 @@ export default {
         }
       }
 
+      if (this.userInfo.userRole=='Member'||this.userInfo.userRole=='CM'){          /////////这里后面还要改
+        this.onSearch();
+      }
+
       console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
@@ -1041,6 +1051,10 @@ export default {
         } else if (this.radioLeader=='2') {
           this.onSearch();
         }
+      }
+
+      if (this.userInfo.userRole=='Member'||this.userInfo.userRole=='CM'){          /////////这里后面还要改
+        this.onSearch();
       }
 
       console.log(`当前为第 ${val} 页`);
@@ -1102,7 +1116,7 @@ export default {
       }
     },
     onShowChangeProjectStatusTo6(item){
-      if(this.userInfo.userRole=='CMO'){           ////////////现在这个测不了
+      if(this.userInfo.userRole=='CM'){
         this.changeProjectStatus.show = true;
         this.changeProjectStatus.title= '项目已归档';
         this.formEdit = item;
@@ -1201,6 +1215,7 @@ export default {
         .finally(() => {
 
         });
+
     },
     distributeEpg(){
 
@@ -1212,9 +1227,11 @@ export default {
       axios.post(`/ProjectUserInfo/Add?id=3` , params)
         .then(res => {
           console.log(res);
-          this.editGroupDialogParam.show=false;
+          this.changeProjectStatus.show = false;
+          this.$message({ message: "成功为该项目分配EPG！", type: "success" });
         })
         .catch(error => {
+          console.log(error)
           this.$message({ message: "执行异常,请重试", type: "error" });
         })
         .finally(() => {
@@ -1232,7 +1249,8 @@ export default {
       axios.post(`/ProjectUserInfo/Add?id=4` , params)
         .then(res => {
           console.log(res);
-          this.editGroupDialogParam.show=false;
+          this.changeProjectStatus.show = false;
+          this.$message({ message: "成功为该项目分配QA！", type: "success" });
         })
         .catch(error => {
           this.$message({ message: "执行异常,请重试", type: "error" });
@@ -1289,40 +1307,18 @@ export default {
     },
     showMyTask(){   //项目上级获取自己待审批的项目
 
-      // viewMyTask()
-      //   .then(response => {
-      //
-      //     this.tableData=[];
-      //     if (response.msg == "查询成功！") {
-      //
-      //       this.tableData = response.data.data;
-      //
-      //     } else {
-      //       this.$message({ message: response.msg, type: "warning" });
-      //     }
-      //   })
-      //   .catch(error => {
-      //     this.$message({ message: "执行异常,请重试", type: "error" });
-      //   })
-      //   .finally(() => {
-      //
-      //   });
-
       this.loading = true;
-      searchProject({
-        pageNum: this.pageInfo.pageNum,
-        pageSize: this.pageInfo.pageSize,
-        leader: this.userInfo.userName,
-        status: 1
-      })
+      viewMyTask()
         .then(response => {
-          var json = response;
-          console.log(json);
-          if (json.msg == "查询成功") {
-            this.tableData = json.data.data;
-            this.pageInfo.pageTotal = json.count;
+
+          this.tableData=[];
+          if (response.msg == "查询成功！") {
+
+            this.tableData = response.data.data;
+            this.pageInfo.pageTotal = response.count;
+
           } else {
-            this.$message({ message: json.message, type: "warning" });
+            this.$message({ message: response.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -1332,23 +1328,21 @@ export default {
           this.loading = false;
         });
 
-
-    },
-    showPMTask(){
-      //查询
-      this.loading = true;
-      // getPMTask({
+      // this.loading = true;
+      // searchProject({
       //   pageNum: this.pageInfo.pageNum,
-      //   pageSize: this.pageInfo.pageSize
+      //   pageSize: this.pageInfo.pageSize,
+      //   leader: this.userInfo.userName,
+      //   status: 1
       // })
       //   .then(response => {
       //     var json = response;
       //     console.log(json);
-      //     if (json.msg == "查询成功！") {
+      //     if (json.msg == "查询成功") {
       //       this.tableData = json.data.data;
       //       this.pageInfo.pageTotal = json.count;
       //     } else {
-      //       this.$message({ message: json.msg, type: "warning" });
+      //       this.$message({ message: json.message, type: "warning" });
       //     }
       //   })
       //   .catch(error => {
@@ -1359,19 +1353,22 @@ export default {
       //   });
 
 
-      searchProject({
+    },
+    showPMTask(){
+      //查询
+      this.loading = true;
+      getPMTask({
         pageNum: this.pageInfo.pageNum,
-        pageSize: this.pageInfo.pageSize,
-        createrId: this.userInfo.userId
+        pageSize: this.pageInfo.pageSize
       })
         .then(response => {
           var json = response;
           console.log(json);
-          if (json.msg == "查询成功") {
+          if (json.msg == "查询成功！") {
             this.tableData = json.data.data;
             this.pageInfo.pageTotal = json.count;
           } else {
-            this.$message({ message: json.message, type: "warning" });
+            this.$message({ message: json.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -1380,6 +1377,29 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+
+
+      // searchProject({
+      //   pageNum: this.pageInfo.pageNum,
+      //   pageSize: this.pageInfo.pageSize,
+      //   createrId: this.userInfo.userId
+      // })
+      //   .then(response => {
+      //     var json = response;
+      //     console.log(json);
+      //     if (json.msg == "查询成功") {
+      //       this.tableData = json.data.data;
+      //       this.pageInfo.pageTotal = json.count;
+      //     } else {
+      //       this.$message({ message: json.message, type: "warning" });
+      //     }
+      //   })
+      //   .catch(error => {
+      //     this.$message({ message: "执行异常,请重试", type: "error" });
+      //   })
+      //   .finally(() => {
+      //     this.loading = false;
+      //   });
     },
     showMemberTask(){
                          /////////////////////////////////////////////查询普通员工自己参与的项目

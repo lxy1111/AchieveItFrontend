@@ -74,6 +74,10 @@ export const workHourAdd = params => { return axios.post(`/WorkHourInfo/Add` , p
 
 export const workHourEdit = params => { return axios.post(`/WorkHourInfo/Edit` , params).then(res => res.data); };
 
+export const workHourAccept = params => { return axios.post(`/WorkHourInfo/Accept?id=`+params , params).then(res => res.data); };
+
+export const workHourReject = params => { return axios.post(`/WorkHourInfo/Reject?id=`+params , params).then(res => res.data); };
+
 
 
 export const groupListSearch = params => { return axios.post(`/ProjectUserInfo/Search?projectId=`+params , params).then(res => res.data); };

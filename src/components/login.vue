@@ -310,6 +310,7 @@ export default {
 
             //保存登陆信息
             var userInfo = json.data;
+            console.log(json)
             sessionStorage.setItem("userName", param.username); //用户名
             sessionStorage.setItem("token", userInfo.token); //保存秘钥
             sessionStorage.setItem("role", userInfo.role);
@@ -326,6 +327,8 @@ export default {
               sessionStorage.setItem("position", "QA经理");
             }else if(userInfo.role=='Member'){
               sessionStorage.setItem("position", "普通员工");
+            }else if(userInfo.role=='CM'){
+              sessionStorage.setItem("position", "组织级配置管理员");
             }
 
             //登陆成功跳转主页
