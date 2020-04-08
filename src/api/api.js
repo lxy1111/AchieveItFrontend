@@ -1,4 +1,5 @@
 import axios from 'axios';
+import qs from 'qs'
 import dev from '../../config/dev.env'
 
 let base = '';
@@ -10,7 +11,9 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 export const requestLogin = params => { return axios.post(`/Login/LogOn`, params).then(res => res.data); };
 
-export const addDevice = params => { return axios.post(`/Device/add`, params).then(res => res.data); };
+export const addDevice = params => { return axios.post(`/Device/Add`, params).then(res => res.data); };
+
+export const deleteDevice = params => { return axios.post(`/Device/Delete`,params).then(res => res.data); };
 
 export const searchProject = params => { return axios.post(`/ProjectInfo/Search`, params).then(res => res.data); };
 

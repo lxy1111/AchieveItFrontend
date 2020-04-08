@@ -21,9 +21,9 @@
               class="demo-form-inline"
               label-width="100px"
             >
-              <el-form-item class="small_form_input" label="设备id" prop="id">
-                <el-input v-model="formSearch.id" placeholder=""></el-input>
-              </el-form-item>
+<!--              <el-form-item class="small_form_input" label="设备id" prop="id">-->
+<!--                <el-input v-model="formSearch.id" placeholder=""></el-input>-->
+<!--              </el-form-item>-->
               <el-form-item class="form_input" label="资产管理者" prop="deviceowner">
                 <el-input v-model="formSearch.deviceowner" placeholder=""></el-input>
               </el-form-item>
@@ -51,17 +51,17 @@
         <el-button style="margin-top: 7px; background: #309aec; color: white; border-color: #309aec;" round @click="onShowAdd">新增设备</el-button>
       </el-col>
       <el-col :span="2">
-        <el-button style="margin-top: 7px;" type="danger" round>批量删除</el-button>
+        <el-button style="margin-top: 7px;" type="danger" round @click="deleteInBatches">批量删除</el-button>
       </el-col>
     </el-row>
     <!-- 操作区 end -->
     <!--表格 start-->
 
-    <el-table :data="tableData" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">
+    <el-table :data="tableData" stripe class="visitor-table" style="width: 100%" align="center" @selection-change="handleSelectionChange" v-loading="loading">
       <el-table-column type="selection" width="30" align="center"></el-table-column>
-      <el-table-column prop="id" label="设备id"  align="center"></el-table-column>
-      <el-table-column prop="deviceowner" label="资产管理者" ></el-table-column>
-      <el-table-column prop="status" label="设备状态" >
+<!--      <el-table-column prop="id" label="设备id"  align="center"></el-table-column>-->
+      <el-table-column prop="deviceowner" label="资产管理者" align="center" ></el-table-column>
+      <el-table-column prop="status" label="设备状态" align="center" >
         <template slot-scope="scope">
           <button style="border-radius: 0.2rem;
                             border: 0px;
@@ -90,6 +90,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="deadline" label="资产使用期限(天)" ></el-table-column>
+
     </el-table>
 
     <!--表格 end-->
@@ -121,15 +122,18 @@
         label-width="68px"
         :disabled="editDialogParam.formEditDisabled"
       >
-        <el-form-item class="form_input" label="设备id" prop="id">
-          <el-input v-model="formEdit.id" placeholder=""></el-input>
-        </el-form-item>
+
         <el-form-item class="form_input" label="资产管理者" prop="deviceowner">
           <el-input v-model="formEdit.deviceowner" placeholder=""></el-input>
         </el-form-item>
-        <el-form-item class="form_date" label="资产交付期限" prop="createDate">
+        <el-form-item class="form_date" label="资产使用期限(天)" prop="createDate">
           <el-input v-model="formEdit.deadline" placeholder=""></el-input>
         </el-form-item>
+        <template slot-scope="scope">
+          <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
+          <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditSubFunction(scope.row)"></i>
+          <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteSubFunction(scope.row)"></i>
+        </template>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogParam.show = false">取 消</el-button>
@@ -453,8 +457,8 @@
 
 
 <script>
-  import {editDevice,addDevice, searchDevice} from "../../api/api";
-
+  import {editDevice,addDevice,deleteDevice, searchDevice} from "../../api/api";
+  import qs from 'qs'
     export default {
         name: "deviceManagement",
         data() {
@@ -468,6 +472,7 @@
                 tableData: [
 
                 ],
+                multipleSelection:'',
                 formSearch: {
                   deadline: "",
                   deviceowner: "",
@@ -482,7 +487,7 @@
                   deviceowner: "",
                   id: "",
                   projectID: "",
-                  status: ""
+                  status: 0
                 },
                 formEditRules: {
                     //校验规则
@@ -507,6 +512,65 @@
             this.onSearch();
         },
         methods: {
+            handleSelectionChange(val){
+                this.multipleSelection = val;
+                console.log(val)
+            },
+            deleteInBatches(){
+                this.$confirm('确认删除吗, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let ids=[]
+                    for(var i=0;i<this.multipleSelection.length;i++){
+                        ids.push(this.multipleSelection[i].id)
+                    }
+                    let param={
+                        ids:ids,
+                    }
+                    deleteDevice(ids).then(response=>{
+                        this.$message({
+                            type:'success',
+                            message:'删除成功'
+                        })
+
+                    })
+
+                }).catch((error) => {
+                    this.$message({
+                        type: 'info',
+                        message: error
+                    });
+                });
+
+            },
+            onShowDeleteDevice(rowData){
+
+                this.$confirm('确认删除妈, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    deleteDevice(rowData.id).then(response=>{
+                        this.getAllFunction(this.formEdit.id)
+                        this.$message({
+                            type:'success',
+                            message:'删除成功'
+                        })
+
+                    })
+
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+
+
+            },
             onSearch() {
                 //查询
                 this.loading = true;
@@ -543,11 +607,12 @@
 
               console.log("新增设备------调用_save:");
               console.log(this.formEdit);
+              this.formEdit.status=1
                 addDevice(this.formEdit).then(response=>{
                     var json = response;
                     console.log(json);
-                    if (json.msg == "查询成功") {
-                        this.$message({message:'成功',type:'success'})
+                    if (json.msg == "新增成功！") {
+                        this.$message({message:'新增成功',type:'success'})
                         this.onSearch()
                     } else {
                         this.$message({ message: json.message, type: "warning" });
