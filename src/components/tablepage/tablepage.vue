@@ -864,18 +864,13 @@ export default {
     onShowAdd() {
       this.formEdit = {
         businessArea: "",
-        changeTime: "",
-        createTime: "",
-        createrId: "",
         customerInfo: "",
         deliveryTime: "",
-        id: "",
         leader: "",
         milepost: "",
         projectFunction: "",
         projectName: "",
         scheduleTime: "",
-        status: "",
         technology: ""
       }
       this.editDialogParam.title = "新增";//设置标题

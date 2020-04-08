@@ -150,24 +150,24 @@
                   stripe class="visitor-table" align="center">
                   <el-table-column type="expand" >
                       <template slot-scope="props">
-                      <el-table  :data="props.row.projectSubFuncs"
-                                 style="width: 100%;margin-bottom: 20px; margin-top: 1rem;"
-                                 row-key="id"
-                                 stripe class="visitor-table" align="center">
-                        <el-table-column label="子功能id" prop="id" align="center" >
-                        </el-table-column>
-                        <el-table-column label="子功能名称" prop="functionName"  align="center">
-                        </el-table-column>
-                        <el-table-column label="负责人" prop="personCharge" align="center" >
-                        </el-table-column>
-                        <el-table-column fixed="right" label="操作"  align="center">
-                          <template slot-scope="scope">
-                            <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
-                            <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditSubFunction(scope.row)"></i>
-                            <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteSubFunction(scope.row)"></i>
-                          </template>
-                        </el-table-column>
-                      </el-table>
+                        <el-table  :data="props.row.projectSubFuncs"
+                                   style="width: 93%; margin-left: 5%; margin-bottom: 20px; margin-top: 1rem; background-color: #fcfcfc;border-radius: 4px;box-shadow:  0px 2px 10px rgba(0, 0, 0, .12); "
+                                   row-key="id"
+                                   stripe class="visitor-table" align="center">
+                          <el-table-column label="子功能id" prop="id" align="center" >
+                          </el-table-column>
+                          <el-table-column label="子功能名称" prop="functionName"  align="center">
+                          </el-table-column>
+                          <el-table-column label="负责人" prop="personCharge" align="center" >
+                          </el-table-column>
+                          <el-table-column fixed="right" label="操作"  align="center">
+                            <template slot-scope="scope">
+                              <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
+                              <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditSubFunction(scope.row)"></i>
+                              <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteSubFunction(scope.row)"></i>
+                            </template>
+                          </el-table-column>
+                        </el-table>
                       </template>
                   </el-table-column>
                   <el-table-column prop="id" label="功能id" align="center"></el-table-column>
@@ -175,7 +175,7 @@
                   <el-table-column prop="personCharge" label="负责人" align="center"></el-table-column>
                   <el-table-column fixed="right" label="操作"  align="center">
                     <template slot-scope="scope">
-                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-circle-plus-outline" @click="onShowAddSubFunction(scope.row)"></i>
+                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-plus" @click="onShowAddSubFunction(scope.row)"></i>
                       <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
 
                       <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditFunction(scope.row)"></i>
@@ -1883,7 +1883,6 @@
 <style lang="scss">
 ._detailpage {
   font-family: "PingFang SC" !important;
-
   .status_button {
     border-radius: 0.1rem;
     border: 0px;
