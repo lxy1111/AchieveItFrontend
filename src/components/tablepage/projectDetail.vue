@@ -771,16 +771,6 @@
 <script>
   import {uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
 
-  import {
-    groupListSearch,
-    searchProject,
-    searchProjectSubFunction,
-    searchDevice,
-    deleteProjectSubFunction,
-    deleteProjectFunction,
-    workHourSearch,
-    workHourAccept, workHourReject
-  } from '../../api/api'
 
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
   import {approveProject, workHourEdit,workHourAdd,
