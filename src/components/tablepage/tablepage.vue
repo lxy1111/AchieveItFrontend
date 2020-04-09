@@ -134,16 +134,16 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100"  align="center">
         <template slot-scope="scope">
-          <i v-if="scope.row.status==5&&userInfo.userRole=='CM'"
+          <i v-if="scope.row.status==5&&userInfo.userRole=='CM'&&scope.row.status!=2"
              style="font-size: 1.1rem;" class="el-icon-zoom-in"
              @click="onShowDetail(scope.row)"></i>
-          <i v-if="scope.row.status!=0&&scope.row.status!=5&&scope.row.status!=6&&
+          <i v-if="scope.row.status!=0&&scope.row.status!=2&&scope.row.status!=5&&scope.row.status!=6&&
               (scope.row.createrId==userInfo.userId||
                (userInfo.userRole=='Superior'&&scope.row.leader==userInfo.userName))"
              style="font-size: 1.1rem;" class="el-icon-zoom-in"
              @click="onShowDetail(scope.row)"></i>
-          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId&&scope.row.status<5" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
-          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId&&scope.row.status<5" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDelete(scope.row)"></i>
+          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId&&scope.row.status<5&&scope.row.status!=2" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEdit(scope.row)"></i>
+          <i v-if="userInfo.userRole=='PM'&&scope.row.createrId==userInfo.userId&&scope.row.status<5&&scope.row.status!=2" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDelete(scope.row)"></i>
         </template>
       </el-table-column>
     </el-table>
@@ -233,8 +233,8 @@
         <el-radio-button label="2">立项驳回</el-radio-button>
       </el-radio-group>
 
-      <el-input v-if="this.changeProjectStatus.title=='分配EPG'" v-model="epgId" placeholder="请填写分配给该项目的EPG"></el-input>
-      <el-input v-if="this.changeProjectStatus.title=='分配QA'" v-model="qaId" placeholder="请填写分配给该项目的QA"></el-input>
+      <el-input v-if="this.changeProjectStatus.title=='分配EPG'" v-model="epgId" placeholder="请填写分配给该项目的EPG的id"></el-input>
+      <el-input v-if="this.changeProjectStatus.title=='分配QA'" v-model="qaId" placeholder="请填写分配给该项目的QA的id"></el-input>
 
       <span v-if="this.changeProjectStatus.title=='变更项目状态'">是否完成所有配置，确定将该项目状态变更为“进行中”？</span>
       <span v-if="this.changeProjectStatus.title=='交付项目'">是否确定将该项目状态变更为“已交付”？</span>
@@ -1134,6 +1134,7 @@ export default {
 
             this.changeProjectStatus.show = false;
             this.onSearch();
+            this.radioPM='2';
 
           } else {
             this.$message({ message: response.msg, type: "warning" });
@@ -1159,6 +1160,7 @@ export default {
 
             this.changeProjectStatus.show = false;
             this.onSearch();
+            this.radioPM='2';
 
           } else {
             this.$message({ message: response.msg, type: "warning" });
@@ -1182,6 +1184,7 @@ export default {
 
             this.changeProjectStatus.show = false;
             this.onSearch();
+            this.radioPM='2';
 
           } else {
             this.$message({ message: response.msg, type: "warning" });
@@ -1270,6 +1273,7 @@ export default {
 
               this.changeProjectStatus.show = false;
               this.onSearch();
+              this.radioSuperior='2';
 
             } else {
               this.$message({ message: response.msg, type: "warning" });
@@ -1290,6 +1294,7 @@ export default {
 
               this.changeProjectStatus.show = false;
               this.onSearch();
+              this.radioSuperior='2';
 
             } else {
               this.$message({ message: response.msg, type: "warning" });
@@ -1308,7 +1313,10 @@ export default {
     showMyTask(){   //项目上级获取自己待审批的项目
 
       this.loading = true;
-      viewMyTask()
+      viewMyTask({
+        pageSize: this.pageInfo.pageSize,
+        pageNum: this.pageInfo.currentPage
+      })
         .then(response => {
 
           this.tableData=[];
