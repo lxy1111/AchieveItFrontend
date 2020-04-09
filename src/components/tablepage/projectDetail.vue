@@ -115,19 +115,19 @@
             <el-tab-pane label="功能列表">
               <el-row style="margin-top: 1rem;">
                 <el-col :span="20">
-                  <el-button v-if="this.userInfo.userRole=='PM'"
-                             style="background: #439ea8;
-                                  color: white;
-                                  margin-left: 1rem;
-                                  width: 8rem;
-                                  border-color: #439ea8;"
-                             round @click="">从excel导入</el-button>
-                  <el-button style="background: #cf9236;
-                                  color: white;
-                                  margin-left: 1rem;
-                                  width: 8rem;
-                                  border-color: #cf9236;"
-                             round>导出至excel</el-button>
+<!--                  <el-button v-if="this.userInfo.userRole=='PM'"-->
+<!--                             style="background: #439ea8;-->
+<!--                                  color: white;-->
+<!--                                  margin-left: 1rem;-->
+<!--                                  width: 8rem;-->
+<!--                                  border-color: #439ea8;"-->
+<!--                             round @click="">从excel导入</el-button>-->
+<!--                  <el-button style="background: #cf9236;-->
+<!--                                  color: white;-->
+<!--                                  margin-left: 1rem;-->
+<!--                                  width: 8rem;-->
+<!--                                  border-color: #cf9236;"-->
+<!--                             round>导出至excel</el-button>-->
                 </el-col>
                 <el-col :span="4">
                   <el-button v-if="this.userInfo.userRole=='PM'"
@@ -175,6 +175,8 @@
                   <el-table-column prop="personCharge" label="负责人" align="center"></el-table-column>
                   <el-table-column fixed="right" label="操作"  align="center">
                     <template slot-scope="scope">
+                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-folder-opened" @click="exportExcel(scope.row)"></i>
+                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-folder-add" @click="onShowOpenExcel(scope.row)"></i>
                       <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-plus" @click="onShowAddSubFunction(scope.row)"></i>
                       <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
 
@@ -570,6 +572,28 @@
       </span>
     </el-dialog>
 
+
+    <el-dialog
+      title="上传excel文件"
+      :visible.sync="showExcel"
+      width="700px"
+      @close="handleDialogClose"
+      v-loading="uploadingexcel"
+    >
+      <el-link  :href="require('../../../static/subFunction.xlsx')" download="子功能模版.xlsx"  style="left: 44%">
+        下载模版文件
+      </el-link>
+      <el-upload
+        class="upload-demo"
+        action="string"
+        :http-request="uploadExcel"
+      >
+        <el-button size="small" type="primary">点击上传</el-button>
+        <div slot="tip" class="el-upload__tip">只能上传excel,且严格按照模版文件来进行文件填写</div>
+      </el-upload>
+  】
+    </el-dialog>
+
     <el-dialog
       :title="editSubFunctionDialogParam.title"
       :visible.sync="editSubFunctionDialogParam.show"
@@ -717,7 +741,7 @@
 
 <script>
 
-  import {groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
+  import {uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
   import {approveProject, workHourEdit,workHourAdd,
     rejectProject, deleteProjectGroup,
@@ -737,6 +761,7 @@
             functionOptions:[
 
             ],
+              uploadingexcel:false,
               functiontype:'',
             activityOptions:[
               {
@@ -846,6 +871,8 @@
 
                 }
             }],
+              showExcel:false,
+              functionid:'',
               riskList:[],
               deviceList:[],
             loadingFunc: false,
@@ -1136,6 +1163,62 @@
               });
 
           },
+            uploadExcel(param){
+                const formData = new FormData()
+                formData.append('file', param.file)
+                formData.append('id',this.functionid)
+                this.uploadingexcel=true
+                uploadExcel(formData,).then(response=>{
+                   if(response.msg="导入成功！"){
+                       this.showExcel=false
+                       this.$message({
+                           type:'success',
+                           message:'导入成功！'
+                       })
+                   }else{
+                       this.$message({
+                           type:'error',
+                           message:response.msg
+                       })
+                   }
+
+                })  .catch(error => {
+                    this.$message({ message: "执行异常,请重试", type: "error" });
+                })
+                    .finally(() => {
+                        this.uploadingexcel = false;
+                    });
+            },
+            onShowOpenExcel(rowData){
+                this.showExcel=true
+                this.functionid=rowData.id
+
+
+            },
+            exportExcel(rowData){
+              this.loadingFunc=true
+              exportExcel(rowData.id).then(res=>{
+                  const blob = new Blob([res.data], {type: 'application/vnd.ms-excel'});//处理文档流
+                  const fileName = rowData.functionName+'.xlsx';
+                  const elink = document.createElement('a');
+                  elink.download = fileName;
+                  elink.style.display = 'none';
+                  elink.href = URL.createObjectURL(blob);
+                  document.body.appendChild(elink);
+                  elink.click();
+                  URL.revokeObjectURL(elink.href); // 释放URL 对象
+                  document.body.removeChild(elink);
+
+
+              }).catch(error => {
+                  this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+                  .finally(() => {
+this.loadingFunc=false
+                  });
+
+
+            },
             getAllRisks(projectId){
 
                 this.loadingFunc = true

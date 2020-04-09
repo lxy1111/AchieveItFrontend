@@ -8,6 +8,28 @@ axios.defaults.baseURL="http://47.100.187.197:8080";
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
+var configs = {
+  headers: {'Content-Type': 'multipart/form-data'}
+}
+var configs2={
+  responseType: 'arraybuffer', // 表明返回服务器返回的数据类型
+  headers: {
+    'Content-Type': 'application/json'
+  }
+
+}
+
+
+export const exportExcel = params => { return axios({
+  headers: {
+    'Content-Type':'application/json'
+  },
+  responseType: 'blob', //一定要写
+  method: 'post',
+  url:'/ProjectSubFunction/ExcelExport?id='+params,
+}) };
+
+export const uploadExcel = params => { return axios.post(`/ProjectSubFunction/ExcelImport`, params,configs).then(res => res.data); };
 
 export const requestLogin = params => { return axios.post(`/Login/LogOn`, params).then(res => res.data); };
 
