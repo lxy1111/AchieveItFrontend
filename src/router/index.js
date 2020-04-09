@@ -137,7 +137,10 @@ axios.interceptors.request.use(
     var headers = config.headers;
     if (sessionStorage.getItem("token")) {
       headers.token = sessionStorage.getItem("token");
+      config.headers.Authorization = sessionStorage.getItem("token");
     }
+
+    console.log(config)
     return config;
   },
   error => {

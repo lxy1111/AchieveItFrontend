@@ -5,7 +5,7 @@
         <el-card class="box-card" style="margin: 0.5rem;">
 
           <el-tabs style="margin: 0.5rem;">
-            <el-tab-pane label="项目信息">
+            <el-tab-pane v-if="formEdit.status!=5" label="项目信息">
               <div class="project-info">
                 <el-form
                   :inline="true"
@@ -41,8 +41,7 @@
                             class="status_button" v-if="formEdit.status==6">已归档</el-button>
                   </el-form-item>
                   <el-form-item class="form_select" label="项目上级" prop="leader">
-                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.leader" placeholder=""></el-input>
-                    <el-input v-else disabled v-model="formEdit.leader" placeholder=""></el-input>
+                    <el-input disabled v-model="formEdit.leader" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input_big" label="客户信息" prop="customerInfo">
                     <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.customerInfo" placeholder=""></el-input>
@@ -112,7 +111,7 @@
                 </el-form>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="功能列表">
+            <el-tab-pane v-if="formEdit.status!=5" label="功能列表">
               <el-row style="margin-top: 1rem;">
                 <el-col :span="20">
 <!--                  <el-button v-if="this.userInfo.userRole=='PM'"-->
@@ -138,7 +137,7 @@
                              round @click="onShowAddFunction">新建功能</el-button>
                 </el-col>
               </el-row>
-              <div>
+              <div v-if="formEdit.status!=5">
                 <el-table
                   :data="functionList"
                   v-loading="loadingFunc"
@@ -148,7 +147,7 @@
 
                   :tree-props="{children: 'subFunction', hasChildren: 'hasChildren'}"
                   stripe class="visitor-table" align="center">
-                  <el-table-column type="expand" >
+                  <el-table-column v-if="formEdit.status!=5" type="expand" >
                       <template slot-scope="props">
                         <el-table  :data="props.row.projectSubFuncs"
                                    style="width: 93%; margin-left: 5%; margin-bottom: 20px; margin-top: 1rem; background-color: #fcfcfc;border-radius: 4px;box-shadow:  0px 2px 10px rgba(0, 0, 0, .12); "
@@ -187,7 +186,7 @@
                 </el-table>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="组员管理">
+            <el-tab-pane v-if="formEdit.status!=5" label="组员管理">
               <el-row style="margin-top: 1rem;">
                 <el-button v-if="this.userInfo.userRole=='PM'"
                            style="background: #309aec;
@@ -221,7 +220,7 @@
                 </el-table>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="工时管理" class="choose-time">
+            <el-tab-pane v-if="formEdit.status!=5" label="工时管理" class="choose-time">
               <el-row style="margin-top: 1rem;">
                 <el-col :span="12" align="left">
                   <span style="font-weight: bold;">
@@ -246,14 +245,14 @@
                   row-key="name"
                   default-expand-all
                   stripe class="visitor-table" align="center">
-                  <el-table-column prop="userId" label="组员id" width="90" align="center"></el-table-column>
-                  <el-table-column prop="userName" label="姓名" width="90"></el-table-column>
-                  <el-table-column prop="userRole" label="角色"></el-table-column>
-                  <el-table-column prop="finishedFunction" label="完成功能"></el-table-column>
-                  <el-table-column prop="finishedActivity" label="完成活动"></el-table-column>
-                  <el-table-column prop="startTime" label="开始时间" :formatter="format_date"></el-table-column>
-                  <el-table-column prop="finishTime" label="结束时间" :formatter="format_date"></el-table-column>
-                  <el-table-column prop="status" width="150" align="center" label="状态" >
+                  <el-table-column prop="userId" label="组员id" width="80" align="center"></el-table-column>
+                  <el-table-column prop="userName" label="姓名" width="80"></el-table-column>
+                  <el-table-column prop="userRole" label="角色" width="130"></el-table-column>
+                  <el-table-column prop="finishedFunction" width="150" label="完成功能"></el-table-column>
+                  <el-table-column prop="finishedActivity" width="160" label="完成活动"></el-table-column>
+                  <el-table-column prop="startTime" label="开始时间" width="160" :formatter="format_date"></el-table-column>
+                  <el-table-column prop="finishTime" label="结束时间" width="160" :formatter="format_date"></el-table-column>
+                  <el-table-column prop="status" align="center" label="状态" >
                     <template slot-scope="scope">
                       <button @click=""
                               class="status_button" v-if="scope.row.status==0">已提交</button>
@@ -261,6 +260,17 @@
                               class="status_button" v-if="scope.row.status==1">已确认</button>
                       <button @click="" style="color: #ab1b10; background: rgba(171,27,16,0.09);"
                               class="status_button" v-if="scope.row.status==2">已驳回</button>
+                    </template>
+                  </el-table-column>
+                  <el-table-column v-if="userInfo.userName==formEdit.leader" fixed="right" label="操作"  align="center">
+                    <template slot-scope="scope">
+                      <button v-if="scope.row.status=='0'&&userInfo.userName==formEdit.leader"
+                                 style="font-size: 0.85rem;
+                                        color: #ab4d02; background-color: transparent;
+                                        border: 0"
+                                 @click="onShowPendingTime(scope.row)">
+                        审批工时
+                      </button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -284,9 +294,9 @@
                   default-expand-all
                   stripe class="visitor-table" align="center">
                   <el-table-column prop="startTime" label="日期" :formatter="format_date2"></el-table-column>
-                  <el-table-column prop="userRole" label="角色"></el-table-column>
-                  <el-table-column prop="finishedFunction" label="完成功能"></el-table-column>
-                  <el-table-column prop="finishedActivity" label="完成活动"></el-table-column>
+                  <el-table-column prop="userRole" width="130" label="角色"></el-table-column>
+                  <el-table-column prop="finishedFunction" width="150" label="完成功能"></el-table-column>
+                  <el-table-column prop="finishedActivity" width="160" label="完成活动"></el-table-column>
                   <el-table-column prop="startTime" label="开始时间" :formatter="format_date"></el-table-column>
                   <el-table-column prop="finishTime" label="结束时间" :formatter="format_date"></el-table-column>
                   <el-table-column prop="status" width="120" align="center" label="状态" >
@@ -307,7 +317,7 @@
                 </el-table>
               </el-row>
             </el-tab-pane>
-            <el-tab-pane label="归档管理">
+            <el-tab-pane v-if="formEdit.status==5" label="归档管理">
               <div>
                 <el-table
                   :data="documentList"
@@ -363,12 +373,12 @@
                 </el-table>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="缺陷管理">
+            <el-tab-pane v-if="formEdit.status!=5" label="缺陷管理">
               缺陷管理
             </el-tab-pane>
-            <el-tab-pane label="风险管理">
+            <el-tab-pane v-if="formEdit.status!=5" label="风险管理">
               <div>
-                <el-table :data="riskList" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loading">
+                <el-table :data="riskList" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loadingFunc">
                   <el-table-column type="selection" width="30" align="center"></el-table-column>
                   <el-table-column prop="id" label="风险id"  align="center"></el-table-column>
                   <el-table-column prop="type" label="风险类型" ></el-table-column>
@@ -667,13 +677,20 @@
     <el-dialog width="400px" align="center"
       :title="changeProjectStatus.title"
       :visible.sync="changeProjectStatus.show">
-      <el-radio-group v-model="radio1">
+      <el-radio-group v-if="this.changeProjectStatus.title=='审批项目'" v-model="radio1">
         <el-radio-button label="1">审批通过</el-radio-button>
         <el-radio-button label="2">立项驳回</el-radio-button>
       </el-radio-group>
+
+      <el-radio-group v-if="this.changeProjectStatus.title=='审批工时'" v-model="radioTime">
+        <el-radio-button label="1">审批通过</el-radio-button>
+        <el-radio-button label="2">工时驳回</el-radio-button>
+      </el-radio-group>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="changeProjectStatus.show = false">取 消</el-button>
         <el-button v-show="this.changeProjectStatus.title=='审批项目'" type="primary" @click="pendingProject()">确 定</el-button>
+        <el-button v-show="this.changeProjectStatus.title=='审批工时'" type="primary" @click="pendingTime()">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -697,14 +714,17 @@
           <el-input disabled v-model="userInfo.userName" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="完成功能" prop="finishedFunction">
-          <el-cascader
-            v-model="formMyTime.finishedFunction"
-            :options="functionOptions"
-            @change="handleChange">
-          </el-cascader>
+          <el-select clearable v-model="formMyTime.finishedFunction" placeholder="请选择">
+            <el-option
+              v-for="item in functionOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item class="form_input" label="完成活动" prop="finishedActivity">
-          <el-cascader
+          <el-cascader clearable
             v-model="formMyTime.finishedActivity"
             :options="activityOptions"
             @change="handleChange">
@@ -740,8 +760,19 @@
 </template>
 
 <script>
-
   import {uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
+
+  import {
+    groupListSearch,
+    searchProject,
+    searchProjectSubFunction,
+    searchDevice,
+    deleteProjectSubFunction,
+    deleteProjectFunction,
+    workHourSearch,
+    workHourAccept, workHourReject
+  } from '../../api/api'
+
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
   import {approveProject, workHourEdit,workHourAdd,
     rejectProject, deleteProjectGroup,
@@ -844,6 +875,7 @@
             ],
 
             radio1: '1',
+            radioTime: '1',
             userInfo: {
               userName: '',
               userId: '',
@@ -1091,8 +1123,8 @@
               projectId: '',
               userId: '',
               userName: '',
-              finishedFunction: '',
-              finishedActivity: '',
+              finishedFunction: [],
+              finishedActivity: [],
               startTime: '',
               finishTime: ''
             }
@@ -1388,7 +1420,7 @@ this.loadingFunc=false
                 this.$message({ message: error, type: "error" });
               })
               .finally(() => {
-                this.loading = false;
+                this.loadingFunc = false;
               });
 
           },
@@ -1398,8 +1430,8 @@ this.loadingFunc=false
               projectId: '',
               userId: '',
               userName: '',
-              finishedFunction: '',
-              finishedActivity: '',
+              finishedFunction: [],
+              finishedActivity: [],
               startTime: '',
               finishTime: ''
             }
@@ -1558,6 +1590,15 @@ this.loadingFunc=false
             this.formEditGroup=Object.assign({},rowData);
 
           },
+          onShowPendingTime(item){
+
+            if (this.userInfo.userName==this.formEdit.leader){
+              console.log("开始审批项目")
+              this.changeProjectStatus.show = true;
+              this.changeProjectStatus.title= '审批工时';
+            }
+            this.formMyTime = item;
+          },
           onShowPending(){
 
             if(this.userInfo.userRole=='Superior'){
@@ -1571,6 +1612,49 @@ this.loadingFunc=false
                 });
               }
 
+            }
+
+          },
+          pendingTime(){
+            if (this.radioTime=='1'){
+              workHourAccept(this.formMyTime.id)
+                .then(response => {
+
+                  if (response.msg == "状态更新成功！") {
+
+                    this.changeProjectStatus.show = false;
+                    this.searchWorkTime();
+
+                  } else {
+                    this.$message({ message: response.msg, type: "warning" });
+                  }
+                })
+                .catch(error => {
+                  this.$message({ message: "执行异常,请重试", type: "error" });
+                })
+                .finally(() => {
+
+                });
+            } else if(this.radioTime=='2'){
+
+              workHourReject(this.formMyTime.id)
+                .then(response => {
+
+                  if (response.msg == "状态更新成功！") {
+
+                    this.changeProjectStatus.show = false;
+                    this.searchWorkTime()
+
+                  } else {
+                    this.$message({ message: response.msg, type: "warning" });
+                  }
+                })
+                .catch(error => {
+                  this.$message({ message: "执行异常,请重试", type: "error" });
+                })
+                .finally(() => {
+
+                });
             }
 
           },
@@ -1889,8 +1973,8 @@ this.loadingFunc=false
               this.formMyTime.projectId = this.formEdit.id;
               this.formMyTime.userId = this.userInfo.userId;
               this.formMyTime.userName = this.userInfo.userName;
-              this.formMyTime.finishedFunction = this.formMyTime.finishedFunction[0];
-              this.formMyTime.finishedActivity = this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1];
+              //this.formMyTime.finishedFunction = this.formMyTime.finishedFunction[0];
+              //this.formMyTime.finishedActivity = this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1];
 
               console.log(this.formMyTime)
 
@@ -1898,17 +1982,23 @@ this.loadingFunc=false
                 .then(res=>{
                   console.log(res);
                   this.getMyWorkHour();
+
+                  formMyTime= {
+                    finishedFunction: [],
+                    finishedActivity: [],
+                    startTime: '',
+                    finishTime: ''
+                  }
+                  this.formMyTimeDialogParam.show = false;
+                  this.$message({
+                    type: 'success',
+                    message: '提交成功!'
+                  });
+
                 })
                 .catch(err=>{
 
                 })
-
-
-              this.formMyTimeDialogParam.show = false;
-              this.$message({
-                type: 'success',
-                message: '提交成功!'
-              });
 
             }).catch((err) => {
               console.log(err)
