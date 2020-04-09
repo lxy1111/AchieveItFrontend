@@ -188,13 +188,22 @@
             </el-tab-pane>
             <el-tab-pane v-if="formEdit.status!=5" label="组员管理">
               <el-row style="margin-top: 1rem;">
-                <el-button v-if="this.userInfo.userRole=='PM'"
-                           style="background: #309aec;
+                <el-col :span="12">
+                  <span style="background: white; font-weight: bold;
+                                  color: #439ea8;
+                                  margin-left: 1rem;
+                                  border: 0;">当前项目上级：{{this.formEdit.leader}}</span>
+                </el-col>
+                <el-col :span="12" align="right">
+                  <el-button v-if="this.userInfo.userRole=='PM'"
+                             style="background: #309aec;
                                 color: white;
                                 margin-left: 1rem;
                                 border-color: #309aec;"
-                           round @click="onShowAddGroup">新增组员</el-button>
+                             round @click="onShowAddGroup">新增组员</el-button>
+                </el-col>
               </el-row>
+
               <div>
                 <el-table
                   :data="groupList"
