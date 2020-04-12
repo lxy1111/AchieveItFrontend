@@ -772,13 +772,6 @@
   import {uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
 
   import {
-    groupListSearch,
-    searchProject,
-    searchProjectSubFunction,
-    searchDevice,
-    deleteProjectSubFunction,
-    deleteProjectFunction,
-    workHourSearch,
     workHourAccept, workHourReject
   } from '../../api/api'
 
@@ -1035,10 +1028,12 @@
               id: "",
               role: ""
             },
-            roleOptions: [{
-              value: '项目上级',
-              label: '项目上级'
-            }, {
+            roleOptions: [
+            //   {
+            //   value: '项目上级',
+            //   label: '项目上级'
+            // },
+              {
               value: '组织级配置管理员',
               label: '组织级配置管理员'
             }, {
