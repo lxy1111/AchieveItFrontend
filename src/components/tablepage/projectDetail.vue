@@ -610,7 +610,7 @@
         <el-button size="small" type="primary">点击上传</el-button>
         <div slot="tip" class="el-upload__tip">只能上传excel,且严格按照模版文件来进行文件填写</div>
       </el-upload>
-  】
+
     </el-dialog>
 
     <el-dialog
@@ -771,6 +771,9 @@
 <script>
   import {uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
 
+  import {
+    workHourAccept, workHourReject
+  } from '../../api/api'
 
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
   import {approveProject, workHourEdit,workHourAdd,
@@ -1025,10 +1028,12 @@
               id: "",
               role: ""
             },
-            roleOptions: [{
-              value: '项目上级',
-              label: '项目上级'
-            }, {
+            roleOptions: [
+            //   {
+            //   value: '项目上级',
+            //   label: '项目上级'
+            // },
+              {
               value: '组织级配置管理员',
               label: '组织级配置管理员'
             }, {
@@ -1245,7 +1250,7 @@
                   this.$message({ message: "执行异常,请重试", type: "error" });
               })
                   .finally(() => {
-this.loadingFunc=false
+                      this.loadingFunc=false
                   });
 
 
