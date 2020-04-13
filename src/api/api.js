@@ -89,7 +89,9 @@ export const searchDevice = params => { return axios.post(`/Device/Search`, para
 
 export const editDevice = params => { return axios.post(`/Device/Edit`, params).then(res => res.data); };
 
+export const addRisk = params => { return axios.post(`/Risk/Add`, params).then(res => res.data); };
 
+export const updateRisk = params => { return axios.post(`/Risk/Edit`, params).then(res => res.data); };
 
 export const workHourSearch = params => { return axios.post(`/WorkHourInfo/Search?`+params , params).then(res => res.data); };
 

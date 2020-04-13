@@ -386,6 +386,20 @@
               缺陷管理
             </el-tab-pane>
             <el-tab-pane v-if="formEdit.status!=5" label="风险管理">
+              <el-row style="margin-top: 1rem;">
+                <el-col :span="20">
+
+                </el-col>
+                <el-col :span="4">
+                  <el-button v-if="this.userInfo.userRole=='PM'"
+                             style="background: #309aec;
+                                  color: white;
+                                  margin-left: 1rem;
+                                  border-color: #309aec;"
+                             round @click="onShowAddRisk">新建风险</el-button>
+                </el-col>
+              </el-row>
+              <br>
               <div>
                 <el-table :data="riskList" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loadingFunc">
                   <el-table-column type="selection" width="30" align="center"></el-table-column>
@@ -401,7 +415,7 @@
                   <el-table-column prop="relevant" label="风险相关者"  ></el-table-column>
                   <el-table-column fixed="right" prop="status" label="风险状态" >
                     <template slot-scope="scope">
-                      <button @click="handleTodayVisit(scope.$index, scope.row)"
+                      <button @click="handleStatus(scope.row,2)"
                               style="border-radius: 0.2rem;
                             border: 0px;
                             position: relative;
@@ -412,8 +426,8 @@
                             font-weight: bolder;
                             font-family: PingFang SC;
                             background: rgba(54,171,168,0.09);"
-                              v-if="scope.row.visitStatus=='non_arrival'">未到</button>
-                      <button @click="handleTodayVisit(scope.$index, scope.row)"
+                              v-if="scope.row.status==1">待处理</button>
+                      <button @click="handleStatus(scope.row,3)"
                               style="border-radius: 0.2rem;
                             border: 0px;
                             position: relative;
@@ -424,8 +438,8 @@
                             font-weight: bolder;
                             font-family: PingFang SC;
                             background: rgba(0,193,160,0.09);"
-                              v-if="scope.row.visitStatus=='in'">已进入</button>
-                      <button @click="handleTodayVisit(scope.$index, scope.row)"
+                              v-if="scope.row.status==2">处理中</button>
+                      <button
                               style="border-radius: 0.2rem;
                             border: 0px;
                             position: relative;
@@ -436,12 +450,13 @@
                             font-weight: bolder;
                             font-family: PingFang SC;
                             background: rgba(48,154,236,0.09);"
-                      >未处理</button>
+                              v-if="scope.row.status==3"
+                      >处理完毕</button>
                     </template>
                   </el-table-column>
                   <el-table-column fixed="right" label="操作" align="center">
                     <template slot-scope="scope">
-                      <el-button style="background: #309aec; color: white; border-color: #309aec;" round @click="">风险跟踪</el-button>
+                      <el-button style="background: #309aec; color: white; border-color: #309aec;" round @click="followRisk(scope.row)">风险跟踪</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -559,6 +574,52 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <el-dialog
+      :title="editRiskDialogParam.title"
+      :visible.sync="editRiskDialogParam.show"
+      width="700px"
+      @close="handleDialogClose"
+    >
+      <el-form
+        :inline="true"
+        :model="formEditRisk"
+        ref="formEditFunction"
+        class="demo-form-inline-dialog"
+        label-width="68px"
+        :rules="formEditFunctionRules"
+        :disabled="editRiskDialogParam.formEditRiskDisabled"
+      >
+        <el-form-item class="form_input" label="风险类型" prop="functionName">
+          <el-input v-model="formEditRisk.type" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input" label="风险描述" prop="personCharge">
+          <el-input v-model="formEditRisk.description" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input" label="风险级别" prop="personCharge">
+          <el-input v-model="formEditRisk.level" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input" label="风险影响度" prop="personCharge">
+          <el-input v-model="formEditRisk.effect" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input" label="风险应对策略" prop="personCharge">
+          <el-input v-model="formEditRisk.strategy" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input" label="风险责任人" prop="personCharge">
+          <el-input v-model="formEditRisk.responsible" placeholder=""></el-input>
+        </el-form-item>
+
+        <el-form-item class="form_input" label="风险相关者" prop="personCharge">
+          <el-input v-model="formEditRisk.relevant" placeholder=""></el-input>
+        </el-form-item>
+
+
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editRiskDialogParam.show = false">取 消</el-button>
+        <el-button type="primary" @click="onAddRisk()">确 定</el-button>
+      </span>
+    </el-dialog>
 
     <el-dialog
       :title="editFunctionDialogParam.title"
@@ -769,7 +830,7 @@
 </template>
 
 <script>
-  import {uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
+  import {updateRisk,addRisk,uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
 
   import {
     workHourAccept, workHourReject
@@ -1012,6 +1073,10 @@
                 type: "QA总结",
                 whetherComplete: true
               }],
+
+              formEditRisk:{
+
+              },
             formEditFunction: {
                 //id: "",
                 functionName: "",
@@ -1096,6 +1161,11 @@
               show: false, //弹框显示
               formEditDisabled:false,//编辑弹窗是否可编辑
             },
+              editRiskDialogParam:{
+                  title: "新增功能", //弹窗标题,值为:新增功能，查看功能，编辑功能
+                  show: false, //弹框显示
+                  formEditRiskDisabled:false,//编辑弹窗是否可编辑
+              },
             editFunctionDialogParam: {
               title: "新增功能", //弹窗标题,值为:新增功能，查看功能，编辑功能
               show: false, //弹框显示
@@ -1199,13 +1269,59 @@
               });
 
           },
+            handleStatus(rowData,status){
+              var checkstatus=''
+              if(status==2){
+                    checkstatus='处理中'
+                }else if (status==3){
+                  checkstatus='处理完毕'
+              }
+                this.$confirm('状态将变为'+checkstatus+' 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    rowData.status=status
+                    updateRisk(rowData).then(response=>{
+                        if(response.msg=="更新成功！"){
+                            this.$message({
+                                type:'success',
+                                message:'更新成功！'
+                            })
+                        }else{
+                            this.$message({
+                                type:'error',
+                                message:response.msg
+                            })
+                        }
+
+                    })  .catch(error => {
+                        this.$message({ message: "执行异常,请重试", type: "error" });
+                    })
+                        .finally(() => {
+
+                        });
+
+
+
+                })
+
+            },
+            onShowAddRisk(){
+
+              this.editRiskDialogParam.title='新增风险'
+                this.editRiskDialogParam.show=true
+
+
+
+            },
             uploadExcel(param){
                 const formData = new FormData()
                 formData.append('file', param.file)
                 formData.append('id',this.functionid)
                 this.uploadingexcel=true
                 uploadExcel(formData,).then(response=>{
-                   if(response.msg="导入成功！"){
+                   if(response.msg=="导入成功！"){
                        this.showExcel=false
                        this.$message({
                            type:'success',
@@ -1228,6 +1344,31 @@
             onShowOpenExcel(rowData){
                 this.showExcel=true
                 this.functionid=rowData.id
+
+
+            },
+            followRisk(rowData){
+              rowData.frequency+=1
+              updateRisk(rowData).then(response=>{
+                  if(response.msg=="更新成功！"){
+                      this.$message({
+                          type:'success',
+                          message:'跟踪成功！已发送邮件到负责人'
+                      })
+                  }else{
+                      this.$message({
+                          type:'error',
+                          message:response.msg
+                      })
+                  }
+
+              })  .catch(error => {
+                  this.$message({ message: "执行异常,请重试", type: "error" });
+              })
+                  .finally(() => {
+
+                  });
+
 
 
             },
@@ -1444,6 +1585,30 @@
             this.formMyTimeDialogParam.formMyTimeDisabled = false;
 
           },
+            onAddRisk(){
+              this.formEditRisk.status=1
+                this.formEditRisk.frequency=0
+                this.formEditRisk.projectID=this.formEdit.id
+              addRisk(this.formEditRisk).then(response=>{
+                  if(response.msg='新增成功！'){
+                      this.$message({
+                          type: 'success',
+                          message: '新增成功!'
+                      });
+                      this.editRiskDialogParam.show=false
+                      this.getAllRisks(this.formEdit.id)
+
+                  }
+
+                }).catch(() => {
+                this.$message({
+                  type: 'info',
+                 message: '已取消删除'
+              });
+              })
+
+
+            },
           onShowEditTime(item){
 
             this.formMyTime = item;

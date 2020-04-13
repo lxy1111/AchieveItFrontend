@@ -21,9 +21,9 @@
               class="demo-form-inline"
               label-width="100px"
             >
-<!--              <el-form-item class="small_form_input" label="设备id" prop="id">-->
-<!--                <el-input v-model="formSearch.id" placeholder=""></el-input>-->
-<!--              </el-form-item>-->
+              <el-form-item class="small_form_input" label="设备id" prop="id">
+                <el-input v-model="formSearch.id" placeholder=""></el-input>
+              </el-form-item>
               <el-form-item class="form_input" label="资产管理者" prop="deviceowner">
                 <el-input v-model="formSearch.deviceowner" placeholder=""></el-input>
               </el-form-item>
@@ -59,7 +59,7 @@
 
     <el-table :data="tableData" stripe class="visitor-table" style="width: 100%" align="center" @selection-change="handleSelectionChange" v-loading="loading">
       <el-table-column type="selection" width="30" align="center"></el-table-column>
-<!--      <el-table-column prop="id" label="设备id"  align="center"></el-table-column>-->
+      <el-table-column prop="id" label="设备id"  align="center"></el-table-column>
       <el-table-column prop="deviceowner" label="资产管理者" align="center" ></el-table-column>
       <el-table-column prop="status" label="设备状态" align="center" >
         <template slot-scope="scope">
@@ -85,7 +85,7 @@
                             font-weight: bolder;
                             font-family: PingFang SC;
                             background: rgba(48,154,236,0.09);"
-                  v-if="scope.row.status==2"
+                  v-if="scope.row.status==2" @click="changeStatus(scope.row,1)"
           >使用中</button>
         </template>
       </el-table-column>
@@ -122,18 +122,12 @@
         label-width="68px"
         :disabled="editDialogParam.formEditDisabled"
       >
-
         <el-form-item class="form_input" label="资产管理者" prop="deviceowner">
           <el-input v-model="formEdit.deviceowner" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_date" label="资产使用期限(天)" prop="createDate">
           <el-input v-model="formEdit.deadline" placeholder=""></el-input>
         </el-form-item>
-        <template slot-scope="scope">
-          <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
-          <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditSubFunction(scope.row)"></i>
-          <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteSubFunction(scope.row)"></i>
-        </template>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogParam.show = false">取 消</el-button>
@@ -512,6 +506,37 @@
             this.onSearch();
         },
         methods: {
+            changeStatus(rowData,status){
+                var checkstatus=''
+                if(status==1){
+                    checkstatus='已归还'
+                }else{
+                    checkstatus='使用中'
+                }
+                this.$confirm('确认更新状态为'+checkstatus+'吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    rowData.status = status
+                    editDevice(rowData).then(response => {
+                        var json = response;
+                        if(response.msg=='更新成功！'){
+                            this.$message({message: "更新成功", type: "success"});
+                        }else{
+                            this.$message({message: response.msg, type: "error"});
+                        }
+                    })
+                        .catch(error => {
+                            this.$message({message: "执行异常,请重试", type: "error"});
+                        })
+                        .finally(() => {
+
+                        });
+                })
+
+
+            },
             handleSelectionChange(val){
                 this.multipleSelection = val;
                 console.log(val)
@@ -542,6 +567,10 @@
                         type: 'info',
                         message: error
                     });
+                }).finally(()=>{
+                    this.onSearch()
+
+
                 });
 
             },
@@ -583,6 +612,8 @@
                   console.log(json);
                   if (json.msg == "查询成功") {
                     this.tableData = json.data.deviceList;
+                    var count=json.count
+                      this.pageInfo.pageTotal=count
                   } else {
                     this.$message({ message: json.message, type: "warning" });
                   }
@@ -614,11 +645,14 @@
                     if (json.msg == "新增成功！") {
                         this.$message({message:'新增成功',type:'success'})
                         this.onSearch()
+                        this.editDialogParam.show=false
                     } else {
                         this.$message({ message: json.message, type: "warning" });
+                        this.editDialogParam.show=false
                     }
 
                 })
+
             },
             _edit() {
 

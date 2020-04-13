@@ -673,7 +673,7 @@ export default {
       },
       pageInfo: {
         //分页
-          pageSize: 5,
+          pageSize: 10,
           pageNum: 1,
           pageTotal: 0,
           currentPage: 1,
