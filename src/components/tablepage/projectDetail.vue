@@ -5,7 +5,7 @@
         <el-card class="box-card" style="margin: 0.5rem;">
 
           <el-tabs style="margin: 0.5rem;">
-            <el-tab-pane v-if="formEdit.status!=5" label="项目信息">
+            <el-tab-pane label="项目信息">
               <div class="project-info">
                 <el-form
                   :inline="true"
@@ -20,7 +20,7 @@
                     <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input" label="项目名称" prop="projectName">
-                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.projectName" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6" v-model="formEdit.projectName" placeholder=""></el-input>
                     <el-input v-else disabled v-model="formEdit.projectName" placeholder=""></el-input>
 
                   </el-form-item>
@@ -44,58 +44,50 @@
                     <el-input disabled v-model="formEdit.leader" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input_big" label="客户信息" prop="customerInfo">
-                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.customerInfo" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6" v-model="formEdit.customerInfo" placeholder=""></el-input>
                     <el-input v-else disabled v-model="formEdit.customerInfo" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input_big" label="主要里程碑" prop="milepost">
-                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.milepost" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6" v-model="formEdit.milepost" placeholder=""></el-input>
                     <el-input v-else disabled v-model="formEdit.milepost" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input" label="主要功能" prop="projectFunction">
-                    <el-input v-if="userInfo.userRole=='PM'" type="textarea" autosize v-model="formEdit.projectFunction" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6" type="textarea" autosize v-model="formEdit.projectFunction" placeholder=""></el-input>
                     <el-input v-else disabled type="textarea" autosize v-model="formEdit.projectFunction" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input_big" label="采用技术" prop="technology">
-                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.technology" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6" v-model="formEdit.technology" placeholder=""></el-input>
                     <el-input v-else disabled v-model="formEdit.technology" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_input" label="业务领域" prop="businessArea">
-                    <el-input v-if="userInfo.userRole=='PM'" v-model="formEdit.businessArea" placeholder=""></el-input>
+                    <el-input v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6" v-model="formEdit.businessArea" placeholder=""></el-input>
                     <el-input v-else disabled v-model="formEdit.businessArea" placeholder=""></el-input>
                   </el-form-item>
                   <el-form-item class="form_date" label="预定时间" prop="scheduleTime">
                     <el-date-picker
-                      v-if="userInfo.userRole=='PM'"
+                      v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6"
                       v-model="formEdit.scheduleTime"
                       type="datetime"
-
-
                       placeholder="选择预定时间"
                     ></el-date-picker>
                     <el-date-picker
                       v-else disabled
                       v-model="formEdit.scheduleTime"
                       type="datetime"
-
-
                       placeholder="选择预定时间"
                     ></el-date-picker>
                   </el-form-item>
                   <el-form-item class="form_date" label="交付时间" prop="deliveryTime">
                     <el-date-picker
-                      v-if="userInfo.userRole=='PM'"
+                      v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6"
                       v-model="formEdit.deliveryTime"
                       type="datetime"
-
-
                       placeholder="选择交付时间"
                     ></el-date-picker>
                     <el-date-picker
                       v-else disabled
                       v-model="formEdit.deliveryTime"
                       type="datetime"
-
-
                       placeholder="选择交付时间"
                     ></el-date-picker>
                   </el-form-item>
@@ -104,14 +96,14 @@
                                   color: white;
                                   margin-left: 1rem;
                                   border-color: #309aec;"
-                               v-if="this.userInfo.userRole=='PM'"
+                               v-if="this.userInfo.userRole=='PM'&&this.formEdit.status!=6"
                                round @click="saveEdit">保存更改</el-button>
                   </el-form-item>
 
                 </el-form>
               </div>
             </el-tab-pane>
-            <el-tab-pane v-if="formEdit.status!=5" label="功能列表">
+            <el-tab-pane label="功能列表">
               <el-row style="margin-top: 1rem;">
                 <el-col :span="20">
 <!--                  <el-button v-if="this.userInfo.userRole=='PM'"-->
@@ -129,7 +121,7 @@
 <!--                             round>导出至excel</el-button>-->
                 </el-col>
                 <el-col :span="4">
-                  <el-button v-if="this.userInfo.userRole=='PM'"
+                  <el-button v-if="this.userInfo.userRole=='PM'&&this.formEdit.status!=5&&this.formEdit.status!=6"
                              style="background: #309aec;
                                   color: white;
                                   margin-left: 1rem;
@@ -137,7 +129,7 @@
                              round @click="onShowAddFunction">新建功能</el-button>
                 </el-col>
               </el-row>
-              <div v-if="formEdit.status!=5">
+              <div>
                 <el-table
                   :data="functionList"
                   v-loading="loadingFunc"
@@ -147,7 +139,7 @@
 
                   :tree-props="{children: 'subFunction', hasChildren: 'hasChildren'}"
                   stripe class="visitor-table" align="center">
-                  <el-table-column v-if="formEdit.status!=5" type="expand" >
+                  <el-table-column type="expand" >
                       <template slot-scope="props">
                         <el-table  :data="props.row.projectSubFuncs"
                                    style="width: 93%; margin-left: 5%; margin-bottom: 20px; margin-top: 1rem; background-color: #fcfcfc;border-radius: 4px;box-shadow:  0px 2px 10px rgba(0, 0, 0, .12); "
@@ -159,7 +151,7 @@
                           </el-table-column>
                           <el-table-column label="负责人" prop="personCharge" align="center" >
                           </el-table-column>
-                          <el-table-column fixed="right" label="操作"  align="center">
+                          <el-table-column v-if="formEdit.status!=5&&formEdit.status!=6" fixed="right" label="操作"  align="center">
                             <template slot-scope="scope">
                               <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowFunctionDetail(scope.row)"></i>
                               <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditSubFunction(scope.row)"></i>
@@ -172,7 +164,7 @@
                   <el-table-column prop="id" label="功能id" align="center"></el-table-column>
                   <el-table-column prop="functionName" label="功能名称" align="center"></el-table-column>
                   <el-table-column prop="personCharge" label="负责人" align="center"></el-table-column>
-                  <el-table-column fixed="right" label="操作"  align="center">
+                  <el-table-column v-if="formEdit.status!=5&&formEdit.status!=6" fixed="right" label="操作"  align="center">
                     <template slot-scope="scope">
                       <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-folder-opened" @click="exportExcel(scope.row)"></i>
                       <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-folder-add" @click="onShowOpenExcel(scope.row)"></i>
@@ -186,7 +178,7 @@
                 </el-table>
               </div>
             </el-tab-pane>
-            <el-tab-pane v-if="formEdit.status!=5" label="组员管理">
+            <el-tab-pane label="组员管理">
               <el-row style="margin-top: 1rem;">
                 <el-col :span="12">
                   <span style="background: white; font-weight: bold;
@@ -195,7 +187,7 @@
                                   border: 0;">当前项目上级：{{this.formEdit.leader}}</span>
                 </el-col>
                 <el-col :span="12" align="right">
-                  <el-button v-if="this.userInfo.userRole=='PM'"
+                  <el-button v-if="this.userInfo.userRole=='PM'&&this.formEdit.status!=5&&this.formEdit.status!=6"
                              style="background: #309aec;
                                 color: white;
                                 margin-left: 1rem;
@@ -219,17 +211,17 @@
                   <el-table-column prop="userDepartment" label="部门" width="100"></el-table-column>
                   <el-table-column prop="projectChargerMail" label="项目上级邮箱"></el-table-column>
                   <el-table-column prop="userTel" label="电话"></el-table-column>
-                  <el-table-column fixed="right" label="操作" align="center">
+                  <el-table-column v-if="this.formEdit.status!=5&&this.formEdit.status!=6" fixed="right" label="操作" align="center">
                     <template slot-scope="scope">
 <!--                      <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowGroupDetail(scope.row)"></i>-->
-<!--                      <i style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditGroup(scope.row)"></i>-->
+                      <i style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditGroup(scope.row)"></i>
                       <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteGroup(scope.row)"></i>
                     </template>
                   </el-table-column>
                 </el-table>
               </div>
             </el-tab-pane>
-            <el-tab-pane v-if="formEdit.status!=5" label="工时管理" class="choose-time">
+            <el-tab-pane v-if="this.formEdit.status!=5&&this.formEdit.status!=6" label="工时管理" class="choose-time">
               <el-row style="margin-top: 1rem;">
                 <el-col :span="12" align="left">
                   <span style="font-weight: bold;">
@@ -285,7 +277,7 @@
                 </el-table>
               </div>
               <el-divider></el-divider>
-              <el-row style="margin-top: 1rem;">
+              <el-row v-if="this.formEdit.status!=5" style="margin-top: 1rem;">
                 <el-col :span="16">
                   <span style="font-weight: bold;">
                     我的工时
@@ -365,7 +357,7 @@
                             font-family: PingFang SC;
                             background: rgba(54,171,168,0.09);"
                               v-if="scope.row.whetherComplete==true">完整</button>
-                      <button @click=""
+                      <button @click="changeArchive(scope.row)"
                               style="border-radius: 0.1rem;
                             border: 0px;
                             position: relative;
@@ -382,16 +374,16 @@
                 </el-table>
               </div>
             </el-tab-pane>
-            <el-tab-pane v-if="formEdit.status!=5" label="缺陷管理">
+            <el-tab-pane label="缺陷管理">
               缺陷管理
             </el-tab-pane>
-            <el-tab-pane v-if="formEdit.status!=5" label="风险管理">
+            <el-tab-pane label="风险管理">
               <el-row style="margin-top: 1rem;">
                 <el-col :span="20">
 
                 </el-col>
                 <el-col :span="4">
-                  <el-button v-if="this.userInfo.userRole=='PM'"
+                  <el-button v-if="this.userInfo.userRole=='PM'&&this.formEdit.status!=5&&this.formEdit.status!=6"
                              style="background: #309aec;
                                   color: white;
                                   margin-left: 1rem;
@@ -454,9 +446,21 @@
                       >处理完毕</button>
                     </template>
                   </el-table-column>
-                  <el-table-column fixed="right" label="操作" align="center">
+                  <el-table-column v-if="this.formEdit.status!=5&&this.formEdit.status!=6" width="110" fixed="right" label="操作" align="center">
                     <template slot-scope="scope">
-                      <el-button style="background: #309aec; color: white; border-color: #309aec;" round @click="followRisk(scope.row)">风险跟踪</el-button>
+                      <button
+                        style="border-radius: 0.2rem;
+                            border: 0px;
+                            position: relative;
+                            width: 4rem;
+                            height: 1.5rem;
+                            color: #ec8a0d;
+                            font-size: 0.83rem;
+                            font-weight: bolder;
+                            font-family: PingFang SC;
+                            background: rgba(236,138,13,0.09);"
+                        @click="followRisk(scope.row)"
+                      >风险跟踪</button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -578,7 +582,7 @@
     <el-dialog
       :title="editRiskDialogParam.title"
       :visible.sync="editRiskDialogParam.show"
-      width="700px"
+      width="500px"
       @close="handleDialogClose"
     >
       <el-form
@@ -586,7 +590,7 @@
         :model="formEditRisk"
         ref="formEditFunction"
         class="demo-form-inline-dialog"
-        label-width="68px"
+        label-width="100px"
         :rules="formEditFunctionRules"
         :disabled="editRiskDialogParam.formEditRiskDisabled"
       >
@@ -608,11 +612,9 @@
         <el-form-item class="form_input" label="风险责任人" prop="personCharge">
           <el-input v-model="formEditRisk.responsible" placeholder=""></el-input>
         </el-form-item>
-
         <el-form-item class="form_input" label="风险相关者" prop="personCharge">
           <el-input v-model="formEditRisk.relevant" placeholder=""></el-input>
         </el-form-item>
-
 
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -725,10 +727,11 @@
           <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input_group" label="新增组员ID" prop="name">
-          <el-input v-model="formEditGroup.id" placeholder=""></el-input>
+          <el-input v-if="this.editGroupDialogParam.title=='新增组员'" v-model="formEditGroup.userId" placeholder=""></el-input>
+          <el-input v-if="this.editGroupDialogParam.title=='编辑组员'" disabled v-model="formEditGroup.userId" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input_group" label="角色" prop="head">
-          <el-select v-model="formEditGroup.role" placeholder="">
+          <el-select v-model="formEditGroup.userRole" placeholder="">
             <el-option
               v-for="item in roleOptions"
               :key="item.value"
@@ -741,6 +744,7 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="editGroupDialogParam.show = false">取 消</el-button>
         <el-button v-show="this.editGroupDialogParam.title=='新增组员'" type="primary" @click="onAddGroup()">确 定</el-button>
+        <el-button v-show="this.editGroupDialogParam.title=='编辑组员'" type="primary" @click="onEditGroup()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -843,6 +847,11 @@
     myWorkHourSearch,
     updateProjectSubFunction,
     addProjectSubFunction} from "../../api/api";
+
+  import {searchProjectArchive,acceptBestExperience, acceptDevelopModel, acceptDevelopTool, acceptExamine,
+    acceptProblem,acceptProjectBasicTable,acceptProjectCost,acceptProjectDemand,acceptProjectEstimate,
+    acceptProjectPrice,acceptProjectProcess,acceptProjectProposal,acceptProjectRisk,
+    acceptProjectSchedule,acceptProjectSummary,acceptQASummary,acceptReport} from "../../api/api";
   import axios from 'axios';
   axios.defaults.baseURL="http://47.100.187.197:8080";
   axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -1007,7 +1016,7 @@
               },
             documentList: [{
                 type: "项目基础数据表",
-                whetherComplete: true
+                whetherComplete: false
               },
               {
                 type: "项目提案书",
@@ -1015,15 +1024,15 @@
               },
               {
                 type: "项目报价书",
-                whetherComplete: true
+                whetherComplete: false
               },
               {
                 type: "项目估算表（功能点）",
-                whetherComplete: true
+                whetherComplete: false
               },
               {
                 type: "项目计划书",
-                whetherComplete: true
+                whetherComplete: false
               },
               {
                 type: "项目过程剪裁表",
@@ -1039,7 +1048,7 @@
               },
               {
                 type: "项目风险管理表",
-                whetherComplete: true
+                whetherComplete: false
               },
               {
                 type: "客户验收问题表",
@@ -1051,7 +1060,7 @@
               },
               {
                 type: "项目总结",
-                whetherComplete: true
+                whetherComplete: false
               },
               {
                 type: "最佳经验和教训",
@@ -1059,11 +1068,11 @@
               },
               {
                 type: "开发工具",
-                whetherComplete: true
+                whetherComplete: false
               },
               {
                 type: "开发模板（设计模板，测试模板）",
-                whetherComplete: true
+                whetherComplete: false
               },
               {
                 type: "各阶段检查单",
@@ -1071,7 +1080,7 @@
               },
               {
                 type: "QA总结",
-                whetherComplete: true
+                whetherComplete: false
               }],
 
               formEditRisk:{
@@ -1243,11 +1252,196 @@
                 }
               })
               .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
+                this.$message({ message: "获取工时列表异常："+error, type: "error" });
               })
               .finally(() => {
                 //this.loading = false;
               });
+
+          },
+          getArchive(item){
+
+            searchProjectArchive(item)
+              .then(response => {
+                if (response.count > 0) {
+                  this.documentList = [{
+                    type: "项目基础数据表",
+                    whetherComplete: response.data.工时信息列表[0].projectBasicTable
+                  },
+                    {
+                      type: "项目提案书",
+                      whetherComplete: response.data.工时信息列表[0].projectProposal
+                    },
+                    {
+                      type: "项目报价书",
+                      whetherComplete: response.data.工时信息列表[0].projectPrice
+                    },
+                    {
+                      type: "项目估算表（功能点）",
+                      whetherComplete: response.data.工时信息列表[0].projectEstimate
+                    },
+                    {
+                      type: "项目计划书",
+                      whetherComplete: response.data.工时信息列表[0].projectSchedule
+                    },
+                    {
+                      type: "项目过程剪裁表",
+                      whetherComplete: response.data.工时信息列表[0].projectProcess
+                    },
+                    {
+                      type: "项目成本管理表",
+                      whetherComplete: response.data.工时信息列表[0].projectCost
+                    },
+                    {
+                      type: "项目需求变更管理表",
+                      whetherComplete: response.data.工时信息列表[0].projectDemand
+                    },
+                    {
+                      type: "项目风险管理表",
+                      whetherComplete: response.data.工时信息列表[0].projectRisk
+                    },
+                    {
+                      type: "客户验收问题表",
+                      whetherComplete: response.data.工时信息列表[0].acceptProblem
+                    },
+                    {
+                      type: "客户验收报告",
+                      whetherComplete: response.data.工时信息列表[0].acceptReport
+                    },
+                    {
+                      type: "项目总结",
+                      whetherComplete: response.data.工时信息列表[0].projectSummary
+                    },
+                    {
+                      type: "最佳经验和教训",
+                      whetherComplete: response.data.工时信息列表[0].bestExperience
+                    },
+                    {
+                      type: "开发工具",
+                      whetherComplete: response.data.工时信息列表[0].developTool
+                    },
+                    {
+                      type: "开发模板（设计模板，测试模板）",
+                      whetherComplete: response.data.工时信息列表[0].developModel
+                    },
+                    {
+                      type: "各阶段检查单",
+                      whetherComplete: response.data.工时信息列表[0].examine
+                    },
+                    {
+                      type: "QA总结",
+                      whetherComplete: response.data.工时信息列表[0].qaSummary
+                    }]
+
+                  console.log(this.documentList)
+                }
+              })
+              .catch(error => { this.$message({ message: "改变文档状态异常："+error, type: "error" });})
+              .finally(() => {});
+
+          },
+          changeArchive(row) {
+
+            var documentStatus=row.whetherComplete==true?'不完整':'完整'
+            this.$confirm('是否确认该文档'+documentStatus+'?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+
+              if(row.type=='项目基础数据表'){
+                acceptProjectBasicTable(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                      this.$message({type:'success', message:'文档状态更新成功'})
+                      this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='项目提案书'){
+                acceptProjectProposal(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='项目报价书'){
+                acceptProjectPrice(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='项目估算表（功能点）'){
+                acceptProjectEstimate(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='项目计划书'){
+                acceptProjectSchedule(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='项目过程剪裁表'){
+                acceptProjectProcess(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='项目成本管理表'){
+                acceptProjectCost(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='项目需求变更管理表'){
+                acceptProjectDemand(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='项目风险管理表'){
+                acceptProjectRisk(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='客户验收问题表'){
+                acceptProblem(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='客户验收报告'){
+                acceptReport(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='项目总结'){
+                acceptProjectSummary(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='最佳经验和教训'){
+                acceptBestExperience(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='开发工具'){
+                acceptDevelopTool(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='开发模板（设计模板，测试模板）'){
+                acceptDevelopModel(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='各阶段检查单'){
+                acceptExamine(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }else if(row.type=='QA总结'){
+                acceptQASummary(this.formEdit.id)
+                  .then(response => {if (response.msg =='状态更新成功！') {
+                    this.$message({type:'success', message:'文档状态更新成功'})
+                    this.getArchive(this.formEdit.id);}})
+              }
+
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消'
+              });
+            });
 
           },
           getAllGroupList(item){
@@ -1262,7 +1456,7 @@
                 }
               })
               .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
+                this.$message({ message: "获取组员列表异常："+error, type: "error" });
               })
               .finally(() => {
                 //this.loading = false;
@@ -1270,49 +1464,48 @@
 
           },
             handleStatus(rowData,status){
-              var checkstatus=''
-              if(status==2){
-                    checkstatus='处理中'
+
+              if(this.formEdit.status!=5&&this.formEdit.status!=6){
+
+                var checkstatus=''
+                if(status==2){
+                  checkstatus='处理中'
                 }else if (status==3){
                   checkstatus='处理完毕'
-              }
+                }
                 this.$confirm('状态将变为'+checkstatus+' 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
                 }).then(() => {
-                    rowData.status=status
-                    updateRisk(rowData).then(response=>{
-                        if(response.msg=="更新成功！"){
-                            this.$message({
-                                type:'success',
-                                message:'更新成功！'
-                            })
-                        }else{
-                            this.$message({
-                                type:'error',
-                                message:response.msg
-                            })
-                        }
+                  rowData.status=status
+                  updateRisk(rowData).then(response=>{
+                    if(response.msg=="更新成功！"){
+                      this.$message({
+                        type:'success',
+                        message:'更新成功！'
+                      })
+                    }else{
+                      this.$message({
+                        type:'error',
+                        message:response.msg
+                      })
+                    }
 
-                    })  .catch(error => {
-                        this.$message({ message: "执行异常,请重试", type: "error" });
-                    })
-                        .finally(() => {
+                  })  .catch(error => {
+                    this.$message({ message: "更新风险异常："+error, type: "error" });
+                  })
+                    .finally(() => {
 
-                        });
-
-
+                    });
 
                 })
-
+              }
             },
             onShowAddRisk(){
 
               this.editRiskDialogParam.title='新增风险'
-                this.editRiskDialogParam.show=true
-
-
+              this.editRiskDialogParam.show=true;
 
             },
             uploadExcel(param){
@@ -1335,7 +1528,7 @@
                    }
 
                 })  .catch(error => {
-                    this.$message({ message: "执行异常,请重试", type: "error" });
+                    this.$message({ message: "导入异常："+error, type: "error" });
                 })
                     .finally(() => {
                         this.uploadingexcel = false;
@@ -1363,7 +1556,7 @@
                   }
 
               })  .catch(error => {
-                  this.$message({ message: "执行异常,请重试", type: "error" });
+                  this.$message({ message: "风险跟踪异常："+error, type: "error" });
               })
                   .finally(() => {
 
@@ -1388,7 +1581,7 @@
 
 
               }).catch(error => {
-                  this.$message({ message: "执行异常,请重试", type: "error" });
+                  this.$message({ message: "导出异常："+error, type: "error" });
               })
                   .finally(() => {
                       this.loadingFunc=false
@@ -1421,14 +1614,14 @@
                         if (json.msg == "查询成功") {
 
                             this.riskList = json.data.riskList;
-                            console.log("功能列表查询成功");
+                            console.log("风险列表查询成功");
 
                         } else {
                             this.$message({ message: json.message, type: "warning" });
                         }
                     })
                     .catch(error => {
-                        this.$message({ message: "执行异常,请重试", type: "error" });
+                        this.$message({ message: "获取风险异常："+error, type: "error" });
                     })
                     .finally(() => {
                         this.loadingFunc = false;
@@ -1454,14 +1647,14 @@
                         if (json.msg == "查询成功") {
 
                             this.deviceList = json.data.deviceList;
-                            console.log("功能列表查询成功");
+                            console.log("设备列表查询成功");
 
                         } else {
                             this.$message({ message: json.message, type: "warning" });
                         }
                     })
                     .catch(error => {
-                        this.$message({ message: "执行异常,请重试", type: "error" });
+                        this.$message({ message: "获取设备异常："+error, type: "error" });
                     })
                     .finally(() => {
                         this.loadingFunc = false;
@@ -1531,7 +1724,7 @@
                 }
               })
               .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
+                this.$message({ message: "获取功能异常："+error, type: "error" });
               })
               .finally(() => {
                 this.loadingFunc = false;
@@ -1556,6 +1749,7 @@
                   this.getAllRisks(this.formEdit.id)
                   this.getDevices(this.formEdit.id)
                   this.getMyWorkHour();
+                  this.getArchive(this.formEdit.id);
 
                 } else {
                   this.$message({ message: json.message, type: "warning" });
@@ -1586,27 +1780,26 @@
 
           },
             onAddRisk(){
-              this.formEditRisk.status=1
-                this.formEditRisk.frequency=0
-                this.formEditRisk.projectID=this.formEdit.id
+              this.formEditRisk.status=1;
+              this.formEditRisk.frequency=0;
+              this.formEditRisk.projectID=this.formEdit.id;
               addRisk(this.formEditRisk).then(response=>{
                   if(response.msg='新增成功！'){
                       this.$message({
                           type: 'success',
                           message: '新增成功!'
                       });
+                      this.formEditRisk={};
                       this.editRiskDialogParam.show=false
                       this.getAllRisks(this.formEdit.id)
-
                   }
 
-                }).catch(() => {
+              }).catch(() => {
                 this.$message({
                   type: 'info',
-                 message: '已取消删除'
-              });
+                  message: '已取消新增'
+                });
               })
-
 
             },
           onShowEditTime(item){
@@ -1718,11 +1911,12 @@
             this.editGroupDialogParam.formEditGroupDisabled=false;//设置可编辑
           },
           onShowEditGroup(rowData) {
-            this.editGroupDialogParam.title = "编辑功能";
+            this.editGroupDialogParam.title = "编辑组员";
             this.editGroupDialogParam.show = true;
             this.editGroupDialogParam.formEditGroupDisabled=false;
 
             this.formEditGroup=Object.assign({},rowData);
+            console.log(this.formEditGroup)
           },
           onShowDeleteGroup(rowData) {
 
@@ -1799,7 +1993,7 @@
                   }
                 })
                 .catch(error => {
-                  this.$message({ message: "执行异常,请重试", type: "error" });
+                  this.$message({ message: "工时审核异常："+error, type: "error" });
                 })
                 .finally(() => {
 
@@ -1819,7 +2013,7 @@
                   }
                 })
                 .catch(error => {
-                  this.$message({ message: "执行异常,请重试", type: "error" });
+                  this.$message({ message: "工时驳回异常："+error, type: "error" });
                 })
                 .finally(() => {
 
@@ -1844,7 +2038,7 @@
                   }
                 })
                 .catch(error => {
-                  this.$message({ message: "执行异常,请重试", type: "error" });
+                  this.$message({ message: "项目审核异常："+error, type: "error" });
                 })
                 .finally(() => {
 
@@ -1865,7 +2059,7 @@
                   }
                 })
                 .catch(error => {
-                  this.$message({ message: "执行异常,请重试", type: "error" });
+                  this.$message({ message: "项目驳回异常："+error, type: "error" });
                 })
                 .finally(() => {
 
@@ -1901,6 +2095,11 @@
               this._saveGroup();
             }
           },
+          onEditGroup() {
+            if (this.editGroupDialogParam.title == "编辑组员") {
+              this._editGroup();
+            }
+          },
           _saveGroup() {
 
             // userRoleSearch(this.userInfo.userId)
@@ -1917,8 +2116,8 @@
 
             var params = {
               "projectId": this.formEdit.id,
-              "roleDescription": this.formEditGroup.role,
-              "userId": this.formEditGroup.id
+              "roleDescription": this.formEditGroup.userRole,
+              "userId": this.formEditGroup.userId
             }
             axios.post(`/ProjectUserInfo/Add?id=5` , params)
               .then(res => {
@@ -1927,11 +2126,38 @@
                 this.getAllGroupList(this.formEdit.id);
               })
               .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
+                this.$message({ message: "保存项目异常："+error, type: "error" });
               })
               .finally(() => {
 
               });
+
+          },
+          _editGroup() {
+
+            var params = 'projectId='+this.formEdit.id+'&userId='+this.formEditGroup.userId;
+            deleteProjectGroup(params).then(response=>{
+
+              var params1 = {
+                "projectId": this.formEdit.id,
+                "roleDescription": this.formEditGroup.userRole,
+                "userId": this.formEditGroup.userId
+              }
+              console.log(params1)
+              axios.post(`/ProjectUserInfo/Add?id=5` , params1)
+                .then(res => {
+                  console.log(res);
+                  this.editGroupDialogParam.show=false;
+                  this.getAllGroupList(this.formEdit.id);
+                })
+                .catch(error => {
+                  this.$message({ message: "编辑组员异常："+error, type: "error" });
+                })
+                .finally(() => {
+
+                });
+
+            })
 
           },
 
@@ -1950,7 +2176,7 @@
                 })
               })
               .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
+                this.$message({ message: "新增项目异常："+error, type: "error" });
               })
               .finally(() => {
 
@@ -1971,7 +2197,7 @@
                         this.getAllFunction(this.formEdit.id);
                     })
                     .catch(error => {
-                        this.$message({ message: "执行异常,请重试", type: "error" });
+                        this.$message({ message: "新增子功能异常："+error, type: "error" });
                     })
                     .finally(() => {
 
@@ -1988,7 +2214,7 @@
                 this.getAllFunction(this.formEditFunction.projectId);
               })
               .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
+                this.$message({ message: "更新功能异常："+error, type: "error" });
               })
               .finally(() => {
 
@@ -2004,7 +2230,7 @@
                         this.getAllFunction(this.formEdit.id);
                     })
                     .catch(error => {
-                        this.$message({ message: "执行异常,请重试", type: "error" });
+                        this.$message({ message: "更新子功能异常："+error, type: "error" });
                     })
                     .finally(() => {
 
@@ -2081,7 +2307,7 @@
                   }
                 })
                 .catch(error => {
-                  this.$message({ message: "执行异常,请重试", type: "error" });
+                  this.$message({ message: "获取工时列表异常："+error, type: "error" });
                 })
                 .finally(() => {
                   //this.loading = false;
@@ -2098,7 +2324,7 @@
                 console.log(json);
               })
               .catch(error => {
-                this.$message({ message: "执行异常,请重试", type: "error" });
+                this.$message({ message: "更新项目异常："+error, type: "error" });
               })
               .finally(() => {
 

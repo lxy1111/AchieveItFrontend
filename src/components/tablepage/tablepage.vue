@@ -137,7 +137,7 @@
           <i v-if="scope.row.status==5&&userInfo.userRole=='CM'&&scope.row.status!=2"
              style="font-size: 1.1rem;" class="el-icon-zoom-in"
              @click="onShowDetail(scope.row)"></i>
-          <i v-if="scope.row.status!=0&&scope.row.status!=2&&scope.row.status!=5&&scope.row.status!=6&&
+          <i v-if="scope.row.status!=0&&scope.row.status!=2&&scope.row.status!=5&&
               (scope.row.createrId==userInfo.userId||
                (userInfo.userRole=='Superior'&&scope.row.leader==userInfo.userName))"
              style="font-size: 1.1rem;" class="el-icon-zoom-in"
@@ -817,7 +817,7 @@ export default {
           }
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "获取项目异常："+error, type: "error" });
         })
         .finally(() => {
           this.loading = false;
@@ -838,13 +838,14 @@ export default {
 
       createNewProject(this.formEdit)
         .then(response => {
+          this.$message({ message: "新增项目成功！已发送邮件通知项目上级、EPG Leader、QA Leader及配置管理员。", type: "success" });
           var json = response;
           console.log(json);
           this.editDialogParam.show = false;
           this.onSearch();
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "新增项目异常："+error, type: "error" });
         })
         .finally(() => {
 
@@ -861,7 +862,7 @@ export default {
           this.onSearch();
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "编辑项目异常："+error, type: "error" });
         })
         .finally(() => {
 
@@ -1141,7 +1142,7 @@ export default {
           }
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "项目状态更新异常："+error, type: "error" });
         })
         .finally(() => {
 
@@ -1167,7 +1168,7 @@ export default {
           }
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "项目状态更新异常："+error, type: "error" });
         })
         .finally(() => {
 
@@ -1191,7 +1192,7 @@ export default {
           }
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "项目状态更新异常："+error, type: "error" });
         })
         .finally(() => {
 
@@ -1213,7 +1214,7 @@ export default {
           }
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "项目状态更新异常："+error, type: "error" });
         })
         .finally(() => {
 
@@ -1232,10 +1233,11 @@ export default {
           console.log(res);
           this.changeProjectStatus.show = false;
           this.$message({ message: "成功为该项目分配EPG！", type: "success" });
+          this.showLeaderTask();
         })
         .catch(error => {
           console.log(error)
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "分配epg异常："+error, type: "error" });
         })
         .finally(() => {
 
@@ -1254,9 +1256,10 @@ export default {
           console.log(res);
           this.changeProjectStatus.show = false;
           this.$message({ message: "成功为该项目分配QA！", type: "success" });
+          this.showLeaderTask();
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "分配qa异常："+error, type: "error" });
         })
         .finally(() => {
 
@@ -1274,13 +1277,14 @@ export default {
               this.changeProjectStatus.show = false;
               this.onSearch();
               this.radioSuperior='2';
+              this.$message({ message: "项目立项成功！已发送邮件通知项目经理、EPG经理、QA经理及组织及配置管理员。", type: "success" });
 
             } else {
               this.$message({ message: response.msg, type: "warning" });
             }
           })
           .catch(error => {
-            this.$message({ message: "执行异常,请重试", type: "error" });
+            this.$message({ message: "项目审核异常："+error, type: "error" });
           })
           .finally(() => {
 
@@ -1295,19 +1299,19 @@ export default {
               this.changeProjectStatus.show = false;
               this.onSearch();
               this.radioSuperior='2';
+              this.$message({ message: "项目已驳回！已发送邮件通知项目经理。", type: "success" });
 
             } else {
               this.$message({ message: response.msg, type: "warning" });
             }
           })
           .catch(error => {
-            this.$message({ message: "执行异常,请重试", type: "error" });
+            this.$message({ message: "项目驳回异常："+error, type: "error" });
           })
           .finally(() => {
 
           });
       }
-
 
     },
     showMyTask(){   //项目上级获取自己待审批的项目
@@ -1330,7 +1334,7 @@ export default {
           }
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "获取我的审核项目异常："+error, type: "error" });
         })
         .finally(() => {
           this.loading = false;
@@ -1380,7 +1384,7 @@ export default {
           }
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "获取项目经理的项目异常："+error, type: "error" });
         })
         .finally(() => {
           this.loading = false;
@@ -1427,7 +1431,7 @@ export default {
           }
         })
         .catch(error => {
-          this.$message({ message: "执行异常,请重试", type: "error" });
+          this.$message({ message: "获取员工项目异常："+error, type: "error" });
         })
         .finally(() => {
           this.loading = false;
@@ -1454,7 +1458,7 @@ export default {
             }
           })
           .catch(error => {
-            this.$message({ message: "执行异常,请重试", type: "error" });
+            this.$message({ message: "获取EPG leader项目异常"+error, type: "error" });
           })
           .finally(() => {
             this.loading = false;
@@ -1477,7 +1481,7 @@ export default {
             }
           })
           .catch(error => {
-            this.$message({ message: "执行异常,请重试", type: "error" });
+            this.$message({ message: "获取QA Leader项目异常"+error, type: "error" });
           })
           .finally(() => {
             this.loading = false;

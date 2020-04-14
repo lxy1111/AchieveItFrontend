@@ -123,3 +123,23 @@ export const userRoleSearch = params => { return axios.post(`/UserInfo/UserRole?
 export const projectRoleSearch = params => { return axios.post(`/ProjectRole/searchAll`, params).then(res => res.data); };
 
 
+
+
+export const searchProjectArchive = params => { return axios.post(`/Archive/Search?projectId=`+params, params).then(res => res.data); };
+export const acceptBestExperience = params => { return axios.post(`/Archive/AcceptBestExperience?projectId=`+params, params).then(res => res.data); };
+export const acceptDevelopModel = params => { return axios.post(`/Archive/AcceptDevelopModel?projectId=`+params, params).then(res => res.data); };
+export const acceptDevelopTool = params => { return axios.post(`/Archive/AcceptDevelopTool?projectId=`+params, params).then(res => res.data); };
+export const acceptExamine = params => { return axios.post(`/Archive/AcceptExamine?projectId=`+params, params).then(res => res.data); };
+export const acceptProblem = params => { return axios.post(`/Archive/AcceptProblem?projectId=`+params, params).then(res => res.data); };
+export const acceptProjectBasicTable = params => { return axios.post(`/Archive/AcceptProjectBasicTable?projectId=`+params, params).then(res => res.data); };
+export const acceptProjectCost = params => { return axios.post(`/Archive/AcceptProjectCost?projectId=`+params, params).then(res => res.data); };
+export const acceptProjectDemand = params => { return axios.post(`/Archive/AcceptProjectDemand?projectId=`+params, params).then(res => res.data); };
+export const acceptProjectEstimate = params => { return axios.post(`/Archive/AcceptProjectEstimate?projectId=`+params, params).then(res => res.data); };
+export const acceptProjectPrice = params => { return axios.post(`/Archive/AcceptProjectPrice?projectId=`+params, params).then(res => res.data); };
+export const acceptProjectProcess = params => { return axios.post(`/Archive/AcceptProjectProcess?projectId=`+params, params).then(res => res.data); };
+export const acceptProjectProposal = params => { return axios.post(`/Archive/AcceptProjectProposal?projectId=`+params, params).then(res => res.data); };
+export const acceptProjectRisk = params => { return axios.post(`/Archive/AcceptProjectRisk?projectId=`+params, params).then(res => res.data); };
+export const acceptProjectSchedule = params => { return axios.post(`/Archive/AcceptProjectSchedule?projectId=`+params, params).then(res => res.data); };
+export const acceptProjectSummary = params => { return axios.post(`/Archive/AcceptProjectSummary?projectId=`+params, params).then(res => res.data); };
+export const acceptQASummary = params => { return axios.post(`/Archive/AcceptQASummary?projectId=`+params, params).then(res => res.data); };
+export const acceptReport = params => { return axios.post(`/Archive/AcceptReport?projectId=`+params, params).then(res => res.data); };

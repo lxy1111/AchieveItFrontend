@@ -1,65 +1,57 @@
 <template>
   <div class="hello">
     <el-row>
-      <el-col :span="12">
+      <el-col :span="24">
         <el-card class="box-card" style="margin: 0.5rem;">
           <div slot="header" class="clearfix">
             <span>所有项目统计</span>
           </div>
-          <div class="text item">
-            <div style="page-break-inside: avoid" id="projectOverall" ref="projectOverall"></div>
-          </div>
-
+          <el-col :span="12">
+            <div class="text item">
+              <div style="page-break-inside: avoid" id="projectOverall" ref="projectOverall"></div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="text item">
+              <div style="page-break-inside: avoid" id="projectOverall2" ref="projectOverall2"></div>
+            </div>
+          </el-col>
         </el-card>
+      </el-col>
+      <el-col :span="24">
         <el-card class="box-card" style="margin: 0.5rem;">
           <div slot="header" class="clearfix">
             <span>我的立项项目统计</span>
           </div>
-          <div class="text item">
-            <div style="page-break-inside: avoid" id="myProjectOverall" ref="myProjectOverall"></div>
-          </div>
+          <el-col :span="12">
+            <div class="text item">
+              <div style="page-break-inside: avoid" id="myProjectOverall" ref="myProjectOverall"></div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="text item">
+              <div style="page-break-inside: avoid" id="myProjectOverall2" ref="myProjectOverall2"></div>
+            </div>
+          </el-col>
         </el-card>
       </el-col>
-      <el-col :span="12">
-        <el-card class="box-card" style="margin: 0.5rem;">
-          <div slot="header" class="clearfix">
-            <span>所有项目统计</span>
-          </div>
-          <div class="text item">
-            <div style="page-break-inside: avoid" id="projectOverall2" ref="projectOverall2"></div>
-          </div>
-
-        </el-card>
-        <el-card class="box-card" style="margin: 0.5rem;">
-          <div slot="header" class="clearfix">
-            <span>我的立项项目统计</span>
-          </div>
-          <div class="text item">
-            <div style="page-break-inside: avoid" id="myProjectOverall2" ref="myProjectOverall2"></div>
-          </div>
-        </el-card>
-      </el-col>
-
     </el-row>
     <el-row>
-      <el-col :span="12">
+      <el-col :span="24">
         <el-card class="box-card" style="margin: 0.5rem;">
           <div slot="header" class="clearfix">
             <span>设备统计</span>
           </div>
-          <div class="text item">
-            <div style="page-break-inside: avoid" id="device" ref="device"></div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="12">
-        <el-card class="box-card" style="margin: 0.5rem;">
-          <div slot="header" class="clearfix">
-            <span>设备统计</span>
-          </div>
-          <div class="text item">
-            <div style="page-break-inside: avoid" id="device2" ref="device2"></div>
-          </div>
+          <el-col :span="12">
+            <div class="text item">
+              <div style="page-break-inside: avoid" id="device" ref="device"></div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="text item">
+              <div style="page-break-inside: avoid" id="device2" ref="device2"></div>
+            </div>
+          </el-col>
         </el-card>
       </el-col>
     </el-row>
@@ -174,7 +166,7 @@ export default {
               },
               series: [
                   {
-                      name: '访问来源',
+                      name: '项目状态',
                       type: 'pie',
                       radius: ['50%', '70%'],
                       avoidLabelOverlap: false,
