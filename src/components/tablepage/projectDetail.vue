@@ -211,6 +211,14 @@
                   <el-table-column prop="userDepartment" label="部门" width="100"></el-table-column>
                   <el-table-column prop="projectChargerMail" label="项目上级邮箱"></el-table-column>
                   <el-table-column prop="userTel" label="电话"></el-table-column>
+                  <el-table-column fixed="right" label="权限" align="center">
+                    <template slot-scope="scope">
+                      <i style="font-size: 1.1rem;" class="el-icon-zoom-in"
+                         @click="onShowDetailPermission(scope.row)"></i>
+<!--                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-plus" @click="onShowAddPermission(scope.row)"></i>-->
+                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditPermission(scope.row)"></i>
+                    </template>
+                  </el-table-column>
                   <el-table-column v-if="this.formEdit.status!=5&&this.formEdit.status!=6" fixed="right" label="操作" align="center">
                     <template slot-scope="scope">
 <!--                      <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowGroupDetail(scope.row)"></i>-->
@@ -748,6 +756,60 @@
       </span>
     </el-dialog>
 
+    <el-dialog
+      :title="editPermissionDialogParam.title"
+      :visible.sync="editPermissionDialogParam.show"
+      width="500px"
+      @close="handleDialogClose"
+    >
+      <el-form
+        :inline="true"
+        :model="formEditPermission"
+        ref="formEditFunction"
+        class="demo-form-inline-dialog"
+        label-width="100px"
+        :disabled="editPermissionDialogParam.formEditPermissionDisabled"
+      >
+
+        <el-form-item class="form_input_group" label="文件权限" prop="head">
+          <el-select v-model="formEditPermission.filePermission" placeholder="">
+            <el-option
+              v-for="item in permissionOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item class="form_input_group" label="git权限" prop="head">
+          <el-select v-model="formEditPermission.gitPermission" placeholder="">
+            <el-option
+              v-for="item in permissionOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item class="form_input_group" label="邮件权限" prop="head">
+          <el-select v-model="formEditPermission.mailPermission" placeholder="">
+            <el-option
+              v-for="item in permissionOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editPermissionDialogParam.show = false">取 消</el-button>
+        <el-button v-show="this.editPermissionDialogParam.title=='新增权限'" type="primary" @click="onAddPermission()">确 定</el-button>
+        <el-button v-show="this.editPermissionDialogParam.title=='编辑权限'" type="primary" @click="onEditPermission()">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <el-dialog width="400px" align="center"
       :title="changeProjectStatus.title"
       :visible.sync="changeProjectStatus.show">
@@ -837,7 +899,7 @@
   import {updateRisk,addRisk,uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
 
   import {
-    workHourAccept, workHourReject
+    workHourAccept, workHourReject, searchPermission, addPermission, editPermission
   } from '../../api/api'
 
   import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
@@ -999,6 +1061,7 @@
               //   phone: "18918058616"
               // }
             ],
+            permissionList: [],
             timeList: [
               // {
               //   id: "10165101240",
@@ -1102,6 +1165,9 @@
               id: "",
               role: ""
             },
+            formEditPermission: {
+
+            },
             roleOptions: [
             //   {
             //   value: '项目上级',
@@ -1126,6 +1192,13 @@
               value: '项目成员',
               label: '项目成员'
             }],
+            permissionOptions: [{
+                value: '0',
+                label: '0'
+              }, {
+                value: '1',
+                label: '1'
+              }],
             formSearch: {
               name: "2213",
               city: "213",
@@ -1184,6 +1257,11 @@
               title: "新增组员", //弹窗标题,值为:新增功能，查看功能，编辑功能
               show: false, //弹框显示
               formEditGroupDisabled:false,//编辑弹窗是否可编辑
+            },
+            editPermissionDialogParam: {
+              title: "新增权限", //弹窗标题,值为:新增功能，查看功能，编辑功能
+              show: false, //弹框显示
+              formEditPermissionDisabled:false,//编辑弹窗是否可编辑
             },
               editSubFunctionDialogParam: {
                   title: "新增功能", //弹窗标题,值为:新增功能，查看功能，编辑功能
@@ -1452,7 +1530,7 @@
                 console.log(json);
                 if (json.count >=0) {
                   this.groupList = json.data.组员信息列表;
-                  console.log(this.groupList)
+                  //console.log(this.groupList)
                 }
               })
               .catch(error => {
@@ -1904,7 +1982,126 @@
 
           },
 
+          onShowAddPermission(rowData) {
+            this.editPermissionDialogParam.title = "新增权限";//设置标题
+            this.editPermissionDialogParam.show = true;//显示弹框
+            this.editPermissionDialogParam.formEditPermissionDisabled=false;//设置可编辑
 
+            this.formEditPermission=Object.assign({},rowData);
+            console.log(this.formEditPermission)
+          },
+
+          onShowDetailPermission(rowData) {
+            this.editPermissionDialogParam.title = "查看权限";//设置标题
+            this.editPermissionDialogParam.show = true;//显示弹框
+            this.editPermissionDialogParam.formEditPermissionDisabled=true;//设置可编辑
+
+            this.formEditPermission=Object.assign({},rowData);
+            console.log(this.formEditPermission)
+
+            var params = 'projectId='+this.formEdit.id+'&userId='+this.formEditPermission.userId;
+            searchPermission(params)
+              .then(response => {
+                console.log(response);
+
+                if (response.count==1) {
+                  this.formEditPermission = {
+
+                    projectChargerMail: this.formEditPermission.projectChargerMail,
+                    userDepartment: this.formEditPermission.userDepartment,
+                    userId: this.formEditPermission.userId,
+                    userMail: this.formEditPermission.userMail,
+                    userName: this.formEditPermission.userName,
+                    userRole: this.formEditPermission.userRole,
+                    userTel: this.formEditPermission.userTel,
+                    filePermission: response.data.data.filePermission,
+                    gitPermission: response.data.data.gitPermission,
+                    mailPermission: response.data.data.mailPermission,
+
+                  }
+                }else{
+                  this.formEditPermission = {
+
+                    projectChargerMail: this.formEditPermission.projectChargerMail,
+                    userDepartment: this.formEditPermission.userDepartment,
+                    userId: this.formEditPermission.userId,
+                    userMail: this.formEditPermission.userMail,
+                    userName: this.formEditPermission.userName,
+                    userRole: this.formEditPermission.userRole,
+                    userTel: this.formEditPermission.userTel,
+                    filePermission: '未分配',
+                    gitPermission: '未分配',
+                    mailPermission: '未分配',
+
+                  }
+                }
+
+                console.log(this.formEditPermission);
+
+              })
+              .catch(error => {
+                this.$message({ message: "获取权限列表异常："+error, type: "error" });
+              })
+              .finally(() => {
+                //this.loading = false;
+              });
+
+          },
+          onShowEditPermission(rowData) {
+            this.editPermissionDialogParam.title = "编辑权限";
+            this.editPermissionDialogParam.show = true;
+            this.editPermissionDialogParam.formEditPermissionDisabled=false;
+
+            this.formEditPermission=Object.assign({},rowData);
+            console.log(this.formEditPermission)
+
+            var params = 'projectId='+this.formEdit.id+'&userId='+this.formEditPermission.userId;
+            searchPermission(params)
+              .then(response => {
+                console.log(response);
+
+                if (response.count==1) {
+                  this.formEditPermission = {
+
+                    projectChargerMail: this.formEditPermission.projectChargerMail,
+                    userDepartment: this.formEditPermission.userDepartment,
+                    userId: this.formEditPermission.userId,
+                    userMail: this.formEditPermission.userMail,
+                    userName: this.formEditPermission.userName,
+                    userRole: this.formEditPermission.userRole,
+                    userTel: this.formEditPermission.userTel,
+                    filePermission: response.data.data.filePermission,
+                    gitPermission: response.data.data.gitPermission,
+                    mailPermission: response.data.data.mailPermission,
+
+                  }
+                }else{
+                  this.formEditPermission = {
+
+                    projectChargerMail: this.formEditPermission.projectChargerMail,
+                    userDepartment: this.formEditPermission.userDepartment,
+                    userId: this.formEditPermission.userId,
+                    userMail: this.formEditPermission.userMail,
+                    userName: this.formEditPermission.userName,
+                    userRole: this.formEditPermission.userRole,
+                    userTel: this.formEditPermission.userTel,
+                    filePermission: '未分配',
+                    gitPermission: '未分配',
+                    mailPermission: '未分配',
+
+                  }
+                }
+
+                console.log(this.formEditPermission);
+
+              })
+              .catch(error => {
+                this.$message({ message: "获取权限列表异常："+error, type: "error" });
+              })
+              .finally(() => {
+                //this.loading = false;
+              });
+          },
           onShowAddGroup() {
             this.editGroupDialogParam.title = "新增组员";//设置标题
             this.editGroupDialogParam.show = true;//显示弹框
@@ -2089,7 +2286,16 @@
                     this._editSubFunction();
                 }
             },
-
+          onAddPermission() {
+            if (this.editPermissionDialogParam.title == "新增权限") {
+              this._savePermission();
+            }
+          },
+          onEditPermission() {
+            if (this.editPermissionDialogParam.title == "编辑权限") {
+              this._editPermission();
+            }
+          },
           onAddGroup() {
             if (this.editGroupDialogParam.title == "新增组员") {
               this._saveGroup();
@@ -2158,6 +2364,34 @@
                 });
 
             })
+
+          },
+          _savePermission() {
+
+
+
+          },
+          _editPermission() {
+
+            var params={
+              filePermission: this.formEditPermission.filePermission,
+              gitPermission: this.formEditPermission.gitPermission,
+              mailPermission: this.formEditPermission.mailPermission,
+              projectId: this.formEdit.id,
+              userId: this.formEditPermission.userId
+            }
+
+            editPermission(params)
+              .then((response)=>{
+                console.log(response)
+                this.editPermissionDialogParam.show=false;
+              })
+              .catch(error => {
+                this.$message({ message: "编辑权限异常："+error, type: "error" });
+              })
+              .finally(() => {
+
+              });
 
           },
 
