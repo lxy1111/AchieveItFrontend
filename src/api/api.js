@@ -83,7 +83,13 @@ export const updateProjectSubFunction = params => { return axios.post(`/ProjectS
 
 export const deleteProjectSubFunction = params => { return axios.post(`/ProjectSubFunction/SubDelete?id=`+params, params).then(res => res.data); };
 
+export const searchUserId = params => { return axios.post(`/UserInfo/SearchUsers?username=`+params, params).then(res => res.data); };
 
+export const deleteDefect = params => { return axios.post(`/Defect/Delete?id=`+params, params).then(res => res.data); };
+
+export const addDefault = params => { return axios.post(`/Defect/Add`, params).then(res => res.data); };
+
+export const searchDefault = params => { return axios.post(`/Defect/Search?projectId=`+params, params).then(res => res.data); };
 
 export const searchDevice = params => { return axios.post(`/Device/Search`, params).then(res => res.data); };
 
