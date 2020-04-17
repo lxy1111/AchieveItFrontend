@@ -149,3 +149,12 @@ export const acceptProjectSchedule = params => { return axios.post(`/Archive/Acc
 export const acceptProjectSummary = params => { return axios.post(`/Archive/AcceptProjectSummary?projectId=`+params, params).then(res => res.data); };
 export const acceptQASummary = params => { return axios.post(`/Archive/AcceptQASummary?projectId=`+params, params).then(res => res.data); };
 export const acceptReport = params => { return axios.post(`/Archive/AcceptReport?projectId=`+params, params).then(res => res.data); };
+
+
+
+export const searchPermission = params => { return axios.post(`/ProjectPermission/Search?`+params, params).then(res => res.data); };
+export const editPermission = params => { return axios.post(`/ProjectPermission/Edit`, params).then(res => res.data); };
+export const addPermission = params => { return axios.post(`/ProjectPermission/Add`, params).then(res => res.data); };
+
+
+
