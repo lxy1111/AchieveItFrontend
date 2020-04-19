@@ -63,6 +63,8 @@ export const getPMTask = params => { return axios.post(`/ProjectInfo/MyProject`,
 
 export const setProjectStatus = params => { return axios.post(`/ProjectInfo/SetStatus?`+params, params).then(res => res.data); };
 
+export const JudgeAssign = params => { return axios.post(`/ProjectInfo/JudgeAssign?projectId=`+params, params).then(res => res.data); };
+
 
 
 export const addProjectFunction = params => { return axios.post(`/ProjectFunction/Add`, params).then(res => res.data); };
@@ -155,6 +157,8 @@ export const acceptReport = params => { return axios.post(`/Archive/AcceptReport
 export const searchPermission = params => { return axios.post(`/ProjectPermission/Search?`+params, params).then(res => res.data); };
 export const editPermission = params => { return axios.post(`/ProjectPermission/Edit`, params).then(res => res.data); };
 export const addPermission = params => { return axios.post(`/ProjectPermission/Add`, params).then(res => res.data); };
+
+export const SearchUserProjectRoles = params => { return axios.post(`/ProjectRole/SearchUserProjectRoles`, params).then(res => res.data); };
 
 
 
