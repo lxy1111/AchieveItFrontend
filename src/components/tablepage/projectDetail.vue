@@ -427,20 +427,20 @@
                                   border-color: #309aec;"
                              round @click="onShowAddRisk">新建风险</el-button>
                 </el-col>
-                <el-col :span="4">
-                  <el-dropdown @command="handleCommand">
-              <span class="el-dropdown-link">
-                 从组织库导入风险<i class="el-icon-arrow-down el-icon--right"></i>
-              </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item command="a">黄金糕</el-dropdown-item>
-                      <el-dropdown-item command="b">狮子头</el-dropdown-item>
-                      <el-dropdown-item command="c">螺蛳粉</el-dropdown-item>
-                      <el-dropdown-item command="d" disabled>双皮奶</el-dropdown-item>
-                      <el-dropdown-item command="e" divided>蚵仔煎</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </el-col>
+<!--                <el-col :span="4">-->
+<!--                  <el-dropdown @command="handleCommand">-->
+<!--              <span class="el-dropdown-link">-->
+<!--                 从组织库导入风险<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>-->
+<!--              </span>-->
+<!--                    <el-dropdown-menu slot="dropdown">-->
+<!--                      <el-dropdown-item command="a">黄金糕</el-dropdown-item>-->
+<!--                      <el-dropdown-item command="b">狮子头</el-dropdown-item>-->
+<!--                      <el-dropdown-item command="c">螺蛳粉</el-dropdown-item>-->
+<!--                      <el-dropdown-item command="d" disabled>双皮奶</el-dropdown-item>-->
+<!--                      <el-dropdown-item command="e" divided>蚵仔煎</el-dropdown-item>-->
+<!--                    </el-dropdown-menu>-->
+<!--                  </el-dropdown>-->
+<!--                </el-col>-->
               </el-row>
               <br>
               <div>
