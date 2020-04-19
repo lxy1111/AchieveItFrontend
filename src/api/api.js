@@ -101,6 +101,10 @@ export const addRisk = params => { return axios.post(`/Risk/Add`, params).then(r
 
 export const updateRisk = params => { return axios.post(`/Risk/Edit`, params).then(res => res.data); };
 
+
+
+export const SearchWorkHour = params => { return axios.post(`/WorkHourInfo/SearchWorkHours?projectId=`+params , params).then(res => res.data); };
+
 export const workHourSearch = params => { return axios.post(`/WorkHourInfo/Search?`+params , params).then(res => res.data); };
 
 export const myWorkHourSearch = params => { return axios.post(`/WorkHourInfo/MyWorkHours?`+params , params).then(res => res.data); };
@@ -160,7 +164,7 @@ export const searchPermission = params => { return axios.post(`/ProjectPermissio
 export const editPermission = params => { return axios.post(`/ProjectPermission/Edit`, params).then(res => res.data); };
 export const addPermission = params => { return axios.post(`/ProjectPermission/Add`, params).then(res => res.data); };
 
-export const SearchUserProjectRoles = params => { return axios.post(`/ProjectRole/SearchUserProjectRoles`, params).then(res => res.data); };
+export const SearchUserProjectRoles = params => { return axios.post(`/ProjectRole/SearchUserProjectRoles?projectId=`+params, params).then(res => res.data); };
 
 
 

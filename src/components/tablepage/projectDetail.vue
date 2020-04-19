@@ -230,21 +230,21 @@
               </div>
             </el-tab-pane>
             <el-tab-pane v-if="this.formEdit.status!=5&&this.formEdit.status!=6" label="工时管理" class="choose-time">
-              <el-row style="margin-top: 1rem;">
+              <el-row style="margin-top: 1rem;" v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'">
                 <el-col :span="12" align="left">
                   <span style="font-weight: bold;">
                     查询项目工时
                   </span>
                 </el-col>
-                <el-col :span="12" align="right">
-                  <el-date-picker v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'"
-                    v-model="formSearchTime"
-                    type="date"
-                    placeholder="选择需要查询工时的日期"
-                  ></el-date-picker>
-                  <el-button v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'"
-                    style="margin-left: 1rem;" type="primary" @click="searchWorkTime()">查询工时</el-button>
-                </el-col>
+<!--                <el-col :span="12" align="right">-->
+<!--                  <el-date-picker v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'"-->
+<!--                    v-model="formSearchTime"-->
+<!--                    type="date"-->
+<!--                    placeholder="选择需要查询工时的日期"-->
+<!--                  ></el-date-picker>-->
+<!--                  <el-button v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'"-->
+<!--                    style="margin-left: 1rem;" type="primary" @click="searchWorkTime()">查询工时</el-button>-->
+<!--                </el-col>-->
               </el-row>
               <div style="margin-bottom: 3rem;"
                    v-if="this.userInfo.userRole=='PM'||this.userInfo.userRole=='Superior'">
@@ -670,7 +670,7 @@
     <el-dialog
       :title="editRiskDialogParam.title"
       :visible.sync="editRiskDialogParam.show"
-      width="500px"
+      width="1000px"
       @close="handleDialogClose"
     >
       <el-form
@@ -678,11 +678,11 @@
         :model="formEditRisk"
         ref="formEditFunction"
         class="demo-form-inline-dialog"
-        label-width="100px"
+        label-width="200px"
         :rules="formEditFunctionRules"
         :disabled="editRiskDialogParam.formEditRiskDisabled"
       >
-        <el-form-item class="form_input" label="组织库导入" prop="functionName">
+        <el-form-item class="form_input" label="组织库导入或自定义风险" prop="functionName">
           <el-select v-model="riskType" placeholder="请选择风险" @change="selectChanged">
             <el-option
               v-for="item in riskTypeList"
@@ -1008,7 +1008,23 @@
 </template>
 
 <script>
-  import {searchUserId,updateRisk,addDefault,addRisk,uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
+    import {
+        searchUserId,
+        updateRisk,
+        addDefault,
+        addRisk,
+        uploadExcel,
+        exportExcel,
+        groupListSearch,
+        searchProject,
+        searchProjectSubFunction,
+        searchDevice,
+        deleteProjectSubFunction,
+        deleteProjectFunction,
+        SearchWorkHour,
+        workHourSearch,
+        SearchUserProjectRoles
+    } from '../../api/api'
 
   import {
     workHourAccept, workHourReject, searchPermission, addPermission, editPermission
@@ -1479,6 +1495,7 @@
           this.userInfo.userRole = sessionStorage.getItem("role");
           this.userInfo.position = sessionStorage.getItem("position");
           this.userInfo.userId = sessionStorage.getItem("userId");
+
         },
         computed: {
           getQueryId: function() {
@@ -2160,6 +2177,7 @@
                   this.getDevices(this.formEdit.id)
                   this.getMyWorkHour();
                   this.getArchive(this.formEdit.id);
+                  this.searchWorkTime()
 
                 } else {
                   this.$message({ message: json.message, type: "warning" });
@@ -2173,6 +2191,15 @@
               });
 
           },
+            findData(list,id){
+                for (var i=0;i<list.length;i++){
+                    if(list[i]==id){
+                        return  true
+                    }
+                }
+                return false
+
+            },
           onAddMyTime(){
 
             this.formMyTime = {
@@ -2184,9 +2211,26 @@
               startTime: '',
               finishTime: ''
             }
-            this.formMyTimeDialogParam.title = '汇报我的工时';
-            this.formMyTimeDialogParam.show = true;
-            this.formMyTimeDialogParam.formMyTimeDisabled = false;
+            SearchUserProjectRoles(this.formEdit.id).then(res=>{
+
+                if(this.findData(res.data.data,4)||this.findData(res.data.data,7)||this.findData(res.data.data,8)){
+                    this.formMyTimeDialogParam.title = '汇报我的工时';
+                    this.formMyTimeDialogParam.show = true;
+                    this.formMyTimeDialogParam.formMyTimeDisabled = false;
+                }else{
+                    this.$message({
+                        type: 'warning',
+                        message: '你无法汇报工时'
+                    });
+                }
+
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消新增'
+                });
+            })
+
 
           },
             onAddDefault(){
@@ -2211,6 +2255,13 @@
                                 message: '已取消新增'
                             });
                         })
+                    }else{
+
+                        this.$message({
+                            type: 'error',
+                            message: '该负责人不存在'
+                        });
+
                     }
 
                 }).catch(() => {
@@ -2932,9 +2983,25 @@
             }
             return this.$moment(date).format("YYYY-MM-DD");
           },
+            dateFormat() {
+                var date=new Date();
+                var year=date.getFullYear();
+                /* 在日期格式中，月份是从0开始的，因此要加0
+                 * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+                 * */
+                var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+                var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+                var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+                var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+                var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+                // 拼接
+                return year+"-"+month+"-"+day
+            },
+
           format_date1(time) {
-            if (time == undefined) {
-              return "";
+            if (time == "") {
+
+              return this.$moment(new Date()).format("YYYY-MM-DD");
             }
             return this.$moment(time).format("YYYY-MM-DD");
           },
@@ -2971,36 +3038,61 @@
                 this.loading = false;
               });
           },
+
+
           searchWorkTime(){
 
             var workHourParams = 'projectId='+this.formEdit.id+'&id='+this.format_date1(this.formSearchTime);
             if (this.formSearchTime==''){
-              this.$message({ message: '查询日期不能为空！', type: "warning" });
+                var param=this.formEdit.id
+                SearchWorkHour(param)
+                    .then(response => {
+                        var json = response;
+                        console.log(json);
+                        if (json.count >= 0) {
+                            this.timeList = json.data.工时信息列表;
+                            console.log(this.timeList)
+
+                            // if (json.count == 0) {
+                            //     this.$message({message: '该日期下暂无工时记录！', type: "warning"});
+                            // }
+
+                        } else {
+                            this.$message({message: json.msg, type: "warning"});
+                        }
+                    })
+                    .catch(error => {
+                        this.$message({message: "获取工时列表异常：" + error, type: "error"});
+                    })
+                    .finally(() => {
+                        //this.loading = false;
+                    });
+
 
             }else {
 
-              workHourSearch(workHourParams)
-                .then(response => {
-                  var json = response;
-                  console.log(json);
-                  if (json.count >=0) {
-                    this.timeList = json.data.工时信息列表;
-                    console.log(this.timeList)
+                workHourSearch(workHourParams)
+                    .then(response => {
+                        var json = response;
+                        console.log(json);
+                        if (json.count >= 0) {
+                            this.timeList = json.data.工时信息列表;
+                            console.log(this.timeList)
 
-                    if (json.count ==0){
-                      this.$message({ message: '该日期下暂无工时记录！', type: "warning" });
-                    }
+                            if (json.count == 0) {
+                                this.$message({message: '该日期下暂无工时记录！', type: "warning"});
+                            }
 
-                  } else {
-                    this.$message({ message: json.msg, type: "warning" });
-                  }
-                })
-                .catch(error => {
-                  this.$message({ message: "获取工时列表异常："+error, type: "error" });
-                })
-                .finally(() => {
-                  //this.loading = false;
-                });
+                        } else {
+                            this.$message({message: json.msg, type: "warning"});
+                        }
+                    })
+                    .catch(error => {
+                        this.$message({message: "获取工时列表异常：" + error, type: "error"});
+                    })
+                    .finally(() => {
+                        //this.loading = false;
+                    });
 
             }
 
@@ -3065,19 +3157,26 @@
               workHourAdd(this.formMyTime)
                 .then(res=>{
                   console.log(res);
-                  this.getMyWorkHour();
+                  if(res.code==0) {
+                      this.getMyWorkHour();
 
-                  this.formMyTime= {
-                    finishedFunction: '',
-                    finishedActivity: '',
-                    startTime: '',
-                    finishTime: ''
+                      this.formMyTime = {
+                          finishedFunction: '',
+                          finishedActivity: '',
+                          startTime: '',
+                          finishTime: ''
+                      }
+                      this.formMyTimeDialogParam.show = false;
+                      this.$message({
+                          type: 'success',
+                          message: '提交成功!'
+                      });
+                  }else{
+                      this.$message({
+                          type: 'warning',
+                          message: res.msg
+                      });
                   }
-                  this.formMyTimeDialogParam.show = false;
-                  this.$message({
-                    type: 'success',
-                    message: '提交成功!'
-                  });
 
                 })
                 .catch(err=>{

@@ -22,21 +22,10 @@
               label-width="100px"
             >
               <el-form-item class="small_form_input" label="设备id" prop="id">
-                <el-input v-model="formSearch.id" placeholder=""></el-input>
+                <el-input v-model="formSearch.deviceId" placeholder=""></el-input>
               </el-form-item>
               <el-form-item class="form_input" label="资产管理者" prop="deviceowner">
                 <el-input v-model="formSearch.deviceowner" placeholder=""></el-input>
-              </el-form-item>
-              <el-form-item class="form_input" label="设备状态" prop="status">
-                <el-input v-model="formSearch.status" placeholder=""></el-input>
-              </el-form-item>
-              <el-form-item class="form_input" label="资产使用期限" prop="deadline">
-<!--                <el-date-picker-->
-<!--                  v-model="formSearch.deadline"-->
-<!--                  type="date"-->
-<!--                  placeholder="选择资产使用期限"-->
-<!--                ></el-date-picker>-->
-                <el-input v-model="formSearch.deadline" placeholder=""></el-input>
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="onSearch">查询</el-button>
@@ -59,7 +48,7 @@
 
     <el-table :data="tableData" stripe class="visitor-table" style="width: 100%" align="center" @selection-change="handleSelectionChange" v-loading="loading">
       <el-table-column type="selection" width="30" align="center"></el-table-column>
-      <el-table-column prop="id" label="设备id"  align="center"></el-table-column>
+      <el-table-column prop="deviceId" label="设备id"  align="center"></el-table-column>
       <el-table-column prop="deviceowner" label="资产管理者" align="center" ></el-table-column>
       <el-table-column prop="status" label="设备状态" align="center" >
         <template slot-scope="scope">
@@ -122,6 +111,9 @@
         label-width="68px"
         :disabled="editDialogParam.formEditDisabled"
       >
+        <el-form-item class="form_input" label="设备Id" prop="deviceowner">
+          <el-input v-model="formEdit.deviceId" placeholder=""></el-input>
+        </el-form-item>
         <el-form-item class="form_input" label="资产管理者" prop="deviceowner">
           <el-input v-model="formEdit.deviceowner" placeholder=""></el-input>
         </el-form-item>
@@ -583,7 +575,7 @@
                     type: 'warning'
                 }).then(() => {
                     deleteDevice(rowData.id).then(response=>{
-                        this.getAllFunction(this.formEdit.id)
+                        this.onSearch()
                         this.$message({
                             type:'success',
                             message:'删除成功'
