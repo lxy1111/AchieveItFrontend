@@ -81,7 +81,7 @@
       show-overflow-tooltip
       :row-style="{height:'1rem'}"
       v-loading="loading">
-      <el-table-column type="selection" width="28" align="center"></el-table-column>
+<!--      <el-table-column type="selection" width="28" align="center"></el-table-column>-->
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form class="demo-table-expand">
@@ -103,7 +103,11 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column prop="id" label="项目id" width="90" align="center"></el-table-column>
+      <el-table-column prop="id" label="项目id" width="180" align="center">
+        <template slot-scope="scope">
+          <span>20201234D{{scope.row.id}}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="projectName" label="项目名称" show-overflow-tooltip tooltip-effect="dark" align="center"></el-table-column>
       <el-table-column prop="leader" label="项目上级" show-overflow-tooltip tooltip-effect="dark" align="center"></el-table-column>
       <el-table-column prop="createrId" label="项目经理id" width="90" align="center"></el-table-column>
@@ -178,7 +182,7 @@
         :disabled="editDialogParam.formEditDisabled"
       >
         <el-form-item v-if="editDialogParam.title=='编辑'" class="form_input" label="项目id" prop="name">
-          <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
+          <span>20201234D{{formEdit.id}}</span>
         </el-form-item>
         <el-form-item class="form_input" label="项目名称" prop="city">
           <el-input v-model="formEdit.projectName" placeholder=""></el-input>

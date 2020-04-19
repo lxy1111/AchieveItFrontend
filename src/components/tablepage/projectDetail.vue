@@ -17,7 +17,7 @@
                   :disabled="editDialogParam.formEditDisabled"
                 >
                   <el-form-item class="form_input" label="项目id" prop="id">
-                    <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
+                    <span>20201234D{{formEdit.id}}</span>
                   </el-form-item>
                   <el-form-item class="form_input" label="项目名称" prop="projectName">
                     <el-input v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6" v-model="formEdit.projectName" placeholder=""></el-input>
@@ -2603,7 +2603,7 @@
               this.formMyTime.userId = this.userInfo.userId;
               this.formMyTime.userName = this.userInfo.userName;
               //this.formMyTime.finishedFunction = this.formMyTime.finishedFunction[0];
-              //this.formMyTime.finishedActivity = this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1];
+              this.formMyTime.finishedActivity = this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1];
 
               console.log(this.formMyTime)
 
@@ -2612,9 +2612,9 @@
                   console.log(res);
                   this.getMyWorkHour();
 
-                  formMyTime= {
-                    finishedFunction: [],
-                    finishedActivity: [],
+                  this.formMyTime= {
+                    finishedFunction: '',
+                    finishedActivity: '',
                     startTime: '',
                     finishTime: ''
                   }
@@ -2652,7 +2652,7 @@
                 startTime: this.formMyTime.startTime,
                 finishTime: this.formMyTime.finishTime,
                 finishedActivity: this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1],
-                finishedFunction: this.formMyTime.finishedFunction[0],
+                finishedFunction: this.formMyTime.finishedFunction,
               })
                 .then(res=>{
                   console.log(res);
