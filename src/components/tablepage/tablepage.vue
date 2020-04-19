@@ -81,7 +81,7 @@
       show-overflow-tooltip
       :row-style="{height:'1rem'}"
       v-loading="loading">
-      <el-table-column type="selection" width="28" align="center"></el-table-column>
+<!--      <el-table-column type="selection" width="28" align="center"></el-table-column>-->
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form class="demo-table-expand">
@@ -103,7 +103,11 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column prop="id" label="项目id" width="90" align="center"></el-table-column>
+      <el-table-column prop="id" label="项目id" width="180" align="center">
+        <template slot-scope="scope">
+          <span>20201234D{{scope.row.id}}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="projectName" label="项目名称" show-overflow-tooltip tooltip-effect="dark" align="center"></el-table-column>
       <el-table-column prop="leader" label="项目上级" show-overflow-tooltip tooltip-effect="dark" align="center"></el-table-column>
       <el-table-column prop="createrId" label="项目经理id" width="90" align="center"></el-table-column>
@@ -139,6 +143,7 @@
              @click="onShowDetail(scope.row)"></i>
           <i v-if="scope.row.status!=0&&scope.row.status!=2&&scope.row.status!=5&&
               (scope.row.createrId==userInfo.userId||
+               userInfo.userRole=='Member'||
                (userInfo.userRole=='Superior'&&scope.row.leader==userInfo.userName))"
              style="font-size: 1.1rem;" class="el-icon-zoom-in"
              @click="onShowDetail(scope.row)"></i>
@@ -178,7 +183,7 @@
         :disabled="editDialogParam.formEditDisabled"
       >
         <el-form-item v-if="editDialogParam.title=='编辑'" class="form_input" label="项目id" prop="name">
-          <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
+          <span>20201234D{{formEdit.id}}</span>
         </el-form-item>
         <el-form-item class="form_input" label="项目名称" prop="city">
           <el-input v-model="formEdit.projectName" placeholder=""></el-input>
@@ -240,6 +245,7 @@
       <span v-if="this.changeProjectStatus.title=='交付项目'">是否确定将该项目状态变更为“已交付”？</span>
       <span v-if="this.changeProjectStatus.title=='结束项目'">是否确定将该项目状态变更为“结束”？</span>
       <span v-if="this.changeProjectStatus.title=='项目已归档'">是否确定将该项目状态变更为“已归档”？</span>
+      <span v-if="this.changeProjectStatus.title=='建立配置库'">是否确定将为该项目建立配置库？</span>
 
 
       <div slot="footer" class="dialog-footer">
@@ -253,6 +259,9 @@
         <el-button v-show="this.changeProjectStatus.title=='分配QA'"
                    type="primary"
                    @click="distributeQa()">确 定</el-button>
+        <el-button v-show="this.changeProjectStatus.title=='建立配置库'"
+                   type="primary"
+                   @click="buildConfig()">确 定</el-button>
         <el-button v-show="this.changeProjectStatus.title=='变更项目状态'"
                    type="primary"
                    @click="changeProjectStatusTo3()">确 定</el-button>
@@ -654,7 +663,7 @@
   import {searchProject, approveProject, rejectProject} from '../../api/api'
   import {createNewProject, getEPGLeaderTask, getQALeaderTask, getMemberTask} from '../../api/api'
   import {updateProject, userRoleSearch, viewMyTask, getPMTask} from '../../api/api'
-  import {deleteProject, setProjectStatus} from '../../api/api'
+  import {deleteProject, setProjectStatus, SearchUserProjectRoles, JudgeAssign} from '../../api/api'
   import axios from 'axios';
   axios.defaults.baseURL="http://47.100.187.197:8080";
   axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -809,11 +818,12 @@ export default {
         .then(response => {
           var json = response;
           console.log(json);
-          if (json.msg == "查询成功") {
+          if (json.code == 0) {
             this.tableData = json.data.data;
             this.pageInfo.pageTotal = json.count;
+
           } else {
-            this.$message({ message: json.message, type: "warning" });
+            this.$message({ message: json.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -838,11 +848,17 @@ export default {
 
       createNewProject(this.formEdit)
         .then(response => {
-          this.$message({ message: "新增项目成功！已发送邮件通知项目上级、EPG Leader、QA Leader及配置管理员。", type: "success" });
-          var json = response;
-          console.log(json);
-          this.editDialogParam.show = false;
-          this.onSearch();
+
+          if (response.code==0){
+            this.$message({ message: "新增项目成功！已发送邮件通知项目上级、EPG Leader、QA Leader及配置管理员。", type: "success" });
+            var json = response;
+            console.log(json);
+            this.editDialogParam.show = false;
+            this.onSearch();
+          }else{
+            this.$message({ message: "新增项目失败："+response.msg, type: "warning" });
+          }
+
         })
         .catch(error => {
           this.$message({ message: "新增项目异常："+error, type: "error" });
@@ -856,10 +872,17 @@ export default {
 
       updateProject(this.formEdit)
         .then(response => {
-          var json = response;
-          console.log(json);
-          this.editDialogParam.show = false;
-          this.onSearch();
+
+          if (response.code==0) {
+            var json = response;
+            console.log(json);
+            this.$message({ message: response.msg, type: "success" });
+            this.editDialogParam.show = false;
+            this.onSearch();
+          }else {
+            this.$message({ message: "编辑项目失败："+response.msg, type: "warning" });
+          }
+
         })
         .catch(error => {
           this.$message({ message: "编辑项目异常："+error, type: "error" });
@@ -902,11 +925,17 @@ export default {
 
         var params = 'ids%5B%5D='+rowData.id
         deleteProject(params).then(response=>{
-          this.onSearch();
-          this.$message({
-            type:'success',
-            message:'删除成功'
-          })
+
+          if (response.code==0){
+            this.onSearch();
+            this.$message({
+              type:'success',
+              message:'删除成功'
+            })
+          } else {
+            this.$message({ message: "删除项目失败："+response.msg, type: "warning" });
+          }
+
 
         })
 
@@ -922,13 +951,20 @@ export default {
     },
     onShowDetail(rowData) {
 
-      this.$router.push({
-        name:'projectDetail',
-        query: {
-          id: Object.assign({},rowData).id
-        },
-        params: {
-          projectInfo: Object.assign({},rowData)
+      SearchUserProjectRoles(rowData.id).then((response)=>{      /////////判断角色
+
+        if (response.code==0){
+          this.$router.push({
+            name:'projectDetail',
+            query: {
+              id: Object.assign({},rowData).id
+            },
+            params: {
+              projectInfo: Object.assign({},rowData)
+            }
+          })
+        }else {
+          this.$message({ message: "您没有查看该项目的权限！", type: "warning" });
         }
       })
 
@@ -1094,7 +1130,14 @@ export default {
         this.changeProjectStatus.title= '分配QA';
         this.formEdit = item;
 
-      }else if(this.userInfo.userRole=='PM'&&item.createrId==this.userInfo.userId){
+      }else if(this.userInfo.userRole=='CM'){
+
+        this.changeProjectStatus.show = true;
+        this.changeProjectStatus.title= '建立配置库';
+        this.formEdit = item;
+
+      }
+      else if(this.userInfo.userRole=='PM'&&item.createrId==this.userInfo.userId){
 
         this.changeProjectStatus.show = true;
         this.changeProjectStatus.title= '变更项目状态';
@@ -1127,26 +1170,43 @@ export default {
 
             //////////////////////////////////////////////////////调用改变项目状态接口
 
-      var params = 'projectId='+this.formEdit.id+'&statusId=3'
-      setProjectStatus(params)
-        .then(response => {
+      JudgeAssign(this.formEdit.id)
+        .then((response)=>{
 
-          if (response.msg == "状态更新成功！") {
+          console.log(response);
+          if(response.code==0){
 
-            this.changeProjectStatus.show = false;
-            this.onSearch();
-            this.radioPM='2';
+            var params = 'projectId='+this.formEdit.id+'&statusId=3'
+            setProjectStatus(params)
+              .then(response => {
 
-          } else {
+                if (response.code == 0) {
+
+                  this.changeProjectStatus.show = false;
+                  this.onSearch();
+                  this.radioPM='2';
+                  this.$message({ message: response.msg, type: "success" });
+
+                } else {
+                  this.$message({ message: "项目状态更新失败："+response.msg, type: "warning" });
+                }
+              })
+              .catch(error => {
+                this.$message({ message: "项目状态更新异常："+error, type: "error" });
+              })
+              .finally(() => {
+
+              });
+
+          }else {
             this.$message({ message: response.msg, type: "warning" });
           }
-        })
-        .catch(error => {
-          this.$message({ message: "项目状态更新异常："+error, type: "error" });
-        })
-        .finally(() => {
 
-        });
+      }).catch(error => {
+        this.$message({ message: "项目状态更新异常："+error, type: "error" });
+      }).finally(() => {
+
+      });
 
     },
     changeProjectStatusTo4(){
@@ -1157,14 +1217,15 @@ export default {
       setProjectStatus(params)
         .then(response => {
 
-          if (response.msg == "状态更新成功！") {
+          if (response.code == 0) {
 
             this.changeProjectStatus.show = false;
             this.onSearch();
             this.radioPM='2';
+            this.$message({ message: response.msg, type: "success" });
 
           } else {
-            this.$message({ message: response.msg, type: "warning" });
+            this.$message({ message: "项目状态更新失败："+response.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -1181,14 +1242,15 @@ export default {
       setProjectStatus(params)
         .then(response => {
 
-          if (response.msg == "状态更新成功！") {
+          if (response.code == 0) {
 
             this.changeProjectStatus.show = false;
             this.onSearch();
             this.radioPM='2';
+            this.$message({ message: response.msg, type: "success" });
 
           } else {
-            this.$message({ message: response.msg, type: "warning" });
+            this.$message({ message: "项目状态更新失败："+response.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -1204,13 +1266,14 @@ export default {
       setProjectStatus(params)
         .then(response => {
 
-          if (response.msg == "状态更新成功！") {
+          if (response.code == 0) {
 
             this.changeProjectStatus.show = false;
             this.onSearch();
+            this.$message({ message: response.msg, type: "success" });
 
           } else {
-            this.$message({ message: response.msg, type: "warning" });
+            this.$message({ message: "项目状态更新失败："+response.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -1231,9 +1294,16 @@ export default {
       axios.post(`/ProjectUserInfo/Add?id=3` , params)
         .then(res => {
           console.log(res);
-          this.changeProjectStatus.show = false;
-          this.$message({ message: "成功为该项目分配EPG！", type: "success" });
-          this.showLeaderTask();
+
+          if (res.code==0){
+            this.changeProjectStatus.show = false;
+            this.$message({ message: "成功为该项目分配EPG并发送邮件通知项目经理！", type: "success" });
+            this.radioLeader = '1';
+            this.showLeaderTask();
+          } else{
+            this.$message({ message: "分配epg失败："+res.msg, type: "warning" });
+          }
+
         })
         .catch(error => {
           console.log(error)
@@ -1253,10 +1323,17 @@ export default {
       }
       axios.post(`/ProjectUserInfo/Add?id=4` , params)
         .then(res => {
-          console.log(res);
-          this.changeProjectStatus.show = false;
-          this.$message({ message: "成功为该项目分配QA！", type: "success" });
-          this.showLeaderTask();
+
+          if (res.code==0){
+            console.log(res);
+            this.changeProjectStatus.show = false;
+            this.$message({ message: "成功为该项目分配QA并发送邮件通知项目经理！", type: "success" });
+            this.radioLeader = '1';
+            this.showLeaderTask();
+          }else {
+            this.$message({ message: "分配qa失败："+res.msg, type: "warning" });
+          }
+
         })
         .catch(error => {
           this.$message({ message: "分配qa异常："+error, type: "error" });
@@ -1266,13 +1343,17 @@ export default {
         });
 
     },
+    buildConfig(){
+      this.$message({ message: "成功建立配置库并发送邮件通知项目经理！", type: "success" });
+      this.changeProjectStatus.show = false;
+    },
     pendingProject(){
 
       if (this.radio1=='1'){
         approveProject(this.formEdit.id)
           .then(response => {
 
-            if (response.msg == "状态更新成功！") {
+            if (response.code == 0) {
 
               this.changeProjectStatus.show = false;
               this.onSearch();
@@ -1280,7 +1361,7 @@ export default {
               this.$message({ message: "项目立项成功！已发送邮件通知项目经理、EPG经理、QA经理及组织及配置管理员。", type: "success" });
 
             } else {
-              this.$message({ message: response.msg, type: "warning" });
+              this.$message({ message: '项目审核失败：'+response.msg, type: "warning" });
             }
           })
           .catch(error => {
@@ -1294,7 +1375,7 @@ export default {
         rejectProject(this.formEdit.id)
           .then(response => {
 
-            if (response.msg == "状态更新成功！") {
+            if (response.code == 0) {
 
               this.changeProjectStatus.show = false;
               this.onSearch();
@@ -1302,7 +1383,7 @@ export default {
               this.$message({ message: "项目已驳回！已发送邮件通知项目经理。", type: "success" });
 
             } else {
-              this.$message({ message: response.msg, type: "warning" });
+              this.$message({ message: '项目驳回失败：'+response.msg, type: "warning" });
             }
           })
           .catch(error => {
@@ -1324,13 +1405,13 @@ export default {
         .then(response => {
 
           this.tableData=[];
-          if (response.msg == "查询成功！") {
+          if (response.code == 0) {
 
             this.tableData = response.data.data;
             this.pageInfo.pageTotal = response.count;
 
           } else {
-            this.$message({ message: response.msg, type: "warning" });
+            this.$message({ message: '获取我的审核项目失败：'+response.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -1376,11 +1457,11 @@ export default {
         .then(response => {
           var json = response;
           console.log(json);
-          if (json.msg == "查询成功！") {
+          if (json.code == 0) {
             this.tableData = json.data.data;
             this.pageInfo.pageTotal = json.count;
           } else {
-            this.$message({ message: json.msg, type: "warning" });
+            this.$message({ message: "获取项目经理的项目失败："+json.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -1423,11 +1504,11 @@ export default {
         .then(response => {
           var json = response;
           console.log(json);
-          if (json.msg == "查询成功！") {
+          if (json.code == 0) {
             this.tableData = json.data.data;
             this.pageInfo.pageTotal = json.count;
           } else {
-            this.$message({ message: json.msg, type: "warning" });
+            this.$message({ message: '获取员工项目失败；'+json.msg, type: "warning" });
           }
         })
         .catch(error => {
@@ -1450,15 +1531,15 @@ export default {
           .then(response => {
             var json = response;
             console.log(json);
-            if (json.msg == "查询成功！") {
+            if (json.code == 0) {
               this.tableData = json.data.data;
               this.pageInfo.pageTotal = json.count;
             } else {
-              this.$message({ message: json.msg, type: "warning" });
+              this.$message({ message: '获取EPG leader项目失败：'+json.msg, type: "warning" });
             }
           })
           .catch(error => {
-            this.$message({ message: "获取EPG leader项目异常"+error, type: "error" });
+            this.$message({ message: "获取EPG leader项目异常："+error, type: "error" });
           })
           .finally(() => {
             this.loading = false;
@@ -1473,11 +1554,11 @@ export default {
           .then(response => {
             var json = response;
             console.log(json);
-            if (json.msg == "查询成功！") {
+            if (json.code == 0) {
               this.tableData = json.data.data;
               this.pageInfo.pageTotal = json.count;
             } else {
-              this.$message({ message: json.msg, type: "warning" });
+              this.$message({ message: '获取QA leader项目失败：'+json.msg, type: "warning" });
             }
           })
           .catch(error => {
@@ -1488,6 +1569,19 @@ export default {
           });
 
       }
+
+    },
+    searchMyRole(projectId){
+
+      var result = 0;
+      SearchUserProjectRoles(projectId).then((response)=>{
+        console.log(response);
+        if (response.code==1){
+          result = 1;
+        } else {
+          result = 0;
+        }
+      })
 
     }
 

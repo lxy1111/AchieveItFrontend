@@ -17,7 +17,7 @@
                   :disabled="editDialogParam.formEditDisabled"
                 >
                   <el-form-item class="form_input" label="项目id" prop="id">
-                    <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
+                    <span>20201234D{{formEdit.id}}</span>
                   </el-form-item>
                   <el-form-item class="form_input" label="项目名称" prop="projectName">
                     <el-input v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6" v-model="formEdit.projectName" placeholder=""></el-input>
@@ -211,7 +211,7 @@
                   <el-table-column prop="userDepartment" label="部门" width="100"></el-table-column>
                   <el-table-column prop="projectChargerMail" label="项目上级邮箱"></el-table-column>
                   <el-table-column prop="userTel" label="电话"></el-table-column>
-                  <el-table-column fixed="right" label="权限" align="center">
+                  <el-table-column v-if="this.formEdit.status!=5&&this.formEdit.status!=6" fixed="right" label="权限" align="center">
                     <template slot-scope="scope">
                       <i style="font-size: 1.1rem;" class="el-icon-zoom-in"
                          @click="onShowDetailPermission(scope.row)"></i>
@@ -1342,22 +1342,27 @@
             }, {
               value: '质量监控',
               label: '质量监控'
-            }, {
-              value: '项目经理',
-              label: '项目经理'
-            }, {
+            },
+            //   {
+            //   value: '项目经理',
+            //   label: '项目经理'
+            // },
+              {
               value: '项目资产管理员',
               label: '项目资产管理员'
             }, {
-              value: '项目成员',
-              label: '项目成员'
+              value: '开发人员',
+              label: '开发人员'
+            }, {
+              value: '测试人员',
+              label: '测试人员'
             }],
             permissionOptions: [{
                 value: '0',
-                label: '0'
+                label: '否'
               }, {
                 value: '1',
-                label: '1'
+                label: '是'
               }],
             formSearch: {
               name: "2213",
@@ -2397,9 +2402,9 @@
                     userName: this.formEditPermission.userName,
                     userRole: this.formEditPermission.userRole,
                     userTel: this.formEditPermission.userTel,
-                    filePermission: response.data.data.filePermission,
-                    gitPermission: response.data.data.gitPermission,
-                    mailPermission: response.data.data.mailPermission,
+                    filePermission: response.data.data.filePermission == 1 ? '是' : '否',
+                    gitPermission: response.data.data.gitPermission == 1 ? '是' : '否',
+                    mailPermission: response.data.data.mailPermission == 1 ? '是' : '否',
 
                   }
                 }else{
@@ -2930,7 +2935,7 @@
               this.formMyTime.userId = this.userInfo.userId;
               this.formMyTime.userName = this.userInfo.userName;
               //this.formMyTime.finishedFunction = this.formMyTime.finishedFunction[0];
-              //this.formMyTime.finishedActivity = this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1];
+              this.formMyTime.finishedActivity = this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1];
 
               console.log(this.formMyTime)
 
@@ -2939,9 +2944,9 @@
                   console.log(res);
                   this.getMyWorkHour();
 
-                  formMyTime= {
-                    finishedFunction: [],
-                    finishedActivity: [],
+                  this.formMyTime= {
+                    finishedFunction: '',
+                    finishedActivity: '',
                     startTime: '',
                     finishTime: ''
                   }
@@ -2979,7 +2984,7 @@
                 startTime: this.formMyTime.startTime,
                 finishTime: this.formMyTime.finishTime,
                 finishedActivity: this.formMyTime.finishedActivity[0]+"/"+this.formMyTime.finishedActivity[1],
-                finishedFunction: this.formMyTime.finishedFunction[0],
+                finishedFunction: this.formMyTime.finishedFunction,
               })
                 .then(res=>{
                   console.log(res);
