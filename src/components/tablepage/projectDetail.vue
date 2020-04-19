@@ -383,7 +383,36 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="缺陷管理">
-              缺陷管理
+              <el-row style="margin-top: 1rem;">
+                <el-col :span="20">
+
+                </el-col>
+                <el-col :span="4">
+                  <el-button v-if="this.userInfo.userRole=='PM'&&this.formEdit.status!=5&&this.formEdit.status!=6"
+                             style="background: #309aec;
+                                  color: white;
+                                  margin-left: 1rem;
+                                  border-color: #309aec;"
+                             round @click="onShowAddDefault">新建缺陷</el-button>
+                </el-col>
+              </el-row>
+              <br>
+              <div>
+                <el-table :data="defaultList" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loadingFunc">
+<!--                  <el-table-column type="selection" width="30" align="center"></el-table-column>-->
+                  <el-table-column prop="id" label="缺陷id"  align="center"></el-table-column>
+                  <el-table-column prop="content" label="缺陷内容" ></el-table-column>
+                  <el-table-column prop="chargerId" label="负责人id" ></el-table-column>
+                  <el-table-column v-if="formEdit.status!=5&&formEdit.status!=6" fixed="right" label="操作"  align="center">
+                    <template slot-scope="scope">
+
+<!--                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditDefect(scope.row)"></i>-->
+                      <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteDefect(scope.row)"></i>
+                    </template>
+                  </el-table-column>
+                </el-table>
+
+              </div>
             </el-tab-pane>
             <el-tab-pane label="风险管理">
               <el-row style="margin-top: 1rem;">
@@ -398,11 +427,25 @@
                                   border-color: #309aec;"
                              round @click="onShowAddRisk">新建风险</el-button>
                 </el-col>
+<!--                <el-col :span="4">-->
+<!--                  <el-dropdown @command="handleCommand">-->
+<!--              <span class="el-dropdown-link">-->
+<!--                 从组织库导入风险<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>-->
+<!--              </span>-->
+<!--                    <el-dropdown-menu slot="dropdown">-->
+<!--                      <el-dropdown-item command="a">黄金糕</el-dropdown-item>-->
+<!--                      <el-dropdown-item command="b">狮子头</el-dropdown-item>-->
+<!--                      <el-dropdown-item command="c">螺蛳粉</el-dropdown-item>-->
+<!--                      <el-dropdown-item command="d" disabled>双皮奶</el-dropdown-item>-->
+<!--                      <el-dropdown-item command="e" divided>蚵仔煎</el-dropdown-item>-->
+<!--                    </el-dropdown-menu>-->
+<!--                  </el-dropdown>-->
+<!--                </el-col>-->
               </el-row>
               <br>
               <div>
                 <el-table :data="riskList" stripe class="visitor-table" style="width: 100%" align="center" v-loading="loadingFunc">
-                  <el-table-column type="selection" width="30" align="center"></el-table-column>
+<!--                  <el-table-column type="selection" width="30" align="center"></el-table-column>-->
                   <el-table-column prop="id" label="风险id"  align="center"></el-table-column>
                   <el-table-column prop="type" label="风险类型" ></el-table-column>
                   <el-table-column prop="description" label="风险描述"></el-table-column>
@@ -586,6 +629,35 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <el-dialog
+      :title="editDefaultDialogParam.title"
+      :visible.sync="editDefaultDialogParam.show"
+      width="500px"
+      @close="handleDialogClose"
+    >
+      <el-form
+        :inline="true"
+        :model="formEditDefault"
+        ref="formEditFunction"
+        class="demo-form-inline-dialog"
+        label-width="100px"
+        :rules="formEditFunctionRules"
+        :disabled="editDefaultDialogParam.formEditRiskDisabled"
+      >
+        <el-form-item class="form_input" label="缺陷内容" prop="functionName">
+          <el-input v-model="formEditDefault.content" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item class="form_input" label="负责人" prop="personCharge">
+          <el-input v-model="formEditDefault.chargerId" placeholder=""></el-input>
+        </el-form-item>
+
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDefaultDialogParam.show = false">取 消</el-button>
+        <el-button type="primary" @click="onAddDefault()">确 定</el-button>
+      </span>
+    </el-dialog>
 
     <el-dialog
       :title="editRiskDialogParam.title"
@@ -896,13 +968,13 @@
 </template>
 
 <script>
-  import {updateRisk,addRisk,uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
+  import {searchUserId,updateRisk,addDefault,addRisk,uploadExcel,exportExcel,groupListSearch, searchProject, searchProjectSubFunction,searchDevice,deleteProjectSubFunction,deleteProjectFunction, workHourSearch} from '../../api/api'
 
   import {
     workHourAccept, workHourReject, searchPermission, addPermission, editPermission
   } from '../../api/api'
 
-  import {searchProjectFunction, addProjectFunction, updateProjectFunction,searchRisk} from '../../api/api'
+  import {searchProjectFunction,deleteDefect, addProjectFunction, updateProjectFunction,searchDefault,searchRisk} from '../../api/api'
   import {approveProject, workHourEdit,workHourAdd,
     rejectProject, deleteProjectGroup,
     updateProject,
@@ -1040,6 +1112,7 @@
               showExcel:false,
               functionid:'',
               riskList:[],
+              defaultList:[],
               deviceList:[],
             loadingFunc: false,
             formSearchFunc: {
@@ -1149,6 +1222,9 @@
               formEditRisk:{
 
               },
+              formEditDefault:{
+
+              },
             formEditFunction: {
                 //id: "",
                 functionName: "",
@@ -1248,6 +1324,11 @@
                   show: false, //弹框显示
                   formEditRiskDisabled:false,//编辑弹窗是否可编辑
               },
+              editDefaultDialogParam:{
+                  title: "新增缺陷", //弹窗标题,值为:新增功能，查看功能，编辑功能
+                  show: false, //弹框显示
+                  formEditDefaultDisabled:false,//编辑弹窗是否可编辑
+              },
             editFunctionDialogParam: {
               title: "新增功能", //弹窗标题,值为:新增功能，查看功能，编辑功能
               show: false, //弹框显示
@@ -1337,6 +1418,39 @@
               });
 
           },
+            onShowEditDefect(rowData){
+                this.editDefaultDialogParam.title='修改缺陷'
+                this.editDefaultDialogParam.show=true
+                this.formEditDefault=rowData
+
+
+            },
+            onShowDeleteDefect(rowData){
+                 var id = rowData.id
+
+                this.$confirm('确定删除吗', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+
+                    deleteDefect(id).then(res => {
+                        if (res.msg == '缺陷删除成功！') {
+                            this.$message({message: "删除成功！" , type: "success"});
+                            this.getAllDefault(this.formEdit.id)
+                        }
+
+                    }).catch(error => {
+                        this.$message({message: "异常：" + error, type: "error"});
+                    })
+                        .finally(() => {
+                            //this.loading = false;
+                        });
+
+                })
+
+
+            },
           getArchive(item){
 
             searchProjectArchive(item)
@@ -1580,6 +1694,10 @@
                 })
               }
             },
+            onShowAddDefault(){
+              this.editDefaultDialogParam.title='新增缺陷'
+                this.editDefaultDialogParam.show=true
+            },
             onShowAddRisk(){
 
               this.editRiskDialogParam.title='新增风险'
@@ -1706,6 +1824,31 @@
                     });
 
             },
+            getAllDefault(projectId){
+
+                this.loadingFunc = true
+
+                searchDefault(projectId)
+                    .then(response => {
+                        var json = response;
+                        console.log(json);
+                        if (json.msg == "查询成功！") {
+
+                            this.defaultList = json.data.缺陷信息列表;
+                            console.log("缺陷列表查询成功");
+
+                        } else {
+                            this.$message({ message: json.message, type: "warning" });
+                        }
+                    })
+                    .catch(error => {
+                        this.$message({ message: "获取缺陷异常："+error, type: "error" });
+                    })
+                    .finally(() => {
+                        this.loadingFunc = false;
+                    });
+
+            },
             getDevices(projectId){
 
                 this.loadingFunc = true
@@ -1825,6 +1968,7 @@
                   this.getAllGroupList(this.formEdit.id);
                   this.getAllFunction(this.formEdit.id);
                   this.getAllRisks(this.formEdit.id)
+                    this.getAllDefault(this.formEdit.id)
                   this.getDevices(this.formEdit.id)
                   this.getMyWorkHour();
                   this.getArchive(this.formEdit.id);
@@ -1857,6 +2001,39 @@
             this.formMyTimeDialogParam.formMyTimeDisabled = false;
 
           },
+            onAddDefault(){
+              this.formEditDefault.projectId=this.formEdit.id
+                searchUserId(this.formEditDefault.chargerId).then(res=>{
+                    if(res.count>0) {
+                        var id = res.data.data[0].id
+                        this.formEditDefault.chargerId = id
+                        addDefault(this.formEditDefault).then(response => {
+                            if (response.msg = '新增成功！') {
+                                this.$message({
+                                    type: 'success',
+                                    message: '新增成功!'
+                                });
+                                this.formEditDefault = {};
+                                this.editDefaultDialogParam.show = false
+                                this.getAllDefault(this.formEdit.id)
+                            }
+                        }).catch(() => {
+                            this.$message({
+                                type: 'info',
+                                message: '已取消新增'
+                            });
+                        })
+                    }
+
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消新增'
+                    });
+                })
+
+
+            },
             onAddRisk(){
               this.formEditRisk.status=1;
               this.formEditRisk.frequency=0;

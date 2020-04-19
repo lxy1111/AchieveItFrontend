@@ -555,6 +555,7 @@
                         ids:ids,
                     }
                     deleteDevice(ids).then(response=>{
+                        this.onSearch()
                         this.$message({
                             type:'success',
                             message:'删除成功'
@@ -638,7 +639,7 @@
 
               console.log("新增设备------调用_save:");
               console.log(this.formEdit);
-              this.formEdit.status=1
+              this.formEdit.status=2
                 addDevice(this.formEdit).then(response=>{
                     var json = response;
                     console.log(json);
