@@ -17,7 +17,7 @@
                   :disabled="editDialogParam.formEditDisabled"
                 >
                   <el-form-item class="form_input" label="项目id" prop="id">
-                    <span>2020-{{computeClientCode(formEdit.id)}}-{{computeProjectType(formEdit.id)}}-{{formEdit.id}}</span>
+                    <span>2020-{{computeClientCode(formEdit.id)}}-{{computeProjectType(formEdit.id)}}-{{computeProjectId(formEdit.id)}}</span>
                   </el-form-item>
                   <el-form-item class="form_input" label="项目名称" prop="projectName">
                     <el-input v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6" v-model="formEdit.projectName" placeholder=""></el-input>
@@ -222,7 +222,7 @@
                   <el-table-column v-if="this.formEdit.status!=5&&this.formEdit.status!=6" fixed="right" label="操作" align="center">
                     <template slot-scope="scope">
 <!--                      <i style="font-size: 1.1rem;" class="el-icon-zoom-in" @click="onShowGroupDetail(scope.row)"></i>-->
-                      <i style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditGroup(scope.row)"></i>
+<!--                      <i style="font-size: 1.1rem;" class="el-icon-edit-outline" @click="onShowEditGroup(scope.row)"></i>-->
                       <i v-if="userInfo.userRole=='PM'" style="font-size: 1.1rem;" class="el-icon-delete" @click="onShowDeleteGroup(scope.row)"></i>
                     </template>
                   </el-table-column>
@@ -2669,7 +2669,8 @@
           },
           onEditGroup() {
             if (this.editGroupDialogParam.title == "编辑组员") {
-              this._editGroup();
+              this._saveGroup();
+              //this._editGroup();
             }
           },
           _saveGroup() {
@@ -2933,8 +2934,12 @@
             return this.$moment(date).format("YYYY-MM-DD");
           },
           format_date1(time) {
+
+            console.log(time);
+            console.log(new Date());
+
             if (time == undefined) {
-              return "";
+              return this.$moment(new Date()).format("YYYY-MM-DD")
             }
             return this.$moment(time).format("YYYY-MM-DD");
           },
@@ -2974,10 +2979,10 @@
           searchWorkTime(){
 
             var workHourParams = 'projectId='+this.formEdit.id+'&id='+this.format_date1(this.formSearchTime);
-            if (this.formSearchTime==''){
-              this.$message({ message: '查询日期不能为空！', type: "warning" });
-
-            }else {
+            // if (this.formSearchTime==''){
+            //   this.$message({ message: '查询日期不能为空！', type: "warning" });
+            //
+            // }else {
 
               workHourSearch(workHourParams)
                 .then(response => {
@@ -3002,7 +3007,7 @@
                   //this.loading = false;
                 });
 
-            }
+            //}
 
           },
           _edit() {
@@ -3162,6 +3167,15 @@
               result = 'S';
             } else if(id%4==3){
               result = 'O';
+            }
+            return result;
+          },
+          computeProjectId(id){
+            var result = id;
+            if (id<=9){
+              result = '0'+id;
+            } else{
+              result = id;
             }
             return result;
           }

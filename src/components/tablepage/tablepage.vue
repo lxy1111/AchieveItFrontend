@@ -21,9 +21,9 @@
               class="demo-form-inline"
               label-width="82px"
             >
-              <el-form-item class="small_form_input" label="项目id" prop="id">
-                <el-input v-model="formSearch.id" placeholder=""></el-input>
-              </el-form-item>
+<!--              <el-form-item class="small_form_input" label="项目id" prop="id">-->
+<!--                <el-input v-model="formSearch.id" placeholder=""></el-input>-->
+<!--              </el-form-item>-->
               <el-form-item class="form_input" label="项目名称" prop="projectName">
                 <el-input v-model="formSearch.projectName" placeholder=""></el-input>
               </el-form-item>
@@ -105,7 +105,7 @@
       </el-table-column>
       <el-table-column prop="id" label="项目id" width="180" align="center">
         <template slot-scope="scope">
-          <span>2020-{{computeClientCode(scope.row.id)}}-{{computeProjectType(scope.row.id)}}-{{scope.row.id}}</span>
+          <span>2020-{{computeClientCode(scope.row.id)}}-{{computeProjectType(scope.row.id)}}-{{computeProjectId(scope.row.id)}}</span>
         </template>
       </el-table-column>
       <el-table-column prop="projectName" label="项目名称" show-overflow-tooltip tooltip-effect="dark" align="center"></el-table-column>
@@ -183,7 +183,7 @@
         :disabled="editDialogParam.formEditDisabled"
       >
         <el-form-item v-if="editDialogParam.title=='编辑'" class="form_input" label="项目id" prop="name">
-          <span>2020-{{computeClientCode(formEdit.id)}}-{{computeProjectType(formEdit.id)}}-{{formEdit.id}}</span>
+          <span>2020-{{computeClientCode(formEdit.id)}}-{{computeProjectType(formEdit.id)}}-{{computeProjectId(formEdit.id)}}</span>
         </el-form-item>
         <el-form-item class="form_input" label="项目名称" prop="city">
           <el-input v-model="formEdit.projectName" placeholder=""></el-input>
@@ -1634,6 +1634,15 @@ export default {
         result = 'S';
       } else if(id%4==3){
         result = 'O';
+      }
+      return result;
+    },
+    computeProjectId(id){
+      var result = id;
+      if (id<=9){
+        result = '0'+id;
+      } else{
+        result = id;
       }
       return result;
     },
