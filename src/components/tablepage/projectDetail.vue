@@ -449,8 +449,16 @@
                   <el-table-column prop="id" label="风险id"  align="center"></el-table-column>
                   <el-table-column prop="type" label="风险类型" ></el-table-column>
                   <el-table-column prop="description" label="风险描述"></el-table-column>
-                  <el-table-column prop="level" label="风险级别" show-overflow-tooltip tooltip-effect="dark" ></el-table-column>
-                  <el-table-column prop="effect" label="风险影响度"  ></el-table-column>
+                  <el-table-column prop="level" label="风险级别" show-overflow-tooltip tooltip-effect="dark" >
+                    <template slot-scope="scope">
+                    <span >{{scope.row.level==1?'低风险':scope.row.level==2?'中等风险':'高风险'}}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="effect" label="风险影响度"  >
+                    <template slot-scope="scope">
+                      <span >{{scope.row.effect==1?'低影响':scope.row.level==2?'中等影响':'高影响'}}</span>
+                    </template>
+                  </el-table-column>
                   <el-table-column prop="strategy" label="风险应对策略"></el-table-column>
                   <el-table-column prop="responsible" label="风险责任人"  ></el-table-column>
                   <!--      <el-table-column prop="gender" label="性别"  :formatter="format_gender"></el-table-column>-->
@@ -674,6 +682,17 @@
         :rules="formEditFunctionRules"
         :disabled="editRiskDialogParam.formEditRiskDisabled"
       >
+        <el-form-item class="form_input" label="组织库导入" prop="functionName">
+          <el-select v-model="riskType" placeholder="请选择风险" @change="selectChanged">
+            <el-option
+              v-for="item in riskTypeList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item class="form_input" label="风险类型" prop="functionName">
           <el-input v-model="formEditRisk.type" placeholder=""></el-input>
         </el-form-item>
@@ -681,10 +700,24 @@
           <el-input v-model="formEditRisk.description" placeholder=""></el-input>
         </el-form-item>
         <el-form-item class="form_input" label="风险级别" prop="personCharge">
-          <el-input v-model="formEditRisk.level" placeholder=""></el-input>
+          <el-select v-model="formEditRisk.level" placeholder="选择级别" @change="levelchanged" >
+            <el-option
+              v-for="item in leveList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item class="form_input" label="风险影响度" prop="personCharge">
-          <el-input v-model="formEditRisk.effect" placeholder=""></el-input>
+          <el-select v-model="formEditRisk.effect" placeholder="选择影响" @change="effectchanged">
+            <el-option
+              v-for="item in effectList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item class="form_input" label="风险应对策略" prop="personCharge">
           <el-input v-model="formEditRisk.strategy" placeholder=""></el-input>
@@ -1000,6 +1033,7 @@
             ],
               uploadingexcel:false,
               functiontype:'',
+
             activityOptions:[
               {
                 value: '工程活动',
@@ -1109,6 +1143,56 @@
 
                 }
             }],
+              leveList:[{
+                  value: 1,
+                  label: '低风险'
+              }, {
+                  value: 2,
+                  label: '中等风险'
+              }, {
+                  value: 3,
+                  label: '高风险'
+              }],
+              effectList:[{
+                  value: 1,
+                  label: '低影响'
+              }, {
+                  value: 2,
+                  label: '中等影响'
+              }, {
+                  value: 3,
+                  label: '高影响'
+              }],
+              riskTypeList:[{
+                  value: 1,
+                  label: '自定义风险'
+              }, {
+                  value: 2,
+                  label: '产品规模风险'
+              }, {
+                  value: 3,
+                  label: '商业影响风险'
+              }, {
+                  value: 4,
+                  label: '客户相关风险'
+              }, {
+                  value: 5,
+                  label: '过程相关风险'
+              },
+                  {
+                      value: 6,
+                      label: '技术相关风险'
+                  },
+                  {
+                      value: 7,
+                      label: '人员相关风险'
+                  },
+                  {
+                      value: 8,
+                      label: '开发环境风险'
+                  },
+              ],
+              riskType:'',
               showExcel:false,
               functionid:'',
               riskList:[],
@@ -1398,6 +1482,12 @@
           }
         },
         methods: {
+            levelchanged(value){
+              this.formEditRisk.level=value
+            },
+            effectchanged(value){
+              this.formEditRisk.effect=value
+            },
           getMyWorkHour(){
 
             var params='projectId='+this.formEdit.id+'&userId='+this.userInfo.userId;
@@ -1425,6 +1515,65 @@
 
 
             },
+            selectChanged(value) {
+                console.log(value)
+              if(value==1){
+                  this.formEditRisk.type=''
+                  this.formEditRisk.description=''
+                  this.formEditRisk.level=''
+                  this.formEditRisk.effect=''
+                  this.formEditRisk.strategy=''
+              }else if(value==2){
+                    this.formEditRisk.type='产品规模风险'
+                  this.formEditRisk.description='由产品规模引发的风险'
+                  this.formEditRisk.level=3
+                  this.formEditRisk.effect=3
+                  this.formEditRisk.strategy='排查产品规模相关的风险'
+                }else if(value==3){
+                  this.formEditRisk.type='商业影响风险'
+                  this.formEditRisk.description='由商业影响引发的风险'
+                  this.formEditRisk.level=3
+                  this.formEditRisk.effect=3
+                  this.formEditRisk.strategy='排查商业相关的风险'
+                }else if(value==4){
+                  this.formEditRisk.type='客户相关风险'
+                  this.formEditRisk.description='由客户引发的风险'
+                  this.formEditRisk.level=2
+                  this.formEditRisk.effect=2
+                  this.formEditRisk.strategy='排查客户相关的风险'
+
+                }else if(value==5){
+                  this.formEditRisk.type='过程相关风险'
+                  this.formEditRisk.description='由过程引发的风险'
+                  this.formEditRisk.level=1
+                  this.formEditRisk.effect=1
+                  this.formEditRisk.strategy='排查过程相关的风险'
+
+                }else if(value==6){
+                  this.formEditRisk.type='技术相关风险'
+                  this.formEditRisk.description='由技术引发的风险'
+                  this.formEditRisk.level=3
+                  this.formEditRisk.effect=2
+                  this.formEditRisk.strategy='排查技术相关的风险'
+
+                }else if(value==7){
+                  this.formEditRisk.type='人员相关风险'
+                  this.formEditRisk.description='由人员轮换引发的风险'
+                  this.formEditRisk.level=3
+                  this.formEditRisk.effect=3
+                  this.formEditRisk.strategy='排查人员轮换相关的风险'
+
+                }else if(value==8){
+                  this.formEditRisk.type='开发环境风险'
+                  this.formEditRisk.description='由开发环境引发的风险'
+                  this.formEditRisk.level=3
+                  this.formEditRisk.effect=3
+                  this.formEditRisk.strategy='排查开发环境相关的风险'
+
+                }
+
+            },
+
             onShowDeleteDefect(rowData){
                  var id = rowData.id
 
@@ -1722,6 +1871,7 @@
                            message:response.msg
                        })
                    }
+                   this.getAllFunction(this.formEdit.id)
 
                 })  .catch(error => {
                     this.$message({ message: "导入异常："+error, type: "error" });
