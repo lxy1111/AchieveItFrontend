@@ -17,7 +17,7 @@
                   :disabled="editDialogParam.formEditDisabled"
                 >
                   <el-form-item class="form_input" label="项目id" prop="id">
-                    <span>20201234D{{formEdit.id}}</span>
+                    <span>2020-{{computeClientCode(formEdit.id)}}-{{computeProjectType(formEdit.id)}}-{{formEdit.id}}</span>
                   </el-form-item>
                   <el-form-item class="form_input" label="项目名称" prop="projectName">
                     <el-input v-if="userInfo.userRole=='PM'&&this.formEdit.status!=6" v-model="formEdit.projectName" placeholder=""></el-input>
@@ -2584,15 +2584,24 @@
               .then(response => {
                 var json = response;
                 console.log(json);
-                this.editFunctionDialogParam.show = false;
-                this.getAllFunction(this.formEditFunction.projectId);
-                this.$message({
+
+                if (response.code==0){
+                  this.editFunctionDialogParam.show = false;
+                  this.getAllFunction(this.formEditFunction.projectId);
+                  this.$message({
                     type:'success',
-                    message:'成功'
-                })
+                    message:'新增功能成功'
+                  })
+                } else {
+                  this.$message({
+                    type:'warning',
+                    message:'新增功能失败：'+response.msg
+                  })
+                }
+
               })
               .catch(error => {
-                this.$message({ message: "新增项目异常："+error, type: "error" });
+                this.$message({ message: "新增功能异常："+error, type: "error" });
               })
               .finally(() => {
 
@@ -2601,16 +2610,22 @@
             _saveSubFunction() {
                 addProjectSubFunction(this.formEditSubFunction)
                     .then(response => {
-                        if(response.msg=='新增成功！'){
+                        if(response.code==0){
                             this.$message({
                                 type:'success',
-                                message:'新增成功！'
+                                message:'新增子功能成功！'
                             })
+                          var json = response;
+                          console.log(json);
+                          this.editSubFunctionDialogParam.show = false;
+                          this.getAllFunction(this.formEdit.id);
+                        }else{
+                          this.$message({
+                            type:'warning',
+                            message:'新增子功能失败：'+response.msg
+                          })
                         }
-                        var json = response;
-                        console.log(json);
-                        this.editSubFunctionDialogParam.show = false;
-                        this.getAllFunction(this.formEdit.id);
+
                     })
                     .catch(error => {
                         this.$message({ message: "新增子功能异常："+error, type: "error" });
@@ -2624,10 +2639,19 @@
             this.formEditFunction.projectId=this.formEdit.id;
             updateProjectFunction(this.formEditFunction)
               .then(response => {
-                var json = response;
-                console.log(json);
-                this.editFunctionDialogParam.show = false;
-                this.getAllFunction(this.formEditFunction.projectId);
+                if (response.code==0){
+                  var json = response;
+                  console.log(json);
+                  this.editFunctionDialogParam.show = false;
+                  this.getAllFunction(this.formEditFunction.projectId);
+                  this.$message({
+                    type:'success',
+                    message:'更新功能成功！'
+                  })
+                } else{
+                  this.$message({ message: "更新功能失败："+response.msg, type: "warning" });
+                }
+
               })
               .catch(error => {
                 this.$message({ message: "更新功能异常："+error, type: "error" });
@@ -2640,10 +2664,22 @@
             _editSubFunction() {
                 updateProjectSubFunction(this.formEditSubFunction)
                     .then(response => {
+                      if (response.code==0){
                         var json = response;
                         console.log(json);
                         this.editSubFunctionDialogParam.show = false;
                         this.getAllFunction(this.formEdit.id);
+                        this.$message({
+                          type:'success',
+                          message:'更新子功能成功！'
+                        })
+                      } else{
+                        this.$message({
+                          type:'warning',
+                          message:'更新子功能失败：'+response.msg
+                        })
+                      }
+
                     })
                     .catch(error => {
                         this.$message({ message: "更新子功能异常："+error, type: "error" });
@@ -2858,6 +2894,39 @@
               });
             });
 
+          },
+          computeClientCode(id){
+            var resultNum = id*101;
+            var result = '';
+            if (resultNum<1000){
+              resultNum = 10000-resultNum;
+              result = resultNum.toString();
+            } else if(resultNum>9999){
+              result = resultNum.toString();
+              if (resultNum%4==0){
+                result = result[4]+result[3]+result[2]+result[1];
+              } else if(resultNum%4==1){
+                result = result[3]+result[1]+result[4]+result[4];
+              } else if(resultNum%4==2){
+                result = result[2]+result[4]+result[3]+result[1];
+              } else if(resultNum%4==3){
+                result = result[1]+result[2]+result[3]+result[4];
+              }
+            }
+            return result;
+          },
+          computeProjectType(id){
+            var result = 'D';
+            if (id%4==0){
+              result = 'D';
+            } else if(id%4==1){
+              result = 'M';
+            } else if(id%4==2){
+              result = 'S';
+            } else if(id%4==3){
+              result = 'O';
+            }
+            return result;
           }
 
         }
