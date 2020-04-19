@@ -1607,11 +1607,24 @@ export default {
     computeClientCode(id){
       var resultNum = id*101;
       var result = '';
-      if (resultNum<1000){
+
+      if (resultNum<10000){
         resultNum = 10000-resultNum;
         result = resultNum.toString();
+
+        if (resultNum%4==0){
+          result = result[0]+result[3]+result[2]+result[1];
+        } else if(resultNum%4==1){
+          result = result[3]+result[1]+result[0]+result[2];
+        } else if(resultNum%4==2){
+          result = result[2]+result[0]+result[3]+result[1];
+        } else if(resultNum%4==3){
+          result = result[1]+result[2]+result[3]+result[0];
+        }
+
       } else if(resultNum>9999){
         result = resultNum.toString();
+
         if (resultNum%4==0){
           result = result[4]+result[3]+result[2]+result[1];
         } else if(resultNum%4==1){
@@ -1622,6 +1635,7 @@ export default {
           result = result[1]+result[2]+result[3]+result[4];
         }
       }
+
       return result;
     },
     computeProjectType(id){
