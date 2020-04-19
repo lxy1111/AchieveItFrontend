@@ -105,7 +105,7 @@
       </el-table-column>
       <el-table-column prop="id" label="项目id" width="180" align="center">
         <template slot-scope="scope">
-          <span>20201234D{{scope.row.id}}</span>
+          <span>2020-{{computeClientCode(scope.row.id)}}-{{computeProjectType(scope.row.id)}}-{{scope.row.id}}</span>
         </template>
       </el-table-column>
       <el-table-column prop="projectName" label="项目名称" show-overflow-tooltip tooltip-effect="dark" align="center"></el-table-column>
@@ -183,7 +183,7 @@
         :disabled="editDialogParam.formEditDisabled"
       >
         <el-form-item v-if="editDialogParam.title=='编辑'" class="form_input" label="项目id" prop="name">
-          <span>20201234D{{formEdit.id}}</span>
+          <span>2020-{{computeClientCode(formEdit.id)}}-{{computeProjectType(formEdit.id)}}-{{formEdit.id}}</span>
         </el-form-item>
         <el-form-item class="form_input" label="项目名称" prop="city">
           <el-input v-model="formEdit.projectName" placeholder=""></el-input>
@@ -951,22 +951,36 @@ export default {
     },
     onShowDetail(rowData) {
 
-      SearchUserProjectRoles(rowData.id).then((response)=>{      /////////判断角色
+      if (this.userInfo.userRole=='Member'){         /////////判断项目成员在该项目中是否拥有角色
+        SearchUserProjectRoles(rowData.id).then((response)=>{
 
-        if (response.code==0){
-          this.$router.push({
-            name:'projectDetail',
-            query: {
-              id: Object.assign({},rowData).id
-            },
-            params: {
-              projectInfo: Object.assign({},rowData)
-            }
-          })
-        }else {
-          this.$message({ message: "您没有查看该项目的权限！", type: "warning" });
-        }
-      })
+          if (response.code==0){
+            this.$router.push({
+              name:'projectDetail',
+              query: {
+                id: Object.assign({},rowData).id
+              },
+              params: {
+                projectInfo: Object.assign({},rowData)
+              }
+            })
+          }else {
+            this.$message({ message: "您没有查看该项目的权限！", type: "warning" });
+          }
+        })
+
+      } else {
+        this.$router.push({
+          name:'projectDetail',
+          query: {
+            id: Object.assign({},rowData).id
+          },
+          params: {
+            projectInfo: Object.assign({},rowData)
+          }
+        })
+      }
+
 
       // this.editDialogParam.title = "查看";
       // this.editDialogParam.show = true;
@@ -1571,18 +1585,51 @@ export default {
       }
 
     },
-    searchMyRole(projectId){
-
-      var result = 0;
-      SearchUserProjectRoles(projectId).then((response)=>{
-        console.log(response);
-        if (response.code==1){
-          result = 1;
-        } else {
-          result = 0;
+    // searchMyRole(projectId){
+    //
+    //   var result = 0;
+    //   SearchUserProjectRoles(projectId).then((response)=>{
+    //     console.log(response);
+    //     if (response.code==1){
+    //       result = 1;
+    //     } else {
+    //       result = 0;
+    //     }
+    //   })
+    //
+    // },
+    computeClientCode(id){
+      var resultNum = id*101;
+      var result = '';
+      if (resultNum<1000){
+        resultNum = 10000-resultNum;
+        result = resultNum.toString();
+      } else if(resultNum>9999){
+        result = resultNum.toString();
+        if (resultNum%4==0){
+          result = result[4]+result[3]+result[2]+result[1];
+        } else if(resultNum%4==1){
+          result = result[3]+result[1]+result[4]+result[4];
+        } else if(resultNum%4==2){
+          result = result[2]+result[4]+result[3]+result[1];
+        } else if(resultNum%4==3){
+          result = result[1]+result[2]+result[3]+result[4];
         }
-      })
-
+      }
+      return result;
+    },
+    computeProjectType(id){
+      var result = 'D';
+      if (id%4==0){
+        result = 'D';
+      } else if(id%4==1){
+        result = 'M';
+      } else if(id%4==2){
+        result = 'S';
+      } else if(id%4==3){
+        result = 'O';
+      }
+      return result;
     }
 
   }
