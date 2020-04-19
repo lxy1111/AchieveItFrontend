@@ -120,7 +120,9 @@ export const groupListSearch = params => { return axios.post(`/ProjectUserInfo/S
 export const groupListAdd = params => { return axios.post(`/ProjectUserInfo/Add?id=`+params , params).then(res => res.data); };
 
 export const deleteProjectGroup = params => { return axios.post(`/ProjectUserInfo/Delete?`+params , params).then(res => res.data); };
-
+export const editProjectGroup = params => { return axios.post(`/ProjectUserInfo/Edit` , params).then(res => res.data); };
+export const AddEPG = params => { return axios.post(`/ProjectUserInfo/AddEPG`, params).then(res => res.data); };
+export const AddQA = params => { return axios.post(`/ProjectUserInfo/AddQA`, params).then(res => res.data); };
 
 
 
@@ -160,5 +162,9 @@ export const addPermission = params => { return axios.post(`/ProjectPermission/A
 
 export const SearchUserProjectRoles = params => { return axios.post(`/ProjectRole/SearchUserProjectRoles`, params).then(res => res.data); };
 
+
+
+export const SearchUsers = params => { return axios.post(`/UserInfo/SearchUsers?username=`+params, params).then(res => res.data); };
+export const ProjectSuperiors = params => { return axios.post(`/UserInfo/ProjectSuperiors?username=`+params, params).then(res => res.data); };
 
 

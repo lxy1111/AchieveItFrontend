@@ -138,7 +138,7 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100"  align="center">
         <template slot-scope="scope">
-          <i v-if="scope.row.status==5&&userInfo.userRole=='CM'&&scope.row.status!=2"
+          <i v-if="scope.row.status==5&&userInfo.userRole=='CM'"
              style="font-size: 1.1rem;" class="el-icon-zoom-in"
              @click="onShowDetail(scope.row)"></i>
           <i v-if="scope.row.status!=0&&scope.row.status!=2&&scope.row.status!=5&&
@@ -190,7 +190,13 @@
         </el-form-item>
         <el-form-item class="form_select" label="项目上级" prop="type">
           <el-input v-if="editDialogParam.title=='编辑'" disabled v-model="formEdit.leader" placeholder=""></el-input>
-          <el-input v-else v-model="formEdit.leader" placeholder=""></el-input>
+<!--          <el-input v-else v-model="formEdit.leader" placeholder=""></el-input>-->
+          <el-autocomplete v-else
+            v-model="formEdit.leader"
+            :fetch-suggestions="querySearchAsync"
+            placeholder="查询所有项目上级"
+            @select="handleSelect"
+          ></el-autocomplete>
         </el-form-item>
         <el-form-item class="form_input" label="客户信息" prop="age">
           <el-input v-model="formEdit.customerInfo" placeholder=""></el-input>
@@ -662,8 +668,8 @@
 <script>
   import {searchProject, approveProject, rejectProject} from '../../api/api'
   import {createNewProject, getEPGLeaderTask, getQALeaderTask, getMemberTask} from '../../api/api'
-  import {updateProject, userRoleSearch, viewMyTask, getPMTask} from '../../api/api'
-  import {deleteProject, setProjectStatus, SearchUserProjectRoles, JudgeAssign} from '../../api/api'
+  import {updateProject, userRoleSearch, viewMyTask, getPMTask, AddEPG, AddQA} from '../../api/api'
+  import {deleteProject, setProjectStatus, SearchUserProjectRoles, JudgeAssign, ProjectSuperiors, SearchUsers} from '../../api/api'
   import axios from 'axios';
   axios.defaults.baseURL="http://47.100.187.197:8080";
   axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -1305,7 +1311,7 @@ export default {
         "roleDescription": '项目改进小组',
         "userId": this.epgId
       }
-      axios.post(`/ProjectUserInfo/Add?id=3` , params)
+      AddEPG(params)
         .then(res => {
           console.log(res);
 
@@ -1335,7 +1341,7 @@ export default {
         "roleDescription": '质量监控',
         "userId": this.qaId
       }
-      axios.post(`/ProjectUserInfo/Add?id=4` , params)
+      AddQA(params)
         .then(res => {
 
           if (res.code==0){
@@ -1630,7 +1636,36 @@ export default {
         result = 'O';
       }
       return result;
-    }
+    },
+    handleSelect(item) {
+      console.log(item);
+    },
+    querySearchAsync(queryString, cb) {
+      console.log('查询项目上级');
+      ProjectSuperiors(queryString)
+        .then((res)=>{
+
+          if (res.code==0){
+            var results = [];
+            for (var i=0;i<res.count;i++){
+              results.push({
+                value: res.data.data[i].username
+              })
+            }
+            cb(results);
+          } else{
+            this.$message({ message: "查询上级失败："+res.msg, type: "warning" });
+          }
+
+        })
+        .catch(error => {
+          this.$message({ message: "查询上级异常"+error, type: "error" });
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+
+    },
 
   }
 };

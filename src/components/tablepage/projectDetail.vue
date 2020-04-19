@@ -205,8 +205,8 @@
                   stripe class="visitor-table" align="center">
                   <el-table-column type="selection" width="30" align="center"></el-table-column>
                   <el-table-column prop="userId" label="组员id" width="70" align="center"></el-table-column>
-                  <el-table-column prop="userName" label="姓名" width="60"></el-table-column>
-                  <el-table-column prop="userRole" label="角色" width="150"></el-table-column>
+                  <el-table-column prop="userName" label="姓名" width="100"></el-table-column>
+                  <el-table-column prop="userRole" label="角色" width="100"></el-table-column>
                   <el-table-column prop="userMail" label="邮箱"></el-table-column>
                   <el-table-column prop="userDepartment" label="部门" width="100"></el-table-column>
                   <el-table-column prop="projectChargerMail" label="项目上级邮箱"></el-table-column>
@@ -839,9 +839,16 @@
         <el-form-item class="form_input_group" label="当前项目ID" prop="projectId">
           <el-input disabled v-model="formEdit.id" placeholder=""></el-input>
         </el-form-item>
-        <el-form-item class="form_input_group" label="新增组员ID" prop="name">
-          <el-input v-if="this.editGroupDialogParam.title=='新增组员'" v-model="formEditGroup.userId" placeholder=""></el-input>
-          <el-input v-if="this.editGroupDialogParam.title=='编辑组员'" disabled v-model="formEditGroup.userId" placeholder=""></el-input>
+        <el-form-item class="form_input_group" label="新增组员" prop="name">
+<!--          <el-input v-if="this.editGroupDialogParam.title=='新增组员'" v-model="formEditGroup.userId" placeholder=""></el-input>-->
+          <el-input v-if="this.editGroupDialogParam.title=='编辑组员'" disabled v-model="formEditGroup.userName" placeholder=""></el-input>
+
+          <el-autocomplete v-if="this.editGroupDialogParam.title=='新增组员'"
+                           v-model="formEditGroup.userId"
+                           :fetch-suggestions="querySearchAsync"
+                           placeholder="查询员工姓名"
+                           @select="handleSelect"
+          ></el-autocomplete>
         </el-form-item>
         <el-form-item class="form_input_group" label="角色" prop="head">
           <el-select v-model="formEditGroup.userRole" placeholder="">
@@ -1013,12 +1020,12 @@
     updateProject,
     myWorkHourSearch,
     updateProjectSubFunction,
-    addProjectSubFunction} from "../../api/api";
+    addProjectSubFunction,editProjectGroup} from "../../api/api";
 
   import {searchProjectArchive,acceptBestExperience, acceptDevelopModel, acceptDevelopTool, acceptExamine,
     acceptProblem,acceptProjectBasicTable,acceptProjectCost,acceptProjectDemand,acceptProjectEstimate,
     acceptProjectPrice,acceptProjectProcess,acceptProjectProposal,acceptProjectRisk,
-    acceptProjectSchedule,acceptProjectSummary,acceptQASummary,acceptReport} from "../../api/api";
+    acceptProjectSchedule,acceptProjectSummary,acceptQASummary,acceptReport,SearchUsers} from "../../api/api";
   import axios from 'axios';
   axios.defaults.baseURL="http://47.100.187.197:8080";
   axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -1799,6 +1806,32 @@
                 if (json.count >=0) {
                   this.groupList = json.data.组员信息列表;
                   //console.log(this.groupList)
+
+                  for (var i=0;i<json.count;i++){
+
+                    for (var j=0;j<this.groupList[i].userRole.length;j++){
+                      console.log(this.groupList[i].userRole[j]);
+                      if (this.groupList[i].userRole[j]=='1'){
+                        this.groupList[i].userRole[j]='项目上级'
+                      } else if (this.groupList[i].userRole[j]=='2'){
+                        this.groupList[i].userRole[j]='组织级配置管理员'
+                      } else if (this.groupList[i].userRole[j]=='3'){
+                        this.groupList[i].userRole[j]='项目改进小组'
+                      } else if (this.groupList[i].userRole[j]=='4'){
+                        this.groupList[i].userRole[j]='质量监控'
+                      } else if (this.groupList[i].userRole[j]=='5'){
+                        this.groupList[i].userRole[j]='项目经理'
+                      } else if (this.groupList[i].userRole[j]=='6'){
+                        this.groupList[i].userRole[j]='项目资产管理员'
+                      } else if (this.groupList[i].userRole[j]=='7'){
+                        this.groupList[i].userRole[j]='开发人员'
+                      } else if (this.groupList[i].userRole[j]=='8'){
+                        this.groupList[i].userRole[j]='测试人员'
+                      }
+                      console.log(this.groupList[i].userRole[j]);
+                    }
+
+                  }
                 }
               })
               .catch(error => {
@@ -2346,9 +2379,9 @@
                     userName: this.formEditPermission.userName,
                     userRole: this.formEditPermission.userRole,
                     userTel: this.formEditPermission.userTel,
-                    filePermission: response.data.data.filePermission,
-                    gitPermission: response.data.data.gitPermission,
-                    mailPermission: response.data.data.mailPermission,
+                    filePermission: response.data.data.filePermission == 1 ? '是' : '否',
+                    gitPermission: response.data.data.gitPermission == 1 ? '是' : '否',
+                    mailPermission: response.data.data.mailPermission == 1 ? '是' : '否',
 
                   }
                 }else{
@@ -2435,6 +2468,7 @@
               });
           },
           onShowAddGroup() {
+            this.formEditGroup={}
             this.editGroupDialogParam.title = "新增组员";//设置标题
             this.editGroupDialogParam.show = true;//显示弹框
             this.editGroupDialogParam.formEditGroupDisabled=false;//设置可编辑
@@ -2652,19 +2686,36 @@
             //
             //   });
 
-            var params = {
-              "projectId": this.formEdit.id,
-              "roleDescription": this.formEditGroup.userRole,
-              "userId": this.formEditGroup.userId
-            }
-            axios.post(`/ProjectUserInfo/Add?id=5` , params)
-              .then(res => {
-                console.log(res);
-                this.editGroupDialogParam.show=false;
-                this.getAllGroupList(this.formEdit.id);
+            SearchUsers(this.formEditGroup.userId)
+              .then((res)=>{
+                 if (res.code==0){
+
+                   var params = {
+                     "projectId": this.formEdit.id,
+                     "roleDescription": this.formEditGroup.userRole,
+                     "userId": res.data.data[0].id
+                   }
+                   axios.post(`/ProjectUserInfo/Add?id=5` , params)
+                     .then(res => {
+                       console.log(res);
+                       this.editGroupDialogParam.show=false;
+                       this.getAllGroupList(this.formEdit.id);
+                       this.formEditGroup={};
+                     })
+                     .catch(error => {
+                       this.$message({ message: "保存项目异常："+error, type: "error" });
+                     })
+                     .finally(() => {
+
+                     });
+
+                 } else{
+
+                 }
+
               })
               .catch(error => {
-                this.$message({ message: "保存项目异常："+error, type: "error" });
+                this.$message({ message: "查询员工异常："+error, type: "error" });
               })
               .finally(() => {
 
@@ -2673,8 +2724,14 @@
           },
           _editGroup() {
 
-            var params = 'projectId='+this.formEdit.id+'&userId='+this.formEditGroup.userId;
-            deleteProjectGroup(params).then(response=>{
+            var params = {
+              newRoleId: 0,
+              projectId: 0,
+              usedRoleId: 0,
+              userId: 0
+            }
+              'projectId='+this.formEdit.id+'&userId='+this.formEditGroup.userId;
+            editProjectGroup(params).then(response=>{
 
               var params1 = {
                 "projectId": this.formEdit.id,
@@ -2705,6 +2762,24 @@
           },
           _editPermission() {
 
+            if (this.formEditPermission.filePermission=='是'){
+              this.formEditPermission.filePermission=1
+            } else if(this.formEditPermission.filePermission=='否'){
+              this.formEditPermission.filePermission=0
+            }
+
+            if (this.formEditPermission.gitPermission=='是'){
+              this.formEditPermission.gitPermission=1
+            } else if(this.formEditPermission.gitPermission=='否'){
+              this.formEditPermission.gitPermission=0
+            }
+
+            if (this.formEditPermission.mailPermission=='是'){
+              this.formEditPermission.mailPermission=1
+            } else if(this.formEditPermission.mailPermission=='否'){
+              this.formEditPermission.mailPermission=0
+            }
+
             var params={
               filePermission: this.formEditPermission.filePermission,
               gitPermission: this.formEditPermission.gitPermission,
@@ -2717,6 +2792,7 @@
               .then((response)=>{
                 console.log(response)
                 this.editPermissionDialogParam.show=false;
+                this.$message({ message: "编辑权限成功！", type: "success" });
               })
               .catch(error => {
                 this.$message({ message: "编辑权限异常："+error, type: "error" });
@@ -2871,18 +2947,29 @@
             console.log(item);
           },
           querySearchAsync(queryString, cb) {
-            var staffs = this.staffs;
-            var results = queryString ? staffs.filter(this.createStateFilter(queryString)) : staffs;
+            console.log('查询员工');
+            SearchUsers(queryString)
+              .then((res)=>{
 
-            clearTimeout(this.timeout);
-            this.timeout = setTimeout(() => {
-              cb(results);
-            }, 3000 * Math.random());
-          },
-          createStateFilter(queryString) {
-            return (state) => {
-              return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-            };
+                if (res.code==0){
+                  var results = [];
+                  for (var i=0;i<res.count;i++){
+                    results.push({
+                      value: res.data.data[i].username
+                    })
+                  }
+                  cb(results);
+                } else{
+                  this.$message({ message: "查询员工失败："+res.msg, type: "warning" });
+                }
+
+              })
+              .catch(error => {
+                this.$message({ message: "查询员工异常"+error, type: "error" });
+              })
+              .finally(() => {
+                this.loading = false;
+              });
           },
           searchWorkTime(){
 
