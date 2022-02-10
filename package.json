@@ -16,7 +16,7 @@
     "element-ui": "^2.13.0",
     "js-yaml": "^3.13.1",
     "moment": "^2.24.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "qs": "^6.9.3",
     "true-case-path": "^2.2.1",
     "vue": "^2.6.11",
